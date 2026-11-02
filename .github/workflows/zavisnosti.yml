@@ -1,0 +1,19 @@
+name: Zavisnosti
+
+on:
+  schedule:
+    - cron: "0 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Full report, including dev tools
+        run: npm audit || true
+      - name: Production dependencies must be clean
+        run: npm audit --omit=dev

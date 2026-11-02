@@ -1,0 +1,22 @@
+name: CI
+
+on: push
+
+permissions:
+  contents: read
+
+jobs:
+  provjera:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+      # shortcut: production dependencies only, because the ESLint tools' minimatch finding has no real fix; drop --omit=dev once it does.
+      - run: npm audit --omit=dev
