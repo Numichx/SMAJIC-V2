@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -6,9 +7,16 @@ export const metadata: Metadata = {
   description: "Narudžbe i naplata za restoran Smajić",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  // Reading a cookie also renders every page per request, which the CSP nonce requires.
+  const tema = (await cookies()).get("tema")?.value;
+
   return (
-    <html lang="bs" className="h-full antialiased">
+    <html
+      lang="bs"
+      data-tema={tema === "tamna" || tema === "svijetla" ? tema : undefined}
+      className="h-full antialiased"
+    >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

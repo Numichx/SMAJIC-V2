@@ -1,0 +1,35 @@
+:root {
+  color-scheme: light;
+  --background: #ffffff;
+  --foreground: #171717;
+  --povrsina: #f2f2f2;
+  --okvir: #767676;
+  --akcent: #0b5cad;
+  --akcent-tekst: #ffffff;
+  --greska: #b00020;
+}
+
+/* Bez izbora teme slijedi se sistem; data-tema ima prednost u oba smjera. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema]) {
+    color-scheme: dark;
+    --background: #0a0a0a;
+    --foreground: #ededed;
+    --povrsina: #1c1c1c;
+    --okvir: #8a8a8a;
+    --akcent: #6cb2f5;
+    --akcent-tekst: #0a0a0a;
+    --greska: #ff8a80;
+  }
+}
+
+:root[data-tema="tamna"] {
+  color-scheme: dark;
+  --background: #0a0a0a;
+  --foreground: #ededed;
+  --povrsina: #1c1c1c;
+  --okvir: #8a8a8a;
+  --akcent: #6cb2f5;
+  --akcent-tekst: #0a0a0a;
+  --greska: #ff8a80;
+}

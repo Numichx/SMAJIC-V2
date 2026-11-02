@@ -1,10 +1,6 @@
-import { connection } from "next/server";
 import { modAplikacije } from "@/lib/supabase/config";
 
-export async function GET() {
-  // Cache Components would otherwise prerender this and freeze the mode at build time.
-  await connection();
-
+export function GET() {
   const mod = modAplikacije();
   const ok = mod !== "misconfigured";
 
