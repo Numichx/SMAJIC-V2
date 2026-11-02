@@ -6,7 +6,7 @@ import { POST as postaviPin } from "@/app/api/pin/route";
 import { GET as imena, POST as prijava } from "@/app/api/prijava/route";
 import { DELETE as odjava, GET as sesija } from "@/app/api/sesija/route";
 import { GET as status } from "@/app/api/status/route";
-import { ApiGreska, odgovorGreske, PoslovnaGreska } from "@/lib/api/greske";
+import { ApiGreska, odgovorGreske } from "@/lib/api/greske";
 import { KOLACIC_UREDJAJA } from "@/lib/auth/pinOgranicenje";
 import { KOLACIC_SESIJE, opcijeKolacica } from "@/lib/auth/session";
 import { demoBaza } from "@/lib/demo/store";
@@ -79,13 +79,7 @@ describe("GET /api/status", () => {
 describe("odgovorGreske", () => {
   afterEach(() => vi.restoreAllMocks());
 
-  it("shows business errors", async () => {
-    const odgovor = odgovorGreske(new PoslovnaGreska("Izaberite drugi PIN."));
-    expect(odgovor.status).toBe(422);
-    expect(await odgovor.json()).toEqual({ greska: "Izaberite drugi PIN." });
-  });
-
-  it("recognises a Postgres business error by its code", async () => {
+  it("shows a Postgres business error, recognised by its code", async () => {
     const odgovor = odgovorGreske({ code: "P0001", message: "Poruka iz baze." });
     expect(odgovor.status).toBe(422);
     expect(await odgovor.json()).toEqual({ greska: "Poruka iz baze." });
@@ -98,10 +92,8 @@ describe("odgovorGreske", () => {
     expect(await odgovor.text()).not.toContain("tajna_tabela");
   });
 
-  it("keeps the status and headers of an API error", () => {
-    const odgovor = odgovorGreske(new ApiGreska(429, "Sačekajte.", { "Retry-After": "60" }));
-    expect(odgovor.status).toBe(429);
-    expect(odgovor.headers.get("Retry-After")).toBe("60");
+  it("keeps the status of an API error", () => {
+    expect(odgovorGreske(new ApiGreska(403, "Ne.")).status).toBe(403);
   });
 });
 
@@ -225,7 +217,7 @@ describe("PIN login and activation (real SQL on PGlite)", () => {
     expect((await postaviPin(postJson("/api/pin", { kod, noviPin: PIN_SEFICE }))).status).toBe(200);
   });
 
-  it("does not let two people in a role share a PIN", async () => {
+  it("gives one guess per code at a colleague's PIN: the code is then used up", async () => {
     const sefica = await prijaviSeficu();
     await prijaviKonobara(sefica);
 
@@ -235,6 +227,46 @@ describe("PIN login and activation (real SQL on PGlite)", () => {
 
     const odgovor = await postaviPin(postJson("/api/pin", { kod, noviPin: PIN_KONOBARA }));
     expect(odgovor.status).toBe(422);
+    expect(await odgovor.json()).toEqual({ greska: "Taj PIN nije dostupan. Zatražite novi kod od šefice." });
+
+    const ponovo = await postaviPin(postJson("/api/pin", { kod, noviPin: "6142" }));
+    expect(ponovo.status).toBe(401);
+  });
+
+  it("ends a waiter's old sessions as soon as the manager issues a new code", async () => {
+    const sefica = await prijaviSeficu();
+    const { id, kolacic: stara } = await prijaviKonobara(sefica);
+    expect((await sesija(zahtjev("/api/sesija", { kolacici: [stara] }))).status).toBe(200);
+
+    const aktivacija = await aktivirajPin(postJson("/api/administracija/pin", { zaposlenikId: id }, { kolacici: [sefica] }));
+    expect(aktivacija.status).toBe(200);
+    const { kod } = (await aktivacija.json()) as { kod: string };
+
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(Date.now() + 31_000);
+    expect((await sesija(zahtjev("/api/sesija", { kolacici: [stara] }))).status).toBe(401);
+    expect((await sesija(zahtjev("/api/sesija", { kolacici: [sefica] }))).status).toBe(200);
+
+    // A session from before the new PIN stays dead, and the new login works.
+    vi.useRealTimers();
+    await postaviPin(postJson("/api/pin", { kod, noviPin: "6142" }));
+    const nova = await prijava(postJson("/api/prijava", { uloga: "konobar", zaposlenikId: id, pin: "6142" }));
+    expect(nova.status).toBe(200);
+    expect((await sesija(zahtjev("/api/sesija", { kolacici: [kolacic(nova, KOLACIC_SESIJE)] }))).status).toBe(200);
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(Date.now() + 31_000);
+    expect((await sesija(zahtjev("/api/sesija", { kolacici: [stara] }))).status).toBe(401);
+  });
+
+  it("keeps the manager logged in when she issues a code to herself", async () => {
+    const sefica = await prijaviSeficu();
+    const id = await idPoImenu(sefica, "Nedžija Smajić");
+    const aktivacija = await aktivirajPin(postJson("/api/administracija/pin", { zaposlenikId: id }, { kolacici: [sefica] }));
+    expect(aktivacija.status).toBe(200);
+
+    vi.useFakeTimers({ toFake: ["Date"] });
+    vi.setSystemTime(Date.now() + 31_000);
+    expect((await sesija(zahtjev("/api/sesija", { kolacici: [sefica] }))).status).toBe(200);
   });
 
   it("logs a waiter in with name and PIN, and lists only staff who have a PIN", async () => {

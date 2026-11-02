@@ -68,8 +68,7 @@ describe("proxy", () => {
 
     expect(csp).toMatch(/script-src 'self' 'nonce-[^']+' 'strict-dynamic'/);
     expect(csp).not.toBe(drugi.headers.get("Content-Security-Policy"));
-    expect(prvi.headers.get("x-middleware-request-x-nonce")).toBeTruthy();
-    expect(csp).toContain(prvi.headers.get("x-middleware-request-x-nonce"));
+    expect(prvi.headers.get("x-middleware-request-content-security-policy")).toBe(csp);
   });
 
   it("leaves API routes to check their own session", () => {

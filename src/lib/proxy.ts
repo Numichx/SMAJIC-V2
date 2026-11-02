@@ -22,7 +22,7 @@ export function zastita(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   if (modAplikacije() === "misconfigured" && pathname !== "/api/status") {
-    return Response.json({ greska: "Aplikacija nije podešena." }, { status: 503 });
+    return Response.json({ greska: "Aplikacija nije postavljena. Javite se šefici." }, { status: 503 });
   }
   // API routes check the session themselves and return JSON, not redirects.
   if (pathname.startsWith("/api/")) return NextResponse.next();
@@ -47,7 +47,6 @@ export function zastita(request: NextRequest) {
   const politika = politikaSadrzaja(nonce, process.env.NODE_ENV === "development");
 
   const zaglavlja = new Headers(request.headers);
-  zaglavlja.set("x-nonce", nonce);
   zaglavlja.set("Content-Security-Policy", politika);
 
   const odgovor = NextResponse.next({ request: { headers: zaglavlja } });

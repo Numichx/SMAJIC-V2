@@ -22,6 +22,8 @@ export default function OsobljePanel() {
   const [greska, postaviGresku] = useState("");
   const [kod, postaviKod] = useState<{ ime: string; kod: string } | null>(null);
   const [osvjezenje, osvjezi] = useState(0);
+  const [ucitano, postaviUcitano] = useState(false);
+  const [saljem, postaviSaljem] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/administracija/zaposlenici")
@@ -29,12 +31,16 @@ export default function OsobljePanel() {
         if (odgovor.status === 401) return window.location.assign(PRIJAVA);
         if (!odgovor.ok) return postaviGresku(await greskaIz(odgovor));
         postaviZaposlenike((await odgovor.json()).zaposlenici);
+        postaviUcitano(true);
       })
       .catch(() => postaviGresku(NEMA_VEZE));
   }, [osvjezenje]);
 
   async function noviPin(z: Zaposlenik) {
+    if (saljem) return;
     postaviGresku("");
+    postaviKod(null);
+    postaviSaljem(z.id);
     try {
       const odgovor = await fetch("/api/administracija/pin", {
         method: "POST",
@@ -47,23 +53,25 @@ export default function OsobljePanel() {
       osvjezi((n) => n + 1);
     } catch {
       postaviGresku(NEMA_VEZE);
+    } finally {
+      postaviSaljem(null);
     }
   }
 
   return (
     <div className="flex flex-col gap-4">
-      {greska && (
-        <p role="alert" className="font-semibold text-greska">
-          {greska}
-        </p>
-      )}
+      <p role="alert" className="font-semibold text-greska">
+        {greska}
+      </p>
       {kod && (
-        <section aria-label="Aktivacijski kod" className="rounded-lg border-2 border-akcent bg-povrsina p-4">
+        <section role="status" aria-label="Aktivacijski kod" className="rounded-lg border-2 border-akcent bg-povrsina p-4">
           <p className="font-semibold">{kod.ime}</p>
-          <p className="my-2 text-4xl font-bold tracking-widest">{kod.kod}</p>
+          <p aria-label={kod.kod.split("").join(" ")} className="my-2 text-4xl font-bold tracking-widest">{kod.kod}</p>
           <p>Kod vrijedi 15 minuta. Dajte ga zaposleniku da izabere svoj PIN.</p>
         </section>
       )}
+      {!ucitano && !greska && <p role="status">Učitavam osoblje…</p>}
+      {ucitano && zaposlenici.length === 0 && <p>Nema zaposlenika.</p>}
       <ul className="flex flex-col gap-2">
         {zaposlenici.map((z) => (
           <li key={z.id} className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-lg border-2 border-okvir p-3">
@@ -77,10 +85,11 @@ export default function OsobljePanel() {
               <button
                 type="button"
                 onClick={() => noviPin(z)}
-                aria-label={`Novi PIN za ${z.ime}`}
+                aria-disabled={saljem === z.id}
+                aria-label={`Izdaj kod za ${z.ime}`}
                 className="min-h-12 rounded-lg bg-akcent px-4 font-semibold text-akcent-tekst"
               >
-                Novi PIN
+                {saljem === z.id ? "Izdajem…" : "Izdaj kod"}
               </button>
             )}
           </li>

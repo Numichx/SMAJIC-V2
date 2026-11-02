@@ -37,11 +37,12 @@ type Rezultat = {
   id: string | null;
   ime: string | null;
   uloga: Uloga | null;
+  sesija_verzija: number | null;
 };
 
 export const GET = ruta(async (request: NextRequest) => {
   const uloga = request.nextUrl.searchParams.get("uloga") ?? undefined;
-  if (!jeOdjeljak(uloga)) throw new ApiGreska(400, "Neispravni podaci.");
+  if (!jeOdjeljak(uloga)) throw new ApiGreska(400, "Podaci nisu ispravni. Osvježite stranicu i pokušajte ponovo.");
 
   const zaposlenici = SA_IMENOM.includes(uloga)
     ? await rpc<{ id: string; ime: string }[]>("zaposlenici_za_prijavu", { p_uloge: PRISTUP[uloga] })
@@ -52,7 +53,7 @@ export const GET = ruta(async (request: NextRequest) => {
 export const POST = ruta(async (request: NextRequest) => {
   const tajna = tajnaSesije();
   const { uloga, zaposlenikId, pin } = await procitajTijelo(request, prijavaShema);
-  if (SA_IMENOM.includes(uloga) && !zaposlenikId) throw new ApiGreska(400, "Neispravni podaci.");
+  if (SA_IMENOM.includes(uloga) && !zaposlenikId) throw new ApiGreska(400, "Podaci nisu ispravni. Osvježite stranicu i pokušajte ponovo.");
 
   const { uredjaj, ip, noviKolacic } = identitetZahtjeva(request, tajna);
   const [rezultat] = await rpc<Rezultat[]>("prijava_pinom", {
@@ -68,7 +69,12 @@ export const POST = ruta(async (request: NextRequest) => {
     odgovor = NextResponse.json({ ime: rezultat.ime, uloga: rezultat.uloga, pocetna: `/${uloga}` });
     odgovor.cookies.set(
       KOLACIC_SESIJE,
-      potpisi("sesija", { id: rezultat.id, ime: rezultat.ime, uloga: rezultat.uloga }, tajna, TRAJANJE_SESIJE_S),
+      potpisi(
+        "sesija",
+        { id: rezultat.id, ime: rezultat.ime, uloga: rezultat.uloga, v: rezultat.sesija_verzija },
+        tajna,
+        TRAJANJE_SESIJE_S,
+      ),
       opcijeKolacica(TRAJANJE_SESIJE_S),
     );
   } else if (rezultat.status === "zakljucano") {

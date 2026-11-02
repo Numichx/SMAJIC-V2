@@ -13,7 +13,7 @@ import { opcijeKolacica, tajnaSesije } from "@/lib/auth/session";
 
 const pinTijelo = z.strictObject({ kod: kodShema, noviPin: pinShema });
 
-type Rezultat = { status: "ok" | "pogresan" | "zakljucano"; retry_after: number };
+type Rezultat = { status: "ok" | "pogresan" | "zakljucano" | "zauzet"; retry_after: number };
 
 export const POST = ruta(async (request: NextRequest) => {
   const tajna = tajnaSesije();
@@ -35,6 +35,8 @@ export const POST = ruta(async (request: NextRequest) => {
       { greska: porukaZakljucano(rezultat.retry_after) },
       { status: 429, headers: { "Retry-After": String(rezultat.retry_after) } },
     );
+  } else if (rezultat.status === "zauzet") {
+    odgovor = NextResponse.json({ greska: "Taj PIN nije dostupan. Zatražite novi kod od šefice." }, { status: 422 });
   } else {
     odgovor = NextResponse.json({ greska: "Kod nije ispravan ili je istekao." }, { status: 401 });
   }

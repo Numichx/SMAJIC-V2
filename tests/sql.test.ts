@@ -8,14 +8,26 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 const MIGRACIJE = path.resolve("supabase/migrations");
 const OTVORENE = [
   "aktiviraj_pin",
+  "meni",
+  "posalji_narudzbu",
   "postavi_pin_kodom",
+  "premjesti_sto",
   "prijava_pinom",
+  "racun_za_sto",
+  "sesija_vazeca",
+  "stolovi_pregled",
   "zaposlenici_pregled",
   "zaposlenici_za_prijavu",
-  "zaposlenik_aktivan",
 ].sort();
 
-type Prijava = { status: string; retry_after: number; id: string | null; ime: string | null; uloga: string | null };
+type Prijava = {
+  status: string;
+  retry_after: number;
+  id: string | null;
+  ime: string | null;
+  uloga: string | null;
+  sesija_verzija: number | null;
+};
 
 let db: PGlite;
 
@@ -32,7 +44,7 @@ afterAll(() => db.close());
 beforeEach(async () => {
   await db.exec(`
     reset role;
-    update public.zaposlenici set pin_hash = null, aktivacija_hash = null, aktivacija_do = null, aktivan = true;
+    update public.zaposlenici set pin_hash = null, aktivacija_hash = null, aktivacija_do = null, aktivan = true, sesija_verzija = 1;
     delete from public.pin_pokusaji;
     delete from public.dnevnik_radnji;
   `);
@@ -86,7 +98,18 @@ describe("database access rules", () => {
       join pg_namespace n on n.oid = c.relnamespace
       where n.nspname = 'public' and c.relkind = 'r'
     `);
-    expect(rows.map((r) => r.relname).sort()).toEqual(["dnevnik_radnji", "pin_pokusaji", "zaposlenici"]);
+    expect(rows.map((r) => r.relname).sort()).toEqual([
+      "dnevnik_radnji",
+      "kategorije",
+      "narudzbe",
+      "pin_pokusaji",
+      "proizvodi",
+      "racun_stolovi",
+      "racuni",
+      "stavke_narudzbe",
+      "stolovi",
+      "zaposlenici",
+    ]);
     expect(rows.filter((r) => !r.relrowsecurity)).toEqual([]);
 
     const politike = await jedan<{ broj: number }>("select count(*)::int as broj from pg_policies where schemaname = 'public'");
@@ -241,17 +264,56 @@ describe("PIN functions", () => {
     expect((await prijava(["konobar"], konobar, "4827")).status).toBe("pogresan");
   });
 
-  it("rejects a shared PIN within a role, and allows it across roles", async () => {
+  it("allows a shared PIN across roles", async () => {
+    await postaviPin(await prviKod(), "4827");
+    const sefica = await idPoImenu("Nedžija Smajić");
+    const konobar = await idPoImenu("Emsud Peco");
+    expect((await postaviPin(await aktiviraj(konobar, sefica), "4827")).status).toBe("ok");
+  });
+
+  it("gives one guess per code at a colleague's PIN: it uses up the code, counts and logs", async () => {
     await postaviPin(await prviKod(), "4827");
     const sefica = await idPoImenu("Nedžija Smajić");
     const prvi = await idPoImenu("Emsud Peco");
     const drugi = await idPoImenu("Gasal Mirza");
+    await postaviPin(await aktiviraj(prvi, sefica), "5930");
 
-    expect((await postaviPin(await aktiviraj(prvi, sefica), "4827")).status).toBe("ok");
-    await expect(postaviPin(await aktiviraj(drugi, sefica), "4827")).rejects.toMatchObject({
-      code: "P0001",
-      message: "Izaberite drugi PIN.",
-    });
+    const kod = await aktiviraj(drugi, sefica);
+    expect((await postaviPin(kod, "5930")).status).toBe("zauzet");
+
+    const { pogresni } = await jedan<{ pogresni: number }>("select pogresni from public.pin_pokusaji where kljuc = 'uredjaj:u1'");
+    expect(pogresni).toBe(1);
+    const zapis = await jedan<{ n: number }>("select count(*)::int as n from public.dnevnik_radnji where radnja = 'pin_zauzet'");
+    expect(zapis.n).toBe(1);
+
+    expect((await postaviPin(kod, "6142")).status).toBe("pogresan");
+    const drugiZapis = await jedan<{ pin_hash: string | null }>("select pin_hash from public.zaposlenici where ime = 'Gasal Mirza'");
+    expect(drugiZapis.pin_hash).toBeNull();
+  });
+
+  it("checks a session by person and version, and bumps the version on a new code or PIN", async () => {
+    await postaviPin(await prviKod(), "4827");
+    const sefica = await idPoImenu("Nedžija Smajić");
+    const konobar = await idPoImenu("Emsud Peco");
+    const vazeca = async (id: string, verzija: number) =>
+      (await jedan<{ v: boolean }>("select public.sesija_vazeca($1::text::uuid, $2) as v", [id, verzija])).v;
+
+    const kod = await aktiviraj(konobar, sefica);
+    expect(await vazeca(konobar, 2)).toBe(true);
+    expect(await vazeca(konobar, 1)).toBe(false);
+
+    await postaviPin(kod, "5930");
+    expect(await vazeca(konobar, 2)).toBe(false);
+    expect(await vazeca(konobar, 3)).toBe(true);
+    expect((await prijava(["konobar"], konobar, "5930")).sesija_verzija).toBe(3);
+
+    await db.query("update public.zaposlenici set aktivan = false where id = $1::text::uuid", [konobar]);
+    expect(await vazeca(konobar, 3)).toBe(false);
+    expect(await vazeca("00000000-0000-4000-8000-000000000000", 1)).toBe(false);
+
+    const prije = (await jedan<{ v: number }>("select sesija_verzija as v from public.zaposlenici where id = $1::text::uuid", [sefica])).v;
+    await aktiviraj(sefica, sefica);
+    expect(await vazeca(sefica, prije)).toBe(true);
   });
 
   it("rejects a deactivated employee", async () => {
@@ -277,14 +339,30 @@ describe("PIN functions", () => {
     expect(pogresni).toBe(1);
   });
 
-  it("clears the device and IP counters on success, but not the global one", async () => {
+  it("clears only the device counter on success", async () => {
     await postaviPin(await prviKod(), "4827");
     await prijava(["sefica"], null, "9999");
     await prijava(["sefica"], null, "4827");
 
-    const { rows } = await db.query<{ kljuc: string }>("select kljuc from public.pin_pokusaji");
-    expect(rows.map((r) => r.kljuc)).toEqual(["globalno"]);
+    const { rows } = await db.query<{ kljuc: string }>("select kljuc from public.pin_pokusaji order by kljuc");
+    expect(rows.map((r) => r.kljuc)).toEqual(["globalno", "ip:i1"]);
   });
+
+  it("stops a colleague guessing at the manager's PIN between their own logins", async () => {
+    await postaviPin(await prviKod(), "4827");
+    const sefica = await idPoImenu("Nedžija Smajić");
+    const konobar = await idPoImenu("Emsud Peco");
+    await postaviPin(await aktiviraj(konobar, sefica), "5930");
+
+    // 4 wrong guesses keep the device under its limit, and a real login clears it. The IP count must keep rising.
+    for (let krug = 0; krug < 4; krug++) {
+      for (let i = 0; i < 4; i++) expect((await prijava(["sefica"], null, "9999")).status).toBe("pogresan");
+      expect((await prijava(["konobar"], konobar, "5930")).status).toBe("ok");
+    }
+    for (let i = 0; i < 3; i++) expect((await prijava(["sefica"], null, "9999")).status).toBe("pogresan");
+    expect((await prijava(["sefica"], null, "9999")).status).toBe("zakljucano");
+    expect((await prijava(["sefica"], null, "4827")).status).toBe("zakljucano");
+  }, 30_000);
 
   it("starts a new count once the window has passed", async () => {
     for (let i = 0; i < 4; i++) await prijava(["sefica"], null, "9999");

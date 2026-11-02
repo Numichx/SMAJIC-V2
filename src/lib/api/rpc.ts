@@ -6,7 +6,7 @@ import { ApiGreska } from "./greske";
 // shortcut: results are cast, not typed, until database.types.ts is generated after the first db push.
 export async function rpc<T>(ime: string, args: Record<string, unknown> = {}): Promise<T> {
   const mod = modAplikacije();
-  if (mod === "misconfigured") throw new ApiGreska(503, "Aplikacija nije podešena.");
+  if (mod === "misconfigured") throw new ApiGreska(503, "Aplikacija nije postavljena. Javite se šefici.");
 
   // The build removes this branch from production, so PGlite and the demo code never ship.
   if (process.env.NODE_ENV !== "production" && mod === "demo") {

@@ -5,15 +5,9 @@ export class ApiGreska extends Error {
   constructor(
     readonly status: number,
     message: string,
-    readonly headers?: HeadersInit,
   ) {
     super(message);
   }
-}
-
-// Same shape as a Postgres `raise exception`, so demo mode and Supabase map the same way.
-export class PoslovnaGreska extends Error {
-  readonly code = "P0001";
 }
 
 function jePoslovna(greska: unknown): greska is { code: string; message: string } {
@@ -21,9 +15,7 @@ function jePoslovna(greska: unknown): greska is { code: string; message: string 
 }
 
 export function odgovorGreske(greska: unknown) {
-  if (greska instanceof ApiGreska) {
-    return Response.json({ greska: greska.message }, { status: greska.status, headers: greska.headers });
-  }
+  if (greska instanceof ApiGreska) return Response.json({ greska: greska.message }, { status: greska.status });
   if (jePoslovna(greska)) return Response.json({ greska: greska.message }, { status: 422 });
 
   console.error(greska);
@@ -43,6 +35,6 @@ export function ruta<A extends unknown[]>(obrada: (...args: A) => Promise<Respon
 export async function procitajTijelo<T extends z.ZodType>(request: NextRequest, shema: T): Promise<z.infer<T>> {
   const tijelo = await request.json().catch(() => undefined);
   const rezultat = shema.safeParse(tijelo);
-  if (!rezultat.success) throw new ApiGreska(400, "Neispravni podaci.");
+  if (!rezultat.success) throw new ApiGreska(400, "Podaci nisu ispravni. Osvježite stranicu i pokušajte ponovo.");
   return rezultat.data;
 }

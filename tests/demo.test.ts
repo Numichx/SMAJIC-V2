@@ -39,7 +39,7 @@ describe("demo backend", () => {
   });
 
   it("returns a scalar function as its bare value", async () => {
-    expect(await demoRpc("zaposlenik_aktivan", { p_id: sefica })).toBe(true);
+    expect(await demoRpc("sesija_vazeca", { p_id: sefica, p_verzija: 1 })).toBe(true);
     expect(await demoRpc("aktiviraj_pin", { p_zaposlenik: sefica, p_sefica: sefica })).toMatch(/^[0-9]{6}$/);
   });
 
@@ -69,8 +69,8 @@ describe("demo backend", () => {
   });
 
   it("refuses wrong argument names, as PostgREST does", async () => {
-    await expect(demoRpc("zaposlenik_aktivan", { p_krivo: sefica })).rejects.toThrow(/Pogrešni argumenti/);
-    await expect(demoRpc("zaposlenik_aktivan", {})).rejects.toThrow(/Pogrešni argumenti/);
+    await expect(demoRpc("sesija_vazeca", { p_krivo: sefica })).rejects.toThrow(/Pogrešni argumenti/);
+    await expect(demoRpc("sesija_vazeca", {})).rejects.toThrow(/Pogrešni argumenti/);
     await expect(demoRpc("nema_takve", {})).rejects.toThrow(/Nema funkcije/);
   });
 
@@ -85,7 +85,7 @@ describe("demo backend", () => {
 
     await demoBaza();
     expect(info.mock.calls[0][0]).toMatch(/Aktivacijski kod za šeficu: [0-9]{6}/);
-    expect(await demoRpc("zaposlenik_aktivan", { p_id: sefica })).toBe(true);
+    expect(await demoRpc("sesija_vazeca", { p_id: sefica, p_verzija: 1 })).toBe(true);
 
     const novi = String(info.mock.calls[0][0]).match(/[0-9]{6}/)![0];
     const [postavljen] = (await demoRpc("postavi_pin_kodom", {

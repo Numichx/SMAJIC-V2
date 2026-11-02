@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { greskaIz } from "@/lib/api/greskaIz";
 import type { Odjeljak } from "@/lib/auth/session";
 
@@ -9,7 +9,7 @@ type Zaposlenik = { id: string; ime: string };
 const NEMA_VEZE = "Nema veze sa serverom. Pokušajte ponovo.";
 
 const dugme = "min-h-12 rounded-lg border-2 border-okvir bg-povrsina px-4 text-lg font-semibold";
-const glavno = "min-h-12 rounded-lg bg-akcent px-4 text-lg font-semibold text-akcent-tekst disabled:opacity-60";
+const glavno = "min-h-12 rounded-lg bg-akcent px-4 text-lg font-semibold text-akcent-tekst aria-disabled:opacity-60";
 const polje = "min-h-12 w-full rounded-lg border-2 border-okvir bg-background px-3 text-lg";
 
 export default function LoginForm({ uloga }: { uloga: Odjeljak }) {
@@ -28,6 +28,16 @@ export default function LoginForm({ uloga }: { uloga: Odjeljak }) {
 
   const [osvjezenje, osvjezi] = useState(0);
 
+  const prvo = useRef<HTMLInputElement>(null);
+  const prviPut = useRef(true);
+  useEffect(() => {
+    if (prviPut.current) {
+      prviPut.current = false;
+      return;
+    }
+    prvo.current?.focus();
+  }, [aktivacija]);
+
   useEffect(() => {
     fetch(`/api/prijava?uloga=${uloga}`)
       .then(async (odgovor) => {
@@ -42,7 +52,9 @@ export default function LoginForm({ uloga }: { uloga: Odjeljak }) {
 
   async function prijavi(e: React.FormEvent) {
     e.preventDefault();
+    if (saljem) return;
     if (saImenom && !odabran) return postaviGresku("Izaberite svoje ime.");
+    if (pin.length < 4) return postaviGresku("PIN ima 4 do 8 cifara.");
     postaviGresku("");
     postaviPoruku("");
     postaviSaljem(true);
@@ -67,9 +79,11 @@ export default function LoginForm({ uloga }: { uloga: Odjeljak }) {
 
   async function postaviNovi(e: React.FormEvent) {
     e.preventDefault();
+    if (saljem) return;
     postaviGresku("");
-    if (noviPin !== ponovljeni) return postaviGresku("PIN-ovi nisu isti.");
+    if (kod.length !== 6) return postaviGresku("Aktivacijski kod ima 6 cifara.");
     if (!/^\d{4,8}$/.test(noviPin)) return postaviGresku("PIN mora imati 4 do 8 cifara.");
+    if (noviPin !== ponovljeni) return postaviGresku("PIN-ovi se ne podudaraju.");
     postaviSaljem(true);
     try {
       const odgovor = await fetch("/api/pin", {
@@ -82,7 +96,7 @@ export default function LoginForm({ uloga }: { uloga: Odjeljak }) {
         postaviNoviPin("");
         postaviPonovljeni("");
         postaviAktivaciju(false);
-        postaviPoruku("PIN je postavljen. Sada se prijavite.");
+        postaviPoruku("PIN je postavljen. Možete se prijaviti.");
         osvjezi((n) => n + 1);
       } else {
         postaviGresku(await greskaIz(odgovor));
@@ -100,19 +114,17 @@ export default function LoginForm({ uloga }: { uloga: Odjeljak }) {
   }
 
   const poruke = (
-    <>
-      {poruka && <p role="status">{poruka}</p>}
-      {greska && (
-        <p role="alert" className="font-semibold text-greska">
-          {greska}
-        </p>
-      )}
-    </>
+    <div>
+      <p role="status">{poruka}</p>
+      <p id="greska-forme" role="alert" className="font-semibold text-greska">
+        {greska}
+      </p>
+    </div>
   );
 
   if (aktivacija) {
     return (
-      <form onSubmit={postaviNovi} className="flex flex-col gap-4">
+      <form onSubmit={postaviNovi} noValidate className="flex flex-col gap-4">
         <label className="flex flex-col gap-1">
           Aktivacijski kod
           <input
@@ -121,13 +133,16 @@ export default function LoginForm({ uloga }: { uloga: Odjeljak }) {
             onChange={(e) => postaviKod(e.target.value.replace(/\D/g, ""))}
             inputMode="numeric"
             autoComplete="off"
-            minLength={6}
             maxLength={6}
-            required
+            ref={prvo}
+            aria-invalid={!!greska}
+            aria-describedby="greska-forme"
           />
         </label>
         <label className="flex flex-col gap-1">
-          Novi PIN
+          <span>
+            Novi PIN <span id="novi-pin-savjet" className="text-base">4 do 8 cifara</span>
+          </span>
           <input
             className={polje}
             type="password"
@@ -136,11 +151,14 @@ export default function LoginForm({ uloga }: { uloga: Odjeljak }) {
             inputMode="numeric"
             autoComplete="new-password"
             maxLength={8}
-            required
+            aria-invalid={!!greska}
+            aria-describedby="novi-pin-savjet greska-forme"
           />
         </label>
         <label className="flex flex-col gap-1">
-          Ponovite PIN
+          <span>
+            Ponovite PIN <span id="ponovljeni-pin-savjet" className="text-base">4 do 8 cifara</span>
+          </span>
           <input
             className={polje}
             type="password"
@@ -149,12 +167,12 @@ export default function LoginForm({ uloga }: { uloga: Odjeljak }) {
             inputMode="numeric"
             autoComplete="new-password"
             maxLength={8}
-            required
+            aria-describedby="ponovljeni-pin-savjet greska-forme"
           />
         </label>
         {poruke}
-        <button type="submit" className={glavno} disabled={saljem}>
-          Postavi PIN
+        <button type="submit" className={glavno} aria-disabled={saljem}>
+          {saljem ? "Postavljam…" : "Postavi PIN"}
         </button>
         <button type="button" className={dugme} onClick={() => prebaci(false)}>
           Nazad na prijavu
@@ -164,12 +182,12 @@ export default function LoginForm({ uloga }: { uloga: Odjeljak }) {
   }
 
   return (
-    <form onSubmit={prijavi} className="flex flex-col gap-4">
+    <form onSubmit={prijavi} noValidate className="flex flex-col gap-4">
       {saImenom && ucitano && zaposlenici.length === 0 && (
-        <p>Još niko nema PIN. Šefica vam daje aktivacijski kod.</p>
+        <p>Još nijedan zaposlenik nema PIN. Aktivacijski kod dobijate od šefice. Pritisnite „Imam aktivacijski kod“.</p>
       )}
       {saImenom && zaposlenici.length > 0 && (
-        <div role="group" aria-label="Ime zaposlenika" className="grid gap-2 sm:grid-cols-2">
+        <div role="group" aria-label="Ime zaposlenika" aria-describedby="greska-forme" className="grid gap-2 sm:grid-cols-2">
           {zaposlenici.map((z) => (
             <button
               key={z.id}
@@ -187,7 +205,9 @@ export default function LoginForm({ uloga }: { uloga: Odjeljak }) {
         </div>
       )}
       <label className="flex flex-col gap-1">
-        PIN
+        <span>
+          PIN <span id="pin-savjet" className="text-base">4 do 8 cifara</span>
+        </span>
         <input
           className={polje}
           type="password"
@@ -195,14 +215,15 @@ export default function LoginForm({ uloga }: { uloga: Odjeljak }) {
           onChange={(e) => postaviPin(e.target.value.replace(/\D/g, ""))}
           inputMode="numeric"
           autoComplete="off"
-          minLength={4}
           maxLength={8}
-          required
+          ref={prvo}
+          aria-invalid={!!greska}
+          aria-describedby="pin-savjet greska-forme"
         />
       </label>
       {poruke}
-      <button type="submit" className={glavno} disabled={saljem}>
-        Prijava
+      <button type="submit" className={glavno} aria-disabled={saljem}>
+        {saljem ? "Prijavljujem…" : "Prijava"}
       </button>
       <button type="button" className={dugme} onClick={() => prebaci(true)}>
         Imam aktivacijski kod
