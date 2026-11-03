@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { NAZIV_STANICE } from "@/lib/format";
+import { formatBroj, NAZIV_STANICE } from "@/lib/format";
 import { PRIJAVA } from "./useMeni";
 
 type Obavijest = { id: string; broj: number; stanica: string; stolovi: number[]; stavke: { naziv: string; kolicina: number; jedinica: string }[] };
@@ -10,7 +10,7 @@ type Prikaz = Obavijest & { kljuc: number };
 const KURSOR = "obavijestiKursor";
 
 const opis = (o: Obavijest) =>
-  `Narudžba ${o.broj} (${NAZIV_STANICE[o.stanica] ?? o.stanica}) je izdata za sto ${o.stolovi.join(", ")}: ${o.stavke.map((s) => `${String(s.kolicina).replace(".", ",")} ${s.jedinica} ${s.naziv}`).join(", ")}`;
+  `Narudžba ${o.broj} (${NAZIV_STANICE[o.stanica] ?? o.stanica}) je izdata za sto ${o.stolovi.join(", ")}: ${o.stavke.map((s) => `${formatBroj(s.kolicina)} ${s.jedinica} ${s.naziv}`).join(", ")}`;
 
 function pisti(ctx: AudioContext | null) {
   if (!ctx) return;

@@ -5,22 +5,20 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { greskaIz } from "@/lib/api/greskaIz";
 import { cijenePriloga, procjenaStavke } from "@/lib/domain/procjena";
-import { formatKM } from "@/lib/format";
+import { formatBroj, formatKM } from "@/lib/format";
 import MeniPrikaz from "./MeniPrikaz";
+import Naplata, { type Placeno } from "./Naplata";
+import NaplacenRacun from "./NaplacenRacun";
 import RacunPrikaz, { type Racun } from "./RacunPrikaz";
 import StoloAkcije from "./StoloAkcije";
 import type { Proizvod } from "./tipovi";
+import { dugme, glavno, polje } from "./stil";
 import { NEMA_VEZE, PRIJAVA, useMeni } from "./useMeni";
 
 type Stavka = { kljuc: number; proizvodId: string; kolicina: string; napomena: string; prilozi: { id: string; poseban: boolean }[] };
 
 const MAX_STAVKI = 100;
 const MAX_PRILOGA = 4;
-const dugme = "min-h-12 min-w-12 rounded-lg border-2 border-okvir bg-povrsina px-4 font-semibold";
-const glavno = "min-h-12 rounded-lg bg-akcent px-4 text-lg font-semibold text-akcent-tekst aria-disabled:opacity-60";
-const polje = "min-h-12 w-full rounded-lg border-2 border-okvir bg-background px-3 text-lg";
-
-const zarez = (n: number) => n.toString().replace(".", ",");
 
 // Returns the quantity as a number, or a Bosnian message.
 function kolicinaIz(p: Proizvod, tekst: string): number | string {
@@ -45,24 +43,35 @@ export default function NarudzbaEditor({ stoId }: { stoId: number }) {
   const [greska, postaviGresku] = useState("");
   const [poruka, postaviPoruku] = useState("");
   const [saljem, postaviSaljem] = useState(false);
+  const [placeno, postaviPlaceno] = useState<Placeno | null>(null);
   const requestId = useRef<string | null>(null);
+  const stornoZauzeto = useRef(false);
+  const pocetno = useRef(false);
   const brojac = useRef(0);
 
   useEffect(() => {
     Promise.all([fetch(`/api/racuni/sto/${stoId}`), fetch("/api/stolovi")])
       .then(async ([a, b]) => {
         if (a.status === 401 || b.status === 401) return window.location.assign(PRIJAVA);
-        if (!a.ok) return postaviGresku(await greskaIz(a));
-        if (!b.ok) return postaviGresku(await greskaIz(b));
+        // Only the first load shows its error: later reloads run in the background and stay silent.
+        if (!a.ok || !b.ok) return pocetno.current ? undefined : postaviGresku(await greskaIz(a.ok ? b : a));
         postaviRacun((await a.json()).racun);
         const stolovi: { id: number; racun: { id: string } | null }[] = (await b.json()).stolovi;
         const ovaj = stolovi.find((s) => s.id === stoId)?.racun?.id;
         postaviSlobodne(stolovi.filter((s) => !s.racun).map((s) => s.id));
         postaviZauzete(stolovi.filter((s) => s.racun && s.racun.id !== ovaj).map((s) => s.id));
         postaviUcitano(true);
+        pocetno.current = true;
       })
-      .catch(() => postaviGresku(NEMA_VEZE));
+      .catch(() => (pocetno.current ? undefined : postaviGresku(NEMA_VEZE)));
   }, [stoId, osvjezenje]);
+
+  // Orders become issued at the stations, so an open bill is reloaded while visible. The cart and payment form are separate state.
+  useEffect(() => {
+    if (placeno) return;
+    const sat = setInterval(() => document.visibilityState === "visible" && osvjezi((n) => n + 1), 10000);
+    return () => clearInterval(sat);
+  }, [placeno]);
 
   const proizvodi = useMemo(() => new Map(meni?.kategorije.flatMap((k) => k.proizvodi).map((p) => [p.id, p])), [meni]);
 
@@ -147,6 +156,26 @@ export default function NarudzbaEditor({ stoId }: { stoId: number }) {
     }
   }
 
+  async function storno(stavkaId: number, razlog: string) {
+    if (stornoZauzeto.current) return;
+    stornoZauzeto.current = true;
+    postaviGresku("");
+    try {
+      const odgovor = await fetch(`/api/narudzbe/stavka/${stavkaId}/storno`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ razlog }),
+      });
+      if (odgovor.status === 401) return window.location.assign(PRIJAVA);
+      if (!odgovor.ok) postaviGresku(await greskaIz(odgovor));
+      osvjezi((n) => n + 1);
+    } catch {
+      postaviGresku(NEMA_VEZE);
+    } finally {
+      stornoZauzeto.current = false;
+    }
+  }
+
   function nakonPrenosa(idiNa: number | null) {
     if (idiNa !== null && idiNa !== stoId) router.push(`/konobar/stolovi/${idiNa}`);
     else osvjezi((n) => n + 1);
@@ -167,18 +196,21 @@ export default function NarudzbaEditor({ stoId }: { stoId: number }) {
         <p role="status">{poruka}</p>
       </div>
 
+      {placeno && <NaplacenRacun p={placeno} />}
       {!ucitano && !greska && <p>Učitavam račun…</p>}
       {ucitano &&
+        !placeno &&
         (racun ? (
           <>
-            <RacunPrikaz racun={racun} />
+            <RacunPrikaz racun={racun} onStorno={storno} />
+            <Naplata racun={racun} neposlano={korpa.length > 0} onPlaceno={postaviPlaceno} onOsvjezi={() => osvjezi((n) => n + 1)} />
             <StoloAkcije stoId={stoId} slobodni={slobodni} zauzeti={zauzeti} onGotovo={nakonPrenosa} />
           </>
         ) : (
           <p>Sto je slobodan.</p>
         ))}
 
-      <section aria-label="Nova narudžba" className="flex flex-col gap-3">
+      <section aria-label="Nova narudžba" hidden={!!placeno} className="flex flex-col gap-3">
         <h2 className="text-xl font-semibold">Nova narudžba</h2>
         {korpa.length === 0 && <p>Korpa je prazna.</p>}
         <ul className="flex flex-col gap-3">
@@ -201,7 +233,7 @@ export default function NarudzbaEditor({ stoId }: { stoId: number }) {
                     aria-label={`Smanji količinu za ${p.naziv}`}
                     onClick={() => {
                       const k = kolicinaIz(p, s.kolicina);
-                      if (typeof k === "number") izmijeni(s.kljuc, { kolicina: zarez(Math.max(kg ? 0.001 : 1, Math.round((k - (kg ? 0.1 : 1)) * 1000) / 1000)) });
+                      if (typeof k === "number") izmijeni(s.kljuc, { kolicina: formatBroj(Math.max(kg ? 0.001 : 1, Math.round((k - (kg ? 0.1 : 1)) * 1000) / 1000)) });
                     }}
                   >
                     −
@@ -222,7 +254,7 @@ export default function NarudzbaEditor({ stoId }: { stoId: number }) {
                     aria-label={`Povećaj količinu za ${p.naziv}`}
                     onClick={() => {
                       const k = kolicinaIz(p, s.kolicina);
-                      if (typeof k === "number") izmijeni(s.kljuc, { kolicina: zarez(Math.min(kg ? 100 : 200, Math.round((k + (kg ? 0.1 : 1)) * 1000) / 1000)) });
+                      if (typeof k === "number") izmijeni(s.kljuc, { kolicina: formatBroj(Math.min(kg ? 100 : 200, Math.round((k + (kg ? 0.1 : 1)) * 1000) / 1000)) });
                     }}
                   >
                     +
@@ -308,7 +340,7 @@ export default function NarudzbaEditor({ stoId }: { stoId: number }) {
         )}
       </section>
 
-      <section aria-label="Meni" className="flex flex-col gap-3">
+      <section aria-label="Meni" hidden={!!placeno} className="flex flex-col gap-3">
         <h2 className="text-xl font-semibold">Meni</h2>
         {!meni && !greskaMenija && <p role="status">Učitavam meni…</p>}
         {meni && <MeniPrikaz meni={meni} onDodaj={dodaj} />}

@@ -6,7 +6,17 @@ import { greskaIz } from "@/lib/api/greskaIz";
 import { formatKM } from "@/lib/format";
 import { NEMA_VEZE, PRIJAVA } from "./useMeni";
 
-export type Sazetak = { id: string; broj: number; otvoren: string; konobar: string; stolovi: number[]; ukupno: number; sveIzdato: boolean };
+export type Sazetak = {
+  id: string;
+  broj: number;
+  otvoren: string;
+  konobar: string;
+  stolovi: number[];
+  bruto: number;
+  popust: { procenat: number; razlog: string | null; iznos: number } | null;
+  ukupno: number;
+  sveIzdato: boolean;
+};
 type Sto = { id: number; racun: Sazetak | null };
 
 export default function StoloviPregled() {

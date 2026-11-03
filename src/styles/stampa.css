@@ -31,3 +31,9 @@
     overflow-wrap: anywhere;
   }
 }
+
+.stampa-red {
+  display: flex;
+  justify-content: space-between;
+  gap: 2mm;
+}

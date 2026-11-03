@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { brojIzUnosa, poredajStavke, sumnjivaTezina, type Stavka } from "@/components/stanice/unos";
 
 const s = (id: number, naziv: string, prilogUz: number | null = null, prilogUzNaziv: string | null = null): Stavka => ({
-  id, naziv, jedinica: "porcija", kolicina: 1, napomena: null, prilogUz, prilogUzNaziv, trebaTezinu: false,
+  id, naziv, jedinica: "porcija", kolicina: 1, napomena: null, prilogUz, prilogUzNaziv, trebaTezinu: false, stornoRazlog: null,
 });
 
 describe("unos stanice", () => {

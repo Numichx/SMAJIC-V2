@@ -7,6 +7,7 @@ export type Stavka = {
   prilogUz: number | null;
   prilogUzNaziv: string | null;
   trebaTezinu: boolean;
+  stornoRazlog: string | null;
 };
 
 // "0,62" and "0.62" are both fine; anything else is NaN, so "1e3" or "0,6,2" never reaches the server.

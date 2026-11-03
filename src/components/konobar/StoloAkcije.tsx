@@ -2,13 +2,12 @@
 
 import { useState } from "react";
 import { greskaIz } from "@/lib/api/greskaIz";
+import { dugme, glavno } from "./stil";
 import { NEMA_VEZE, PRIJAVA } from "./useMeni";
 
 type Radnja = "premjesti" | "spoji" | "dodaj";
 const naziv: Record<Radnja, string> = { premjesti: "Premjesti sto", spoji: "Spoji sa stolom", dodaj: "Dodaj sto" };
 
-const dugme = "min-h-12 rounded-lg border-2 border-okvir bg-povrsina px-4 font-semibold";
-const glavno = "min-h-12 rounded-lg bg-akcent px-4 font-semibold text-akcent-tekst aria-disabled:opacity-60";
 
 // slobodni: free table ids, zauzeti: ids of tables with an open bill that is not this one.
 export default function StoloAkcije({

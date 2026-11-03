@@ -4,7 +4,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { NEMA_VEZE } from "@/components/konobar/useMeni";
 import { greskaIz } from "@/lib/api/greskaIz";
-import { NAZIV_STANICE } from "@/lib/format";
+import { formatBroj, NAZIV_STANICE } from "@/lib/format";
+import { useIspis } from "./useIspis";
 import { brojIzUnosa, poredajStavke, sumnjivaTezina, type Stavka } from "./unos";
 
 type Stanica = "kuhinja" | "pecenjara" | "sank";
@@ -20,7 +21,7 @@ type Narudzba = {
   stavke: Stavka[];
 };
 
-const kol = (s: Stavka) => `${String(s.kolicina).replace(".", ",")} ${s.jedinica}`;
+const kol = (s: Stavka) => `${formatBroj(s.kolicina)} ${s.jedinica}`;
 const minute = (sada: string, kreirano: string) => Math.max(0, Math.floor((Date.parse(sada) - Date.parse(kreirano)) / 60000));
 
 function Stavke({ narudzba }: { narudzba: Narudzba }) {
@@ -28,16 +29,20 @@ function Stavke({ narudzba }: { narudzba: Narudzba }) {
     <ul className="flex flex-col gap-2">
       {poredajStavke(narudzba.stavke).map(({ stavka, prilozi, uz }) => (
         <li key={stavka.id}>
-          <span className="text-lg font-semibold">
+          <span className={`text-lg font-semibold${stavka.stornoRazlog ? " line-through" : ""}`}>
             {kol(stavka)} {stavka.naziv}
             {uz && ` uz ${uz}`}
           </span>
+          {stavka.stornoRazlog && <p className="font-bold">STORNO: {stavka.stornoRazlog}</p>}
           {stavka.napomena && <p>Napomena: {stavka.napomena}</p>}
           {prilozi.length > 0 && (
             <ul className="ml-6 list-disc">
               {prilozi.map((p) => (
                 <li key={p.id}>
-                  {kol(p)} {p.naziv} (uz)
+                  <span className={p.stornoRazlog ? "line-through" : ""}>
+                    {kol(p)} {p.naziv} (uz)
+                  </span>
+                  {p.stornoRazlog && <p className="font-bold">STORNO: {p.stornoRazlog}</p>}
                   {p.napomena && <p>Napomena: {p.napomena}</p>}
                 </li>
               ))}
@@ -72,7 +77,7 @@ function FormaGotovo({ narudzba, zauzeto, posalji }: { narudzba: Narudzba; zauze
   const [tezine, postaviTezine] = useState<Record<number, string>>({});
   const [upozoren, postaviUpozoren] = useState("");
   const [greska, postaviGresku] = useState("");
-  const jagnjetina = narudzba.stavke.filter((s) => s.trebaTezinu);
+  const jagnjetina = narudzba.stavke.filter((s) => s.trebaTezinu && !s.stornoRazlog);
   const potpis = JSON.stringify([cijena, tezine]);
 
   function predaj(e: React.FormEvent) {
@@ -158,13 +163,8 @@ export default function RedStanice({ stanica }: { stanica: Stanica }) {
     };
   }, [ucitaj]);
 
-  useEffect(() => {
-    if (!ispis) return;
-    const ocisti = () => postaviIspis(null);
-    window.addEventListener("afterprint", ocisti);
-    window.print();
-    return () => window.removeEventListener("afterprint", ocisti);
-  }, [ispis]);
+  const ocistiIspis = useCallback(() => postaviIspis(null), []);
+  useIspis(ispis, ocistiIspis);
 
   async function posalji(n: Narudzba, tijelo: object) {
     // A ref, not state: two taps in the same frame both see the same render's state.
@@ -224,7 +224,7 @@ export default function RedStanice({ stanica }: { stanica: Stanica }) {
                   onClick={() => (gotovoPecenjare(n) ? postaviFormu(n.id) : posalji(n, { status: n.sljedeci }))}
                   className="min-h-14 rounded-lg bg-akcent px-4 text-lg font-bold text-akcent-tekst disabled:opacity-60"
                 >
-                  {n.sljedeci}
+                  {n.stavke.every((s) => s.stornoRazlog) ? "Ukloni storno" : n.sljedeci}
                 </button>
               )
             )}
