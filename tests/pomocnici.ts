@@ -59,6 +59,17 @@ export async function proizvodi() {
 
 export async function ocisti() {
   await (await demoBaza()).exec(`
+    delete from public.dopune_sanka;
+    delete from public.popisi_sanka;
+    delete from public.popisi_pecenjare;
+    delete from public.smjene;
+    delete from public.uplate_pecenjari;
+    delete from public.prometi_zaliha;
+    delete from public.zahtjevi_mesnici;
+    update public.zaliha_artikli set stanje = 0;
+    delete from public.dnevni_zakljucci;
+    delete from public.rezervacije;
+    delete from public.naplate_dugova;
     delete from public.naplate;
     delete from public.statusi_narudzbe;
     delete from public.stavke_narudzbe;
