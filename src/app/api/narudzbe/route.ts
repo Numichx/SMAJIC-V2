@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
-import { procitajTijelo, ruta } from "@/lib/api/greske";
+import { ApiGreska, procitajTijelo, ruta } from "@/lib/api/greske";
 import { rpc } from "@/lib/api/rpc";
 import { pinShema } from "@/lib/auth/pin";
 import {
@@ -10,7 +10,17 @@ import {
   TRAJANJE_UREDJAJA_S,
 } from "@/lib/auth/pinOgranicenje";
 import { zahtijevajSesiju } from "@/lib/auth/requestSession";
-import { opcijeKolacica, tajnaSesije } from "@/lib/auth/session";
+import { opcijeKolacica, PRISTUP, tajnaSesije } from "@/lib/auth/session";
+
+const stanicaShema = z.enum(["kuhinja", "pecenjara", "sank"]);
+
+export const GET = ruta(async (request: NextRequest) => {
+  const stanica = stanicaShema.safeParse(request.nextUrl.searchParams.get("stanica"));
+  const sesija = await zahtijevajSesiju(request, stanica.success ? PRISTUP[stanica.data] : undefined);
+  if (!stanica.success) throw new ApiGreska(400, "Nepoznata stanica.");
+
+  return Response.json(await rpc<unknown>("red_stanice", { p_zaposlenik: sesija.id, p_stanica: stanica.data }));
+});
 
 // The limits per unit and the prices are checked in posalji_narudzbu.
 const narudzbaShema = z.strictObject({

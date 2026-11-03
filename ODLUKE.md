@@ -11,6 +11,11 @@ The app was built with full authority to choose. These are the choices that affe
 | Which sides are free with which dish | Copied from the old app. Fries with made-to-order dishes, chicken and grill (except ćevapi and sudžukice); vegetables with lešo; mashed potato, rice or macaroni with gulaš; fries or potato salad with fish; roast potato or fries with teletina ispod sača. | Check it still matches the current menu. |
 | Lockout limits | 5 wrong PINs per device (5 min), 20 per IP (15 min), 100 overall (15 min). | The prompt says 5 everywhere, but the restaurant shares one IP, so that would let one person lock out every device. |
 | Menu prices | Exactly as in `menu-export.csv`, which says it came from the old app's seed data. | Check them against the real menu. |
+| Order steps | Every station taps through all four: Novo, U pripremi, Gotovo, Izdato, as your prompt says. | The old app let the kitchen and bar skip Gotovo, which is one tap fewer per order. It is a small change if you prefer that. |
+| Grill price | The grill must enter a price on every order at Gotovo. It is what the waiter owes the grill, as in the old app, and it never changes the guest's bill. | Your prompt only says "the grill enters a price". |
+| Lamb weight | Only "Jagnjetina s ražnja" is weighed, and its real weight changes the guest's bill. "Teletina ispod sača" is also sold by kg but keeps the ordered quantity. | It affects what guests pay for veal. |
+| Mistyped weight | The weight is entered once and cannot be edited. The screen asks for a second tap when it looks far off the ordered amount. Otherwise, void the line once voids exist. | 6,2 kg typed instead of 0,62 kg bills 310 KM instead of 31 KM. |
+| Who gets the "order issued" alert | Both the waiter who placed the order and the one holding the bill. | They differ after a merge or when a colleague adds to a table. |
 | Kitchen staff role | Rebihić Aldina, Mirzeta and Nina log in as `kuhinja`. | The staff list marks this mapping "to be confirmed". |
 | Printed receipts | Until the fiscal device is connected, each receipt says "Ovo nije fiskalni račun" and shows no VAT. | Do not hand these to guests as the official fiscal receipt. |
 
