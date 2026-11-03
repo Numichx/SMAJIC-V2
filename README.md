@@ -22,7 +22,7 @@ Niko nema PIN dok ga sam ne izabere.
 
 1. **Šefica, prvi put:** u Supabase SQL editoru pokrenite `select aktiviraj_prvu_seficu();`. Naredba vraća aktivacijski kod koji vrijedi 15 minuta. U demo načinu kod se ispisuje u terminalu pri prvom pokretanju.
 2. Šefica na ekranu za prijavu izabere „Imam aktivacijski kod“, upiše kod i izabere svoj PIN.
-3. **Ostali:** šefica u Administraciji pritisne „Novi PIN“ i da zaposleniku kod. Zaposlenik ga upiše na ekranu za prijavu i izabere svoj PIN.
+3. **Ostali:** šefica u Administraciji pritisne „Izdaj kod“ i da zaposleniku kod. Zaposlenik ga upiše na ekranu za prijavu i izabere svoj PIN.
 
 PIN ima 4 do 8 cifara. Lagani PIN-ovi (1111, 1234, 2580, godine) nisu dozvoljeni.
 
