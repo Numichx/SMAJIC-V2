@@ -258,6 +258,7 @@ describe("GET /api/narudzbe: what a queue holds", () => {
           prilogUz: null,
           prilogUzNaziv: null,
           trebaTezinu: false,
+          stornoRazlog: null,
         },
       ],
     });

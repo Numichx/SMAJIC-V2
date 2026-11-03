@@ -59,6 +59,7 @@ export async function proizvodi() {
 
 export async function ocisti() {
   await (await demoBaza()).exec(`
+    delete from public.naplate;
     delete from public.statusi_narudzbe;
     delete from public.stavke_narudzbe;
     delete from public.narudzbe;

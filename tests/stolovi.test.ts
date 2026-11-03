@@ -131,10 +131,10 @@ describe("GET /api/racuni/sto/[stoId]", () => {
     const tekst = await odgovor.text();
     const { racun: r } = JSON.parse(tekst) as { racun: Sazetak & { narudzbe: Record<string, unknown>[] } };
 
-    expect(Object.keys(r).sort()).toEqual(["broj", "id", "konobar", "narudzbe", "otvoren", "stolovi", "sveIzdato", "ukupno"]);
+    expect(Object.keys(r).sort()).toEqual(["broj", "bruto", "id", "konobar", "narudzbe", "otvoren", "popust", "stolovi", "sveIzdato", "ukupno"]);
     expect(Object.keys(r.narudzbe[0]).sort()).toEqual(["id", "kreirano", "stanica", "status", "stavke"]);
     expect(Object.keys((r.narudzbe[0].stavke as object[])[0]).sort()).toEqual(
-      ["cijena", "id", "iznos", "jedinica", "kolicina", "naziv", "napomena", "poseban", "prilogUz"].sort(),
+      ["cijena", "id", "iznos", "jedinica", "kolicina", "naziv", "napomena", "poseban", "prilogUz", "stornoRazlog", "stornoVrijednost"].sort(),
     );
     expect(tekst).not.toMatch(/request|pin|hash/i);
   });

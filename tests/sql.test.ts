@@ -9,16 +9,20 @@ const MIGRACIJE = path.resolve("supabase/migrations");
 const OTVORENE = [
   "aktiviraj_pin",
   "meni",
+  "naplati_racun",
   "obavijesti_konobara",
+  "odobri_popust",
   "posalji_narudzbu",
   "postavi_pin_kodom",
   "premjesti_sto",
   "prijava_pinom",
   "promijeni_status_narudzbe",
+  "racun_za_stampu",
   "racun_za_sto",
   "red_stanice",
   "sesija_vazeca",
   "stolovi_pregled",
+  "storniraj_stavku",
   "zaposlenici_pregled",
   "zaposlenici_za_prijavu",
 ].sort();
@@ -104,6 +108,7 @@ describe("database access rules", () => {
     expect(rows.map((r) => r.relname).sort()).toEqual([
       "dnevnik_radnji",
       "kategorije",
+      "naplate",
       "narudzbe",
       "pin_pokusaji",
       "proizvodi",

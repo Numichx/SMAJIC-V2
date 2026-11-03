@@ -16,6 +16,15 @@ The app was built with full authority to choose. These are the choices that affe
 | Lamb weight | Only "Jagnjetina s ražnja" is weighed, and its real weight changes the guest's bill. "Teletina ispod sača" is also sold by kg but keeps the ordered quantity. | It affects what guests pay for veal. |
 | Mistyped weight | The weight is entered once and cannot be edited. The screen asks for a second tap when it looks far off the ordered amount. Otherwise, void the line once voids exist. | 6,2 kg typed instead of 0,62 kg bills 310 KM instead of 31 KM. |
 | Who gets the "order issued" alert | Both the waiter who placed the order and the one holding the bill. | They differ after a merge or when a colleague adds to a table. |
+| Orders on a discounted bill | Refused until the discount is removed with the manager's PIN. The old app let later lines inherit the discount. | Stops a comp on one coffee making everything ordered after it free, but adding to a discounted bill takes the manager twice. |
+| Who can void | Any waiter, any line on an open bill, even after it was issued, with one of the four reasons and no PIN. Every void is logged. A void covers the whole line. | As in the old app, but it is the easiest way to lose takings. Your prompt only asks for a PIN on discounts. |
+| Voided free side | If a dish's free side is voided, a charged side on that dish stays charged. | Gulaš with free Pire and Riža for 4 KM still charges Riža. Void Riža and re-add it to fix it. |
+| Fully voided order | The card stays on the station's screen, marked, until the station clears it with one tap. It does not block payment. | If it vanished at once, the kitchen might keep cooking. |
+| Void after an order was issued | The station gets no alert, because the order has left its screen. | The food has already gone out. |
+| Split by person | One payment, plus the shares for that number of people, adding up exactly with any leftover fenings on the first shares. Not separate payments per person. | As in the old app. Your prompt only says "allow splitting a bill by person". |
+| Tip | Cash given, minus change returned, minus the total. The waiter must enter the change. On a card, whatever was charged above the total. | Tips are only right if the change is entered. |
+| Discount rounding | Half up on what the guest pays, so 10,01 KM at 15 % is 8,51 KM. | Your accountant may have a rule. |
+| Merging discounted bills | Refused until the manager removes the discount. | It would drop one discount or stretch the other. |
 | Kitchen staff role | Rebihić Aldina, Mirzeta and Nina log in as `kuhinja`. | The staff list marks this mapping "to be confirmed". |
 | Printed receipts | Until the fiscal device is connected, each receipt says "Ovo nije fiskalni račun" and shows no VAT. | Do not hand these to guests as the official fiscal receipt. |
 
@@ -34,6 +43,7 @@ The app was built with full authority to choose. These are the choices that affe
 - **First PINs use a 6-digit code** that lasts 15 minutes and works once. The manager issues codes, and a new code ends that person's old sessions at once.
 - **A PIN already used by a colleague in the same role** is refused, and the code is used up. This limits anyone to one guess per code.
 - **Login names are public** for waiters and the bar, because the prompt asks for name plus PIN. Anyone with the URL can see the names of staff who have a PIN.
+- **Guest names on debts are kept with no time limit for now.** They are stored only with the debt, and stay off the log and receipts. The retention rule comes in phase 7.
 - **Bot protection is not built yet.** With the limits above, a distributed attack could try about 9,600 PINs a day, so a 4-digit PIN is weak if the app is public. Longer PINs help.
 
 ## Changes to the original plan
