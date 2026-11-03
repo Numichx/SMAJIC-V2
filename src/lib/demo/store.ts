@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync } from "node:fs";
+import { mkdirSync, readdirSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { PGlite, type Transaction } from "@electric-sql/pglite";
 import { pgcrypto } from "@electric-sql/pglite/contrib/pgcrypto";
@@ -9,6 +9,8 @@ const globalno = globalThis as typeof globalThis & { demoBaza?: Promise<PGlite> 
 
 async function otvori() {
   const folder = process.env.DEMO_BAZA ?? path.join(process.cwd(), ".data", "demo");
+  // PGlite does not create missing parents, so a fresh install would fail. memory:// is not a path.
+  if (!folder.includes("://")) mkdirSync(folder, { recursive: true });
   const db = await PGlite.create(folder, { extensions: { pgcrypto } });
 
   await db.exec(`

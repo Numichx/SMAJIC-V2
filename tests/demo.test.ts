@@ -17,7 +17,8 @@ describe("demo backend", () => {
   }
 
   beforeAll(async () => {
-    vi.stubEnv("DEMO_BAZA", path.join(folder, "baza"));
+    // A parent folder that does not exist yet, as on a fresh install.
+    vi.stubEnv("DEMO_BAZA", path.join(folder, "nema-jos", "baza"));
     const db = await demoBaza();
     const { rows } = await db.query<{ id: string }>("select id from public.zaposlenici where uloga = 'sefica'");
     sefica = rows[0].id;
