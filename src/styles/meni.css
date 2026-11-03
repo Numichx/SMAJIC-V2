@@ -1,0 +1,31 @@
+/* Kategorije, kartice proizvoda i fotografije menija: sve na jednom mjestu. */
+.mitem-img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: 0.5rem;
+}
+
+.mkat {
+  min-height: 3rem;
+  padding: 0 1rem;
+  border: 2px solid var(--okvir);
+  border-radius: 0.5rem;
+  background: var(--povrsina);
+  font-weight: 600;
+}
+
+.mkat[aria-pressed="true"] {
+  border-color: var(--akcent);
+  background: var(--akcent);
+  color: var(--akcent-tekst);
+}
+
+.mkartica {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  border: 2px solid var(--okvir);
+  border-radius: 0.5rem;
+}

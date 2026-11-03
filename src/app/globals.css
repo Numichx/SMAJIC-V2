@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "../styles/tema.css";
+@import "../styles/meni.css";
 
 @theme inline {
   --color-background: var(--background);

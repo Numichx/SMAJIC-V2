@@ -8,6 +8,7 @@ import PrekidacTeme from "./PrekidacTeme";
 const navigacija: Record<Uloga, { href: string; naziv: string }[]> = {
   konobar: [
     { href: "/konobar", naziv: "Stolovi" },
+    { href: "/konobar/meni", naziv: "Meni" },
     { href: "/sank", naziv: "Šank" },
   ],
   kuhinja: [{ href: "/kuhinja", naziv: "Red narudžbi" }],
