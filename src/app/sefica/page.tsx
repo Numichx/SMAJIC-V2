@@ -1,10 +1,12 @@
-export const metadata = { title: "Šefica – Smajić" };
+import Izvjestaji from "@/components/sefica/Izvjestaji";
+
+export const metadata = { title: "Izvještaji – Smajić" };
 
 export default function Page() {
   return (
     <>
-      <h1 className="text-2xl font-semibold">Šefica</h1>
-      <p>Ovaj ekran još nije dostupan.</p>
+      <h1 className="mb-4 text-2xl font-semibold">Izvještaji</h1>
+      <Izvjestaji />
     </>
   );
 }
