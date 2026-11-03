@@ -1,4 +1,4 @@
-import { formatKM } from "@/lib/format";
+import { formatKM, NAZIV_STANICE } from "@/lib/format";
 import type { Sazetak } from "./StoloviPregled";
 
 export type Racun = Sazetak & {
@@ -23,8 +23,6 @@ export type Racun = Sazetak & {
 
 type StavkaRacuna = Racun["narudzbe"][number]["stavke"][number];
 
-const nazivStanice: Record<string, string> = { kuhinja: "Kuhinja", pecenjara: "Pečenjara", sank: "Šank" };
-
 function Prilog({ p, uz }: { p: StavkaRacuna; uz?: string }) {
   return (
     <div className="flex justify-between gap-2 pl-4">
@@ -48,7 +46,7 @@ export default function RacunPrikaz({ racun }: { racun: Racun }) {
       {racun.narudzbe.map((n) => (
         <div key={n.id} className="rounded-lg border-2 border-okvir p-3">
           <p className="font-semibold">
-            {nazivStanice[n.stanica] ?? n.stanica} · {n.status}
+            {NAZIV_STANICE[n.stanica] ?? n.stanica} · {n.status}
           </p>
           <ul className="mt-2 flex flex-col gap-1">
             {n.stavke

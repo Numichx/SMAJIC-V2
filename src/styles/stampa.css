@@ -1,0 +1,33 @@
+/* Prints in place: the ticket or receipt is a child of body with class .stampa, and everything else hides. */
+.stampa {
+  display: none;
+}
+
+/* shortcut: Chromium drops "58mm auto" and falls back to Letter, so the first size is a fixed 200 mm page;
+   browsers that understand auto use the second. Check the real printer's paper feed in the trial week. */
+@page {
+  size: 58mm 200mm;
+  size: 58mm auto;
+  margin: 2mm;
+}
+
+@media print {
+  body > :not(.stampa) {
+    display: none !important;
+  }
+
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+    margin: 0;
+  }
+
+  .stampa {
+    display: block;
+    color: #000;
+    background: #fff;
+    font: 10pt/1.3 "Courier New", monospace;
+    overflow-wrap: anywhere;
+  }
+}

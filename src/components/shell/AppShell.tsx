@@ -1,5 +1,6 @@
 import { sesijaStranice } from "@/lib/auth/requestSession";
 import type { Odjeljak, Uloga } from "@/lib/auth/session";
+import ObavijestiKonobara from "@/components/konobar/ObavijestiKonobara";
 import DemoStatus from "./DemoStatus";
 import Navigacija from "./Navigacija";
 import Odjava from "./Odjava";
@@ -36,6 +37,7 @@ export default async function AppShell({ odjeljak, children }: { odjeljak: Odjel
           <Odjava />
         </div>
       </header>
+      {sesija.uloga === "konobar" && <ObavijestiKonobara />}
       <main className="mx-auto w-full max-w-5xl flex-1 p-4">{children}</main>
     </>
   );
