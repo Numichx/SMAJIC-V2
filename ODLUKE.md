@@ -25,6 +25,17 @@ The app was built with full authority to choose. These are the choices that affe
 | Tip | Cash given, minus change returned, minus the total. The waiter must enter the change. On a card, whatever was charged above the total. | Tips are only right if the change is entered. |
 | Discount rounding | Half up on what the guest pays, so 10,01 KM at 15 % is 8,51 KM. | Your accountant may have a rule. |
 | Merging discounted bills | Refused until the manager removes the discount. | It would drop one discount or stretch the other. |
+| Shift takings difference | Handed over, minus the bar's sales by count, minus kitchen and grill lines at menu price. Discounts, debts and card payments are not subtracted, so they show as a shortage, with those figures listed beside it. As in the old app. | A comp or a debt looks like missing cash. Tell me if these should be subtracted. |
+| "Debt to the shop" | Built as what each waiter owes the grill, from the grill's price on each order. It grows when an order is issued, and only the grill records payments. As in the old app. | Your prompt says "debt to the shop", so please confirm this is what you meant. |
+| Void after the grill priced an order | The waiter still owes the grill the full price. | The waiter carries the cost of a voided grill order. |
+| Grill takings | Chickens sold x 14 KM plus lamb sold x 50 KM per kg, read from the menu and stored at closing. All lamb counts at the per-kg price, including portions. | Portions sell for a different amount than the per-kg price. |
+| Butcher's selling prices | Your file has none, so butcher sales are refused until the manager sets a price per item. | Sales can't start until you enter them. |
+| Purchase suggestions | The last 7 days of recipe use plus butcher sales, plus 20 %. Stock on hand is shown but not subtracted. Only 3 dishes have recipes, so most items suggest 0. | Needs real recipes to be useful. |
+| Reservation names | Waiters see guests' names and phones on reservations, because they take the call and seat the guest. Debtor names go only to the manager. Names stay out of reports, CSV and the log. | It is personal data. |
+| Business day | A calendar day in Sarajevo. Takings after midnight land on the next day, and the manager can close yesterday after midnight. | Late nights split across two days in reports. |
+| Daily close | Refused while a bill or shift from that day is open. It stores the day's figures, and a payment landed later can be closed again, with both logged. | Check it matches how you close. |
+| Who opens and closes shifts | Any waiter, as in the old app. The manager can do the grill count if nobody is at the grill. A closing count cannot be corrected once saved. | Counts drive the takings difference. |
+| Opening a shift | About 70 drinks must each be typed at every opening. Carrying over the last closing count is not built. | Tell me after the trial week if this is too slow. |
 | Kitchen staff role | Rebihić Aldina, Mirzeta and Nina log in as `kuhinja`. | The staff list marks this mapping "to be confirmed". |
 | Printed receipts | Until the fiscal device is connected, each receipt says "Ovo nije fiskalni račun" and shows no VAT. | Do not hand these to guests as the official fiscal receipt. |
 
