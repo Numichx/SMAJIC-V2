@@ -118,7 +118,7 @@ function Popust({ racun, onOsvjezi, prijavi }: { racun: Racun; onOsvjezi: () => 
   );
 }
 
-export default function Naplata({ racun, neposlano, onPlaceno, onOsvjezi }: { racun: Racun; neposlano: boolean; onPlaceno: (p: Placeno) => void; onOsvjezi: () => void }) {
+export default function Naplata({ racun, neposlano, onPlaceno, onOsvjezi }: { racun: Racun; neposlano: string; onPlaceno: (p: Placeno) => void; onOsvjezi: () => void }) {
   const [nacin, postaviNacin] = useState<Nacin>("gotovina");
   const [gotovina, postaviGotovinu] = useState("");
   const [kartica, postaviKarticu] = useState("");
@@ -200,7 +200,7 @@ export default function Naplata({ racun, neposlano, onPlaceno, onOsvjezi }: { ra
         <p className="text-xl font-bold">Za platiti: {formatKM(ukupno)}</p>
         {neposlano ? (
           <p role="status" className="font-semibold">
-            Imate neposlane stavke u korpi. Pošaljite narudžbu ili uklonite stavke prije naplate.
+            {neposlano}
           </p>
         ) : !racun.sveIzdato ? (
           <p role="status" className="font-semibold">

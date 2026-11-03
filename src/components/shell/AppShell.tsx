@@ -4,6 +4,7 @@ import ObavijestiKonobara from "@/components/konobar/ObavijestiKonobara";
 import DemoStatus from "./DemoStatus";
 import Navigacija from "./Navigacija";
 import Odjava from "./Odjava";
+import OfflineStatus from "./OfflineStatus";
 import PrekidacTeme from "./PrekidacTeme";
 
 const navigacija: Record<Uloga, { href: string; naziv: string }[]> = {
@@ -53,6 +54,7 @@ export default async function AppShell({ odjeljak, children }: { odjeljak: Odjel
           <Odjava />
         </div>
       </header>
+      {sesija.uloga === "konobar" && <OfflineStatus konobar={sesija.ime} />}
       {sesija.uloga === "konobar" && <ObavijestiKonobara />}
       <main className="mx-auto w-full max-w-5xl flex-1 p-4">{children}</main>
     </>

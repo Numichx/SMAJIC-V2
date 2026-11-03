@@ -36,6 +36,10 @@ The app was built with full authority to choose. These are the choices that affe
 | Daily close | Refused while a bill or shift from that day is open. It stores the day's figures, and a payment landed later can be closed again, with both logged. | Check it matches how you close. |
 | Who opens and closes shifts | Any waiter, as in the old app. The manager can do the grill count if nobody is at the grill. A closing count cannot be corrected once saved. | Counts drive the takings difference. |
 | Opening a shift | About 70 drinks must each be typed at every opening. Carrying over the last closing count is not built. | Tell me after the trial week if this is too slow. |
+| Orders with no connection | Queued on the device and sent when the connection returns. An order with a special side is not queued, because it needs the manager's PIN. A page that is already open keeps working, but a tablet reloaded offline shows the browser's error page until the connection returns; the waiting orders are kept. | There is no offline app shell, as you chose: orders only. |
+| Queued order expiry | An order waiting more than 4 hours is not sent, and the waiter is told. | The 4 hours is my guess, so a device offline overnight doesn't send yesterday's order to the kitchen. |
+| Paying with a queued order | The waiter's own queued order for that table blocks payment. A colleague's only warns, because nobody on that device can clear it, so that order could open a new bill after payment. | It could leave a table with a small new bill. |
+| Queued order after logout | It is kept, and sent only when the same waiter logs back in on that device. There is no way to cancel a queued order; void it after it sends. | Waiters need to know this. |
 | Kitchen staff role | Rebihić Aldina, Mirzeta and Nina log in as `kuhinja`. | The staff list marks this mapping "to be confirmed". |
 | Printed receipts | Until the fiscal device is connected, each receipt says "Ovo nije fiskalni račun" and shows no VAT. | Do not hand these to guests as the official fiscal receipt. |
 
