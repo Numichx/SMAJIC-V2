@@ -11,6 +11,16 @@ The app was built with full authority to choose. These are the choices that affe
 | Which sides are free with which dish | Copied from the old app. Fries with made-to-order dishes, chicken and grill (except ćevapi and sudžukice); vegetables with lešo; mashed potato, rice or macaroni with gulaš; fries or potato salad with fish; roast potato or fries with teletina ispod sača. | Check it still matches the current menu. |
 | Lockout limits | 5 wrong PINs per device (5 min), 20 per IP (15 min), 100 overall (15 min). | The prompt says 5 everywhere, but the restaurant shares one IP, so that would let one person lock out every device. |
 | Menu prices | Exactly as in `menu-export.csv`, which says it came from the old app's seed data. | Check them against the real menu. |
+| Kitchen staff role | Rebihić Aldina, Mirzeta and Nina log in as `kuhinja`. | The staff list marks this mapping "to be confirmed". |
+| Printed receipts | Until the fiscal device is connected, each receipt says "Ovo nije fiskalni račun" and shows no VAT. | Do not hand these to guests as the official fiscal receipt. |
+
+## What the app still needs from you
+
+- **Fiscal device and receipt printer:** model and connection, plus any manual or API document.
+- **Business details:** legal name, address, JIB, PDV number, and the VAT rates on food and drinks.
+- **Design:** logo, colours, fonts and the design prompt.
+- **Stock figures:** `stock-and-recipes.csv` says its quantities and purchase prices are demo values, and only 3 dishes have recipes. Real figures are needed before purchase suggestions can be trusted.
+- **Menu translations:** the columns in `menu-export.csv` are empty. Nothing uses them until a language switch is built, which is a later feature.
 
 ## Security choices
 
