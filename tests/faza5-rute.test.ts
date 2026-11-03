@@ -249,7 +249,7 @@ describe("SQL re-checks the role", () => {
 
   it("covers every function granted in phase 5", async () => {
     const stare = new Set([
-      "aktiviraj_pin", "meni", "naplati_racun", "obavijesti_konobara", "odobri_popust", "posalji_narudzbu", "postavi_pin_kodom",
+      "aktiviraj_pin", "anonimiziraj_licne_podatke", "meni", "meni_pregled", "sacuvaj_proizvod", "z_izvjestaj", "naplati_racun", "obavijesti_konobara", "odobri_popust", "posalji_narudzbu", "postavi_pin_kodom",
       "premjesti_sto", "prijava_pinom", "promijeni_status_narudzbe", "racun_za_stampu", "racun_za_sto", "red_stanice",
       "sesija_vazeca", "stolovi_pregled", "storniraj_stavku", "zaposlenici_pregled", "zaposlenici_za_prijavu",
     ]);

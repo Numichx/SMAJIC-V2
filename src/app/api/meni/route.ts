@@ -5,7 +5,7 @@ import { zahtijevajSesiju } from "@/lib/auth/requestSession";
 import { SLIKE } from "@/lib/data/slike";
 
 type Meni = {
-  kategorije: { id: string; proizvodi: { naziv: string }[] }[];
+  kategorije: { id: string; proizvodi: { slikaKljuc: string | null }[] }[];
   prilozi: string[];
 };
 
@@ -17,8 +17,9 @@ export const GET = ruta(async (request: NextRequest) => {
     prilozi: meni.prilozi,
     kategorije: meni.kategorije.map((k) => ({
       ...k,
-      proizvodi: k.proizvodi.map((p) => {
-        const slika = SLIKE[`${k.id}/${p.naziv}`];
+      proizvodi: k.proizvodi.map(({ slikaKljuc, ...p }) => {
+        // The key is set once in the database, so a renamed item keeps its photo.
+        const slika = slikaKljuc ? SLIKE[slikaKljuc] : null;
         return { ...p, slika: slika ? { putanja: slika.putanja, zasluge: slika.zasluge } : null };
       }),
     })),
