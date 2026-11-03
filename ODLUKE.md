@@ -40,6 +40,13 @@ The app was built with full authority to choose. These are the choices that affe
 | Queued order expiry | An order waiting more than 4 hours is not sent, and the waiter is told. | The 4 hours is my guess, so a device offline overnight doesn't send yesterday's order to the kitchen. |
 | Paying with a queued order | The waiter's own queued order for that table blocks payment. A colleague's only warns, because nobody on that device can clear it, so that order could open a new bill after payment. | It could leave a table with a small new bill. |
 | Queued order after logout | It is kept, and sent only when the same waiter logs back in on that device. There is no way to cancel a queued order; void it after it sends. | Waiters need to know this. |
+| Menu changes during a shift | A drink's price or station can't change while a shift is open, and chicken and lamb prices can't change while the grill count is open. A drink not on the open count can't be added until the shift closes. | Counts are priced at closing, so a mid-shift change would show a false shortage. |
+| Price limits | 0,01 to 9.999,99 KM, so an item can't be free on the menu. | These limits are my choice. |
+| Free sides on a new dish | Set by the category's rule, such as free fries on a new grill dish unless its name has ćevap or sudžuk. The manager can't pick them. | Tell me if she should pick per dish. |
+| New items sold by the kg | Weighed only if the name contains "jagnjetina", as today. | A new veal item by the kg would not be weighed. |
+| Photos | A renamed or moved item keeps its photo, and a new item has none. Photos stay in `lib/data/slike.ts`, not the database as your prompt said, because there is no upload. | Adding photos for new items needs a developer until upload is built. |
+| Keeping personal data | The manager runs a cleanup: collected debts' names after 365 days; reservation names, phones and notes after 90 days. It can't be undone, and open debts are never touched. | These periods are my defaults, not legal advice. Please check them. Staff names, order notes and backups aren't covered. |
+| Z-report | Totals by payment type, storno and discounts for one day, without VAT, and without butcher sales or sales per waiter. | VAT is empty until you send the rates. Your accountant should check this report. |
 | Kitchen staff role | Rebihić Aldina, Mirzeta and Nina log in as `kuhinja`. | The staff list marks this mapping "to be confirmed". |
 | Printed receipts | Until the fiscal device is connected, each receipt says "Ovo nije fiskalni račun" and shows no VAT. | Do not hand these to guests as the official fiscal receipt. |
 
