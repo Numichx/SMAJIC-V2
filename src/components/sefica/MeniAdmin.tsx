@@ -4,7 +4,7 @@ import { useState } from "react";
 import { dugme, glavno, polje } from "@/components/konobar/stil";
 import { formatKM } from "@/lib/format";
 import { useSlanje, useUcitaj, zovi } from "./api";
-import { cijenaIzUnosa, redoslijedIzUnosa } from "./meniAdminPomocno";
+import { cijenaIzUnosa, potvrdaCijenePotrebna, redoslijedIzUnosa } from "./meniAdminPomocno";
 import { Greska, Polje } from "./ui";
 
 type Kategorija = { id: string; naziv: string };
@@ -100,7 +100,7 @@ function ProizvodForma({
       ...(redoslijed.vrijednost === undefined ? {} : { redoslijed: redoslijed.vrijednost }),
     };
     const kljuc = `${proizvod?.id ?? "novi"}|${JSON.stringify(tijelo)}`;
-    if (potvrda !== kljuc) {
+    if (potvrdaCijenePotrebna(proizvod?.cijena, cijena) && potvrda !== kljuc) {
       postaviPotvrdu(kljuc);
       return;
     }
@@ -154,20 +154,21 @@ function ProizvodForma({
         </div>
       )}
       <Greska tekst={lokalnaGreska || greska} />
-      {potvrda && (
+      {potvrda && cijenaPotvrde !== null && potvrdaCijenePotrebna(proizvod?.cijena, cijenaPotvrde) && (
         <p role="status" className="font-semibold">
-          {cijenaPotvrde !== null &&
-            (proizvod
-              ? cijenaPotvrde !== proizvod.cijena
-                ? `Cijena se mijenja sa ${formatKM(proizvod.cijena)} na ${formatKM(cijenaPotvrde)}.`
-                : `Cijena ostaje ${formatKM(cijenaPotvrde)}.`
-              : `Novi proizvod će biti ponuđen po cijeni ${formatKM(cijenaPotvrde)}.`)}
+          {proizvod
+            ? `Cijena se mijenja sa ${formatKM(proizvod.cijena)} na ${formatKM(cijenaPotvrde)}.`
+            : `Novi proizvod će biti ponuđen po cijeni ${formatKM(cijenaPotvrde)}.`}
           {" "}Ponovo pritisnite dugme za potvrdu.
         </p>
       )}
       <div className="flex flex-wrap gap-2">
         <button type="button" className={glavno} disabled={saljem} onClick={spremi}>
-          {saljem ? "Spremam…" : potvrda ? "Potvrdi i sačuvaj" : "Sačuvaj"}
+          {saljem
+            ? "Spremam…"
+            : potvrda && cijenaPotvrde !== null && potvrdaCijenePotrebna(proizvod?.cijena, cijenaPotvrde)
+              ? "Potvrdi i sačuvaj"
+              : "Sačuvaj"}
         </button>
         {odustani && <button type="button" className={dugme} onClick={odustani}>Odustani</button>}
       </div>

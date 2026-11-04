@@ -6,6 +6,10 @@ export function cijenaIzUnosa(unos: string): number | null {
   return Number.isFinite(cijena) && cijena >= 0.01 && cijena <= 9999.99 ? cijena : null;
 }
 
+export function potvrdaCijenePotrebna(staraCijena: number | undefined, novaCijena: number): boolean {
+  return staraCijena === undefined || staraCijena !== novaCijena;
+}
+
 export function redoslijedIzUnosa(unos: string): { ispravno: true; vrijednost?: number } | { ispravno: false } {
   const tekst = unos.trim();
   if (!tekst) return { ispravno: true };

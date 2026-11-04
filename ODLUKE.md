@@ -42,6 +42,7 @@ The app was built with full authority to choose. These are the choices that affe
 | Queued order after logout | It is kept, and sent only when the same waiter logs back in on that device. There is no way to cancel a queued order; void it after it sends. | Waiters need to know this. |
 | Menu changes during a shift | A drink's price or station can't change while a shift is open, and chicken and lamb prices can't change while the grill count is open. A drink not on the open count can't be added until the shift closes. | Counts are priced at closing, so a mid-shift change would show a false shortage. |
 | Price limits | 0,01 to 9.999,99 KM, so an item can't be free on the menu. | These limits are my choice. |
+| Confirming menu prices | A second tap confirms a new product's initial price or a change to an existing price. It is not shown for other product edits or availability toggles. | Prevents accidental price changes without slowing routine sold-out updates. |
 | Free sides on a new dish | Set by the category's rule, such as free fries on a new grill dish unless its name has ćevap or sudžuk. The manager can't pick them. | Tell me if she should pick per dish. |
 | New items sold by the kg | Weighed only if the name contains "jagnjetina", as today. | A new veal item by the kg would not be weighed. |
 | Photos | A renamed or moved item keeps its photo, and a new item has none. Photos stay in `lib/data/slike.ts`, not the database as your prompt said, because there is no upload. | Adding photos for new items needs a developer until upload is built. |

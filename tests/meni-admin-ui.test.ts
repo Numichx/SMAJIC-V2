@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { cijenaIzUnosa, redoslijedIzUnosa } from "@/components/sefica/meniAdminPomocno";
+import { cijenaIzUnosa, potvrdaCijenePotrebna, redoslijedIzUnosa } from "@/components/sefica/meniAdminPomocno";
 
 describe("cijenaIzUnosa", () => {
   it("prihvata zarez ili tačku i najviše dvije decimale", () => {
@@ -28,5 +28,13 @@ describe("redoslijedIzUnosa", () => {
     for (const unos of ["0", "10000", "1,5", "1.5", "-1", "abc"]) {
       expect(redoslijedIzUnosa(unos)).toEqual({ ispravno: false });
     }
+  });
+});
+
+describe("potvrdaCijenePotrebna", () => {
+  it("traži drugi tap samo za novu ili promijenjenu cijenu", () => {
+    expect(potvrdaCijenePotrebna(undefined, 12.5)).toBe(true);
+    expect(potvrdaCijenePotrebna(12, 12.5)).toBe(true);
+    expect(potvrdaCijenePotrebna(12.5, 12.5)).toBe(false);
   });
 });
