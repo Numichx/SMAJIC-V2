@@ -36,6 +36,8 @@ const navigacija: Record<Uloga, { href: string; naziv: string }[]> = {
     { href: "/sefica/dugovi", naziv: "Dugovi" },
     { href: "/sefica/administracija", naziv: "Osoblje" },
     { href: "/sefica/dnevnik", naziv: "Dnevnik" },
+    { href: "/sefica/z", naziv: "Z-izvještaj" },
+    { href: "/sefica/privatnost", naziv: "Privatnost" },
     { href: "/sank", naziv: "Šank" },
   ],
 };
