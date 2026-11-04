@@ -12,6 +12,7 @@ const nazivi = {
   sank: "Šank",
   mesnica: "Mesnica",
   sefica: "Šefica",
+  pomoc: "Pomoć",
 };
 
 export default async function Page({ searchParams }: { searchParams: Promise<{ uloga?: string | string[] }> }) {

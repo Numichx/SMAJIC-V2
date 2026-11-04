@@ -51,7 +51,7 @@ export default async function AppShell({ odjeljak, children }: { odjeljak: Odjel
       <header className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b-2 border-okvir p-3">
         <strong className="text-lg">Smajić – Narudžbe</strong>
         <span>{sesija.ime}</span>
-        <Navigacija veze={navigacija[sesija.uloga]} />
+        <Navigacija veze={[...navigacija[sesija.uloga], { href: "/pomoc", naziv: "Pomoć" }]} />
         <div className="ml-auto flex gap-2">
           <PrekidacTeme />
           <Odjava />

@@ -1,8 +1,8 @@
 import { ApiGreska } from "@/lib/api/greske";
 
-export const ODJELJCI = ["konobar", "kuhinja", "pecenjara", "sank", "mesnica", "sefica"] as const;
+export const ODJELJCI = ["konobar", "kuhinja", "pecenjara", "sank", "mesnica", "sefica", "pomoc"] as const;
 export type Odjeljak = (typeof ODJELJCI)[number];
-export type Uloga = Exclude<Odjeljak, "sank">;
+export type Uloga = Exclude<Odjeljak, "sank" | "pomoc">;
 
 export type Sesija = { id: string; ime: string; uloga: Uloga; v: number; exp: number };
 
@@ -17,6 +17,7 @@ export const PRISTUP: Record<Odjeljak, readonly Uloga[]> = {
   sank: ["konobar", "sefica"],
   mesnica: ["mesnica"],
   sefica: ["sefica"],
+  pomoc: ["konobar", "kuhinja", "pecenjara", "mesnica", "sefica"],
 };
 
 export function jeOdjeljak(vrijednost: string | undefined): vrijednost is Odjeljak {
