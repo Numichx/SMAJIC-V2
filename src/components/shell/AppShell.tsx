@@ -32,6 +32,7 @@ const navigacija: Record<Uloga, { href: string; naziv: string }[]> = {
     { href: "/sefica/pecenjara", naziv: "Popis pečenjare" },
     { href: "/sefica/zaliha", naziv: "Zaliha" },
     { href: "/sefica/recepti", naziv: "Recepti" },
+    { href: "/sefica/meni", naziv: "Meni" },
     { href: "/sefica/dugovi", naziv: "Dugovi" },
     { href: "/sefica/administracija", naziv: "Osoblje" },
     { href: "/sefica/dnevnik", naziv: "Dnevnik" },
