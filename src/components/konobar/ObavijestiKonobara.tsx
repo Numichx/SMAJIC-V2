@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { formatBroj, NAZIV_STANICE } from "@/lib/format";
+import { CEKANJE_MS } from "@/lib/offline/sync";
 import { PRIJAVA } from "./useMeni";
 
 type Obavijest = { id: string; broj: number; stanica: string; stolovi: number[]; stavke: { naziv: string; kolicina: number; jedinica: string }[] };
@@ -51,7 +52,7 @@ export default function ObavijestiKonobara() {
       uToku = true;
       try {
         const od = sessionStorage.getItem(KURSOR);
-        const odgovor = await fetch(od === null ? "/api/konobar/obavijesti" : `/api/konobar/obavijesti?od=${od}`);
+        const odgovor = await fetch(od === null ? "/api/konobar/obavijesti" : `/api/konobar/obavijesti?od=${od}`, { signal: AbortSignal.timeout(CEKANJE_MS) });
         if (!zivo) return;
         if (odgovor.status === 401) return window.location.assign(PRIJAVA);
         if (!odgovor.ok) return;

@@ -5,6 +5,13 @@ import { ApiGreska } from "@/lib/api/greske";
 // Outside production it always answers "human", so tests and `next dev` are unaffected.
 // A local `next start` has no Vercel headers, so its logins are refused; use `next dev` or a preview.
 export async function zahtijevajCovjeka() {
-  const { isBot } = await checkBotId({ developmentOptions: { bypass: "HUMAN" } });
+  let isBot: boolean;
+  try {
+    ({ isBot } = await checkBotId({ developmentOptions: { bypass: "HUMAN" } }));
+  } catch (greska) {
+    // BotID itself is down: let staff log in. The per-device, per-IP and global PIN lockouts still apply.
+    console.error("BotID provjera nije uspjela, propuštam zahtjev:", greska);
+    return;
+  }
   if (isBot) throw new ApiGreska(403, "Provjera uređaja nije uspjela. Osvježite stranicu i pokušajte ponovo.");
 }

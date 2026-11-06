@@ -5,6 +5,7 @@ import { createPortal } from "react-dom";
 import { NEMA_VEZE } from "@/components/konobar/useMeni";
 import { greskaIz } from "@/lib/api/greskaIz";
 import { formatBroj, NAZIV_STANICE } from "@/lib/format";
+import { CEKANJE_MS } from "@/lib/offline/sync";
 import { useIspis } from "./useIspis";
 import { brojIzUnosa, poredajStavke, sumnjivaTezina, type Stavka } from "./unos";
 
@@ -140,7 +141,7 @@ export default function RedStanice({ stanica }: { stanica: Stanica }) {
     if (document.visibilityState !== "visible" || uToku.current) return;
     uToku.current = true;
     try {
-      const odgovor = await fetch(`/api/narudzbe?stanica=${stanica}`);
+      const odgovor = await fetch(`/api/narudzbe?stanica=${stanica}`, { signal: AbortSignal.timeout(CEKANJE_MS) });
       if (odgovor.status === 401) return window.location.assign(prijava);
       if (!odgovor.ok) return postaviGresku(await greskaIz(odgovor));
       postaviRed(await odgovor.json());

@@ -53,7 +53,7 @@ export default function NarudzbaEditor({ stoId }: { stoId: number }) {
   const brojac = useRef(0);
 
   useEffect(() => {
-    Promise.all([fetch(`/api/racuni/sto/${stoId}`), fetch("/api/stolovi")])
+    Promise.all([fetch(`/api/racuni/sto/${stoId}`, { signal: AbortSignal.timeout(CEKANJE_MS) }), fetch("/api/stolovi", { signal: AbortSignal.timeout(CEKANJE_MS) })])
       .then(async ([a, b]) => {
         if (a.status === 401 || b.status === 401) return window.location.assign(PRIJAVA);
         // Only the first load shows its error: later reloads run in the background and stay silent.

@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { ApiGreska, procitajTijelo, ruta } from "@/lib/api/greske";
 import { rpc } from "@/lib/api/rpc";
+import { zahtijevajCovjeka } from "@/lib/auth/covjek";
 import { pinShema } from "@/lib/auth/pin";
 import {
   identitetZahtjeva,
@@ -51,6 +52,8 @@ export const POST = ruta(async (request: NextRequest) => {
   const sesija = await zahtijevajSesiju(request, ["konobar"]);
   const { requestId, stoId, stavke, posebanPin } = await procitajTijelo(request, narudzbaShema);
 
+  // Only an order with the manager's PIN for a special side counts toward the PIN lockouts.
+  if (posebanPin) await zahtijevajCovjeka();
   const identitet = posebanPin ? identitetZahtjeva(request, tajnaSesije()) : null;
   const rezultat = await rpc<Rezultat>("posalji_narudzbu", {
     p_konobar: sesija.id,

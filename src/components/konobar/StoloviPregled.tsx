@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { greskaIz } from "@/lib/api/greskaIz";
 import { formatKM } from "@/lib/format";
+import { CEKANJE_MS } from "@/lib/offline/sync";
 import { NEMA_VEZE, PRIJAVA } from "./useMeni";
 
 export type Sazetak = {
@@ -28,7 +29,7 @@ export default function StoloviPregled() {
     async function ucitaj() {
       if (document.visibilityState !== "visible") return;
       try {
-        const odgovor = await fetch("/api/stolovi");
+        const odgovor = await fetch("/api/stolovi", { signal: AbortSignal.timeout(CEKANJE_MS) });
         if (!zivo) return;
         if (odgovor.status === 401) return window.location.assign(PRIJAVA);
         if (!odgovor.ok) return postaviGresku(await greskaIz(odgovor));

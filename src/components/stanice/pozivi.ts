@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState, type MutableRefObject } from "react";
 import { NEMA_VEZE } from "@/components/konobar/useMeni";
 import { greskaIz } from "@/lib/api/greskaIz";
+import { CEKANJE_MS } from "@/lib/offline/sync";
 
 export type Odgovor<T> = { ok: true; podaci: T } | { ok: false; greska: string };
 
@@ -11,6 +12,8 @@ export async function pozovi<T = unknown>(adresa: string, prijava: string, metod
   try {
     const odgovor = await fetch(adresa, {
       method: metoda,
+      // A hung poll would keep the in-flight guard set and freeze the screen. Writes wait for their answer.
+      ...(metoda === "GET" && { signal: AbortSignal.timeout(CEKANJE_MS) }),
       ...(tijelo && { headers: { "Content-Type": "application/json" }, body: JSON.stringify(tijelo) }),
     });
     if (odgovor.status === 401) {

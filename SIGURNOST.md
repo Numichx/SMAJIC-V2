@@ -15,7 +15,7 @@ Checked on 2026-11-06 against production (<https://smajic-pos.vercel.app>) and c
 | 9 | Secure session cookies | Pass | `httpOnly`, `sameSite=lax`, `secure` in production, 18 hours, HMAC-signed (`lib/auth/session.ts`, `lib/auth/sessionToken.ts`). A new `SESSION_SECRET` logs everyone out. |
 | 10 | Hash passwords | Pass | bcrypt through `pgcrypto`. No PIN is stored, logged or put in the repo. |
 | 11 | Rate limit login | Pass | Per device, per IP and global lockouts on every PIN check, including the manager PIN for discounts and special sides (`20261102230200_pin_pokusaji.sql`, `20261103000400_racuni_naplata.sql`, `20261103000100_narudzbe.sql`). |
-| 12 | Add bot protection | Pass | Vercel BotID guards login and first-PIN activation (`src/instrumentation-client.ts`, `lib/auth/covjek.ts`). On the staging preview a script and headless Edge got 403, a normal Edge window got through. |
+| 12 | Add bot protection | Pass | Vercel BotID guards every PIN check: login, first-PIN activation, and the manager PIN for discounts and special sides (`src/instrumentation-client.ts`, `lib/auth/covjek.ts`). If BotID itself is down, staff still get in under the PIN lockouts. On the staging preview a script and headless Edge got 403, a normal Edge window got through. |
 | 13 | Parameterize queries | Pass | All data goes through `rpc` with bound arguments. The migrations contain no dynamic `execute`. |
 | 14 | Validate all input | Pass | zod on every route, and the SQL functions check ranges, lengths and states again. |
 | 15 | Escape user content | Pass | React renders all text; no raw HTML anywhere (`tests/sigurnost.test.ts`). Receipts print the same way. |

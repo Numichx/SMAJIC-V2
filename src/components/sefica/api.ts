@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { greskaIz } from "@/lib/api/greskaIz";
+import { CEKANJE_MS } from "@/lib/offline/sync";
 
 export const NEMA_VEZE = "Nema veze sa serverom. Pokušajte ponovo.";
 
@@ -12,7 +13,8 @@ export async function zovi<T = unknown>(adresa: string, metoda?: "POST" | "PATCH
   try {
     const odgovor = await fetch(
       adresa,
-      metoda ? { method: metoda, headers: { "Content-Type": "application/json" }, body: JSON.stringify(tijelo) } : undefined,
+      // Reads time out so a hung poll cannot freeze the screen. Writes wait for their answer.
+      metoda ? { method: metoda, headers: { "Content-Type": "application/json" }, body: JSON.stringify(tijelo) } : { signal: AbortSignal.timeout(CEKANJE_MS) },
     );
     if (odgovor.status === 401) {
       const prijava = location.pathname.startsWith("/mesnica") ? "/login?uloga=mesnica" : "/login?uloga=sefica";

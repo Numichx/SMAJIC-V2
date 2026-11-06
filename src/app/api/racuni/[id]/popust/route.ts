@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { ApiGreska, procitajTijelo, ruta } from "@/lib/api/greske";
 import { rpc } from "@/lib/api/rpc";
+import { zahtijevajCovjeka } from "@/lib/auth/covjek";
 import { pinShema } from "@/lib/auth/pin";
 import { identitetZahtjeva, KOLACIC_UREDJAJA, porukaZakljucano, TRAJANJE_UREDJAJA_S } from "@/lib/auth/pinOgranicenje";
 import { zahtijevajSesiju } from "@/lib/auth/requestSession";
@@ -25,6 +26,7 @@ export const POST = ruta(async (request: NextRequest, { params }: { params: Prom
   const id = z.uuid().safeParse((await params).id);
   if (!id.success) throw new ApiGreska(400, "Neispravni podaci.");
   const { procenat, razlog, pin } = await procitajTijelo(request, popustShema);
+  await zahtijevajCovjeka();
 
   const identitet = identitetZahtjeva(request, tajnaSesije());
   const rezultat = await rpc<Rezultat>("odobri_popust", {
