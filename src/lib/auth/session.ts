@@ -3,6 +3,8 @@ import { ApiGreska } from "@/lib/api/greske";
 export const ODJELJCI = ["konobar", "kuhinja", "pecenjara", "sank", "mesnica", "sefica", "pomoc"] as const;
 export type Odjeljak = (typeof ODJELJCI)[number];
 export type Uloga = Exclude<Odjeljak, "sank" | "pomoc">;
+// Help pages open for any role, so they are not a login: a PIN there would match every role at once.
+export const PRIJAVE = ODJELJCI.filter((o): o is Exclude<Odjeljak, "pomoc"> => o !== "pomoc");
 
 export type Sesija = { id: string; ime: string; uloga: Uloga; v: number; exp: number };
 

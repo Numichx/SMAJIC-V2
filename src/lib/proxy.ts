@@ -36,7 +36,7 @@ export function zastita(request: NextRequest) {
       process.env.SESSION_SECRET,
     );
     if (!sesija) {
-      return NextResponse.redirect(new URL(`/login?uloga=${odjeljak}`, request.url));
+      return NextResponse.redirect(new URL(odjeljak === "pomoc" ? "/" : `/login?uloga=${odjeljak}`, request.url));
     }
     if (!PRISTUP[odjeljak].includes(sesija.uloga)) {
       return NextResponse.redirect(new URL(`/${sesija.uloga}`, request.url));

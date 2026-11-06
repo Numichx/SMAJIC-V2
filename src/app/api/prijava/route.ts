@@ -13,7 +13,7 @@ import {
 import {
   jeOdjeljak,
   KOLACIC_SESIJE,
-  ODJELJCI,
+  PRIJAVE,
   opcijeKolacica,
   PRISTUP,
   tajnaSesije,
@@ -27,7 +27,7 @@ import { potpisi } from "@/lib/auth/sessionToken";
 const SA_IMENOM: readonly Odjeljak[] = ["konobar", "sank"];
 
 const prijavaShema = z.strictObject({
-  uloga: z.enum(ODJELJCI),
+  uloga: z.enum(PRIJAVE),
   zaposlenikId: z.uuid().optional(),
   pin: pinShema,
 });
@@ -43,7 +43,7 @@ type Rezultat = {
 
 export const GET = ruta(async (request: NextRequest) => {
   const uloga = request.nextUrl.searchParams.get("uloga") ?? undefined;
-  if (!jeOdjeljak(uloga)) throw new ApiGreska(400, "Podaci nisu ispravni. Osvježite stranicu i pokušajte ponovo.");
+  if (!jeOdjeljak(uloga) || uloga === "pomoc") throw new ApiGreska(400, "Podaci nisu ispravni. Osvježite stranicu i pokušajte ponovo.");
 
   const zaposlenici = SA_IMENOM.includes(uloga)
     ? await rpc<{ id: string; ime: string }[]>("zaposlenici_za_prijavu", { p_uloge: PRISTUP[uloga] })
