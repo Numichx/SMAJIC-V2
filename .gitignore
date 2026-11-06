@@ -34,6 +34,10 @@ yarn-error.log*
 .env*
 !.env.example
 
+# backups hold PIN hashes and guest names
+/kopija*.json
+/povrat*.sql
+
 # demo mode data
 /.data/
 

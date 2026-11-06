@@ -67,7 +67,7 @@ The app was built with full authority to choose. These are the choices that affe
 - **A PIN already used by a colleague in the same role** is refused, and the code is used up. This limits anyone to one guess per code.
 - **Login names are public** for waiters and the bar, because the prompt asks for name plus PIN. Anyone with the URL can see the names of staff who have a PIN.
 - **Guest names on debts are kept with no time limit for now.** They are stored only with the debt, and stay off the log and receipts. The retention rule comes in phase 7.
-- **Bot protection is not built yet.** With the limits above, a distributed attack could try about 9,600 PINs a day, so a 4-digit PIN is weak if the app is public. Longer PINs help.
+- **Vercel BotID guards login and first-PIN activation.** A script that skips the app page gets 403 before any PIN is checked, so it can neither guess PINs nor hold the global lockout on. A normal browser passes; headless browsers are refused, so automated browser tests on a preview must run a visible browser. If a restaurant tablet is ever refused, removing the two `zahtijevajCovjeka()` calls turns it off.
 
 ## Changes to the original plan
 
@@ -76,6 +76,8 @@ See "Changes to the original build prompt" in `AGENTS.md`.
 ## Other choices
 
 - **Vercel runs in Frankfurt** (`fra1`), next to the database.
+- **Three environments.** Production (<https://smajic-pos.vercel.app>) uses the real database. Previews use a second free Supabase project, `SMAJIC-V2-staging`, so tests never write fake bills into real takings. Free projects pause after a week unused; restore it in the Supabase dashboard before testing.
+- **Backups are a script, not Supabase.** The free plan keeps none, and `supabase db dump` needs Docker. `scripts/kopija.mjs` exports every table as JSON and builds a restore script. Supabase Pro (25 USD a month) adds daily backups if you prefer those.
 - **Demo mode runs the real database code** on PGlite, so `npm run dev` needs no Docker or accounts.
 - **Merging tables is always a deliberate action.** Moving onto an occupied table is refused, because a merge cannot be undone.
 - **Any waiter can act on any table,** as in the old app.

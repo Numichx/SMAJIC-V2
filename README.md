@@ -16,6 +16,18 @@ U `.env.local` upišite `SESSION_SECRET` (naredba je u `.env.example`). Ako Supa
 
 Provjera rada: <http://localhost:3000/api/status> vraća način rada (`supabase`, `demo` ili `misconfigured`).
 
+## Okruženja
+
+| Okruženje | Adresa | Baza |
+|---|---|---|
+| Produkcija | <https://smajic-pos.vercel.app> | Supabase `SMAJIC-V2` (prave narudžbe i novac) |
+| Pregled (preview) | Link za svaki push na granu `razvoj`, zaštićen Vercel prijavom | Supabase `SMAJIC-V2-staging` (samo testni podaci) |
+| Razvoj | <http://localhost:3000> | Demo baza na računaru |
+
+Push na `main` objavljuje produkciju. Nove migracije idu prvo na staging, pa tek onda na pravu bazu.
+
+Prijava i prvi PIN su zaštićeni Vercel BotID provjerom: rade u običnom pregledniku, a skripte i headless preglednici dobiju poruku „Provjera uređaja nije uspjela“.
+
 ## Prva prijava
 
 Niko nema PIN dok ga sam ne izabere.
@@ -46,6 +58,23 @@ Navigacija šefice: Izvještaji, Zatvaranje dana, Smjene, Popis pečenjare, Zali
 | `npm run db:reset` | Ponovo pravi lokalnu bazu |
 | `npm run db:types` | Pravi tipove iz lokalne baze |
 | `npm run db:types:linked` | Pravi tipove iz povezane Supabase baze |
+
+## Rezervna kopija
+
+Besplatni Supabase plan ne pravi rezervne kopije. Kopiju pravite ovako (samo čita bazu):
+
+```bash
+node scripts/kopija.mjs izvoz clnnjqbogzilkwhxzgyz C:/Kopije/smajic-2026-11-06.json
+```
+
+Kopija sadrži hashove PIN-ova i imena gostiju: čuvajte je izvan OneDrive foldera. Povrat na novu bazu, nakon `supabase db push` s istim migracijama:
+
+```bash
+node scripts/kopija.mjs povrat C:/Kopije/smajic-2026-11-06.json povrat.sql
+npx supabase db query --remote=<project-ref> -f povrat.sql
+```
+
+Povrat briše sve postojeće podatke u toj bazi i upisuje one iz kopije.
 
 ## Tajni podaci
 

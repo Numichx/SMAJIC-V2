@@ -24,6 +24,7 @@ Restaurant POS. The UI is in Bosnian, prices are in KM, and one device is assign
 - The server computes prices, totals and statuses, and never trusts the client's values.
 - No secrets or PINs in the repo, in logs or in chat. Staff choose their own PINs.
 - Styling stays minimal and in one place until the design pass (phase 7b).
+- Production runs on Supabase `SMAJIC-V2`; Vercel previews run on `SMAJIC-V2-staging`. Push a migration to staging first. BotID refuses headless browsers on any deployment, so browser tests there need a visible browser.
 
 ## Changes to the original build prompt (decided by the owner)
 
