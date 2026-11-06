@@ -28,7 +28,7 @@ Restaurant POS. The UI is in Bosnian, prices are in KM, and one device is assign
 ## Changes to the original build prompt (decided by the owner)
 
 - No Supabase Realtime: stations keep polling, because the browser has no database access.
-- No graphify.
+- Graphify Cloud is connected as a read-only MCP server for `Numichx/SMAJIC-V2`. Use it for code structure, but it can lag behind the last push, and missing call edges are not proof: confirm with a text search.
 - Offline means the order queue only. No offline payments, voids or table moves unless the trial week shows a need.
 - Phase 8, Sentry, uptime checks and ESC/POS printing are not scheduled. Choose from them after the trial week.
 - Get the fiscal device model and VAT rates before phase 4, because bills and receipts depend on them.
