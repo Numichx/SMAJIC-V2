@@ -55,13 +55,22 @@ export function upitPodataka(sema) {
   return `select jsonb_build_object(${parovi.join(", ")}) as podaci`;
 }
 
-export function sqlPovrata({ sema, podaci }) {
+export function sqlPovrata({ sema, podaci, migracije }) {
+  if (!Array.isArray(migracije) || !migracije.length || !migracije.every((m) => /^[0-9]{14}$/.test(m))) {
+    throw new Error("Kopija nema ispravan popis migracija.");
+  }
   const tekst = JSON.stringify(podaci);
   let oznaka = "kopija";
   while (tekst.includes(`$${oznaka}$`)) oznaka += "_";
   const tabele = redoslijed(sema);
   const sve = tabele.map((t) => `public.${ime(t.tabela)}`).join(", ");
-  const sql = ["begin;", `truncate table ${sve} restart identity cascade;`];
+  // A backup from other migrations would restore without error but leave new columns at their defaults.
+  const popis = migracije.map((m) => `'${m}'`).join(", ");
+  const sql = [
+    "begin;",
+    `do $provjera$ begin if (select array_agg(version::text order by version) from supabase_migrations.schema_migrations) is distinct from array[${popis}]::text[] then raise exception 'Baza nema iste migracije kao kopija. Povrat je prekinut i ništa nije promijenjeno.'; end if; end $provjera$;`,
+    `truncate table ${sve} restart identity cascade;`,
+  ];
   for (const t of tabele) {
     const redovi = podaci[t.tabela] ?? [];
     const kolone = t.kolone.map((k) => ime(k.ime)).join(", ");

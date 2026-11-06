@@ -10,12 +10,16 @@ import { jelo, naruci, plati, pomjeri, racunStola } from "./pomocnici-faza5";
 
 type Sema = { tabela: string; kolone: { ime: string; identitet: string }[]; zavisi_od: string[] }[];
 
-// A second database with only the migrations, like a new Supabase project after `db push`.
+const MIGRACIJE = readdirSync(path.join(process.cwd(), "supabase", "migrations")).sort().map((m) => m.slice(0, 14));
+
+// A second database with only the migrations and their history, like a new Supabase project after `db push`.
 async function praznaBaza() {
   const db = await PGlite.create("memory://", { extensions: { pgcrypto } });
   await db.exec("create role anon; create role authenticated; create role service_role;");
   const folder = path.join(process.cwd(), "supabase", "migrations");
   for (const ime of readdirSync(folder).sort()) await db.exec(readFileSync(path.join(folder, ime), "utf8"));
+  await db.exec("create schema supabase_migrations; create table supabase_migrations.schema_migrations (version text primary key);");
+  for (const m of MIGRACIJE) await db.query("insert into supabase_migrations.schema_migrations values ($1)", [m]);
   return db;
 }
 
@@ -55,7 +59,13 @@ it("restores every table exactly into a freshly migrated database, and new rows 
   );
 
   const cilj = await praznaBaza();
-  await cilj.exec(sqlPovrata({ sema, podaci }));
+  // A backup from one migration earlier is refused before anything changes.
+  const prijeRestauracije = await sadrzaj(cilj, sema);
+  await expect(cilj.exec(sqlPovrata({ sema, podaci, migracije: MIGRACIJE.slice(0, -1) }))).rejects.toThrow(/iste migracije/);
+  await cilj.exec("rollback").catch(() => {});
+  expect(await sadrzaj(cilj, sema)).toEqual(prijeRestauracije);
+
+  await cilj.exec(sqlPovrata({ sema, podaci, migracije: MIGRACIJE }));
 
   const prije = await sadrzaj(izvor, sema);
   expect(await sadrzaj(cilj, sema)).toEqual(prije);
