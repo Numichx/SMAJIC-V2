@@ -26,6 +26,14 @@ Niko nema PIN dok ga sam ne izabere.
 
 PIN ima 4 do 8 cifara. Lagani PIN-ovi (1111, 1234, 2580, godine) nisu dozvoljeni.
 
+## Šefica
+
+Navigacija šefice: Izvještaji, Zatvaranje dana, Smjene, Popis pečenjare, Zaliha, Recepti, Meni, Dugovi, Osoblje, Dnevnik, Z-izvještaj, Privatnost, Šank i Pomoć.
+
+- **Meni:** dodavanje proizvoda, izmjena naziva, cijene, kategorije, jedinice, stanice i redoslijeda, te „Označi rasprodano“ / „Vrati u ponudu“. Promjena cijene traži potvrdu. Vaganje i besplatne priloge određuje aplikacija i ne uređuju se ovdje. Izmjene ne mijenjaju već poslane narudžbe.
+- **Z-izvještaj:** za zatvoren dan prikazuje sačuvani zaključak, inače trenutne podatke. Gotovina i kartica uključuju bakšiš. PDV nije podešen i izvještaj nije fiskalni račun.
+- **Privatnost:** anonimizira stare naplaćene dugove i rezervacije (rok od 30 do 3.650 dana). Radnja je nepovratna i traži dodatnu potvrdu.
+
 ## Naredbe
 
 | Naredba | Opis |
