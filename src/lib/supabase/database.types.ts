@@ -1649,6 +1649,19 @@ export type Database = {
           p_preostala_kg: number
           p_preostale_koke: number
           p_request_id: string
+          p_smjena: string
+          p_zaposlenik: string
+        }
+        Returns: Json
+      }
+      zatvori_popis_pecenjare_otvoreni: {
+        Args: {
+          p_dodatna_kg: number
+          p_dodatne_koke: number
+          p_predani: number
+          p_preostala_kg: number
+          p_preostale_koke: number
+          p_request_id: string
           p_zaposlenik: string
         }
         Returns: Json

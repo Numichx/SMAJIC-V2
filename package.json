@@ -11,7 +11,7 @@
     "db:start": "supabase start",
     "db:reset": "supabase db reset",
     "db:types": "supabase gen types typescript --local > src/lib/supabase/database.types.ts",
-    "db:types:linked": "supabase gen types typescript --linked > src/lib/supabase/database.types.ts"
+    "db:types:staging": "supabase gen types typescript --remote=creuuewxiwngmzqbsbpf > src/lib/supabase/database.types.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.118.0",

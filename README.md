@@ -57,7 +57,7 @@ Navigacija šefice: Izvještaji, Zatvaranje dana, Smjene, Popis pečenjare, Zali
 | `npm run db:start` | Pokreće lokalnu bazu (potreban je Docker) |
 | `npm run db:reset` | Ponovo pravi lokalnu bazu |
 | `npm run db:types` | Pravi tipove iz lokalne baze |
-| `npm run db:types:linked` | Pravi tipove iz povezane Supabase baze |
+| `npm run db:types:staging` | Pravi tipove iz staging baze (migracije idu prvo tamo) |
 
 ## Rezervna kopija
 
