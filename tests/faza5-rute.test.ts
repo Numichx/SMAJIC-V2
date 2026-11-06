@@ -58,7 +58,7 @@ const RUTE: { naziv: string; ruta: Ruta; url: string; uloge: Uloga[]; tijelo?: (
     ruta: popisPecenjare.PATCH,
     url: "/api/pecenjara/smjena",
     uloge: ["pecenjara", "sefica"],
-    tijelo: () => ({ requestId: u(), dodatneKoke: 0, dodatnaJanjetinaKg: 0, preostaleKoke: 0, preostalaJanjetinaKg: 0, predaniPazar: 0 }),
+    tijelo: () => ({ requestId: u(), smjenaId: u(), dodatneKoke: 0, dodatnaJanjetinaKg: 0, preostaleKoke: 0, preostalaJanjetinaKg: 0, predaniPazar: 0 }),
   },
   { naziv: "GET pecenjara/dug", ruta: dug.GET, url: "/api/pecenjara/dug", uloge: ["pecenjara", "sefica"] },
   { naziv: "POST pecenjara/dug", ruta: dug.POST, url: "/api/pecenjara/dug", uloge: ["pecenjara"], tijelo: () => ({ requestId: u(), konobarId: u(), iznos: 1 }) },
@@ -121,7 +121,7 @@ const FUNKCIJE: { ime: string; uloge: Uloga[]; argumenti: (id: string) => Record
   {
     ime: "zatvori_popis_pecenjare",
     uloge: ["pecenjara", "sefica"],
-    argumenti: (id) => ({ p_zaposlenik: id, p_request_id: u(), p_dodatne_koke: 0, p_dodatna_kg: 0, p_preostale_koke: 0, p_preostala_kg: 0, p_predani: 0 }),
+    argumenti: (id) => ({ p_zaposlenik: id, p_smjena: u(), p_request_id: u(), p_dodatne_koke: 0, p_dodatna_kg: 0, p_preostale_koke: 0, p_preostala_kg: 0, p_predani: 0 }),
   },
   { ime: "dugovi_pecenjari", uloge: ["pecenjara", "sefica"], argumenti: (id) => ({ p_zaposlenik: id }) },
   { ime: "uplati_pecenjari", uloge: ["pecenjara"], argumenti: (id) => ({ p_zaposlenik: id, p_request_id: u(), p_konobar: u(), p_iznos: 1 }) },

@@ -136,7 +136,7 @@ export default function PopisPecenjare() {
       postaviGresku("");
       return postaviPotvrdu(potpis);
     }
-    return posalji("PATCH", brojevi, potpis);
+    return posalji("PATCH", { smjenaId: zakljucan?.smjenaId, ...brojevi }, potpis);
   }
 
   if (!pregled) return <p role="status">{lista.greska || "Učitavam…"}</p>;

@@ -16,6 +16,7 @@ const otvaranjeShema = z.strictObject({
 });
 const zatvaranjeShema = z.strictObject({
   requestId: z.uuid(),
+  smjenaId: z.uuid(),
   dodatneKoke: koke,
   dodatnaJanjetinaKg: kg,
   preostaleKoke: koke,
@@ -53,6 +54,7 @@ export const PATCH = ruta(async (request: NextRequest) => {
   const t = await procitajTijelo(request, zatvaranjeShema);
   const popis = await rpc<unknown>("zatvori_popis_pecenjare", {
     p_zaposlenik: sesija.id,
+    p_smjena: t.smjenaId,
     p_request_id: t.requestId,
     p_dodatne_koke: t.dodatneKoke,
     p_dodatna_kg: t.dodatnaJanjetinaKg,

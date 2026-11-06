@@ -89,11 +89,13 @@ const otvoriPopis = (tijelo: Record<string, unknown> = {}, uloga: Uloga = "pecen
     }),
   );
 
-const zatvoriPopis = (tijelo: Record<string, unknown> = {}, uloga: Uloga = "pecenjara") =>
+// Names the open shift, as the grill screen does with the count it shows.
+const zatvoriPopis = async (tijelo: Record<string, unknown> = {}, uloga: Uloga = "pecenjara") =>
   popisPatch(
     zahtjev("/api/pecenjara/smjena", {
       tijelo: {
         requestId: randomUUID(),
+        smjenaId: (await (await demoBaza()).query<{ id: string }>("select id from public.smjene where kraj is null")).rows[0]?.id ?? randomUUID(),
         dodatneKoke: 0,
         dodatnaJanjetinaKg: 0,
         preostaleKoke: 0,
@@ -449,6 +451,8 @@ describe("the shift list", () => {
 describe("the grill's count", () => {
   it("needs an open shift", async () => {
     expect(await greska(await otvoriPopis())).toMatch(/Nema otvorene smjene/);
+    expect(await greska(await zatvoriPopis())).toMatch(/Ta smjena više nije otvorena/);
+    await novaSmjena();
     expect(await greska(await zatvoriPopis())).toBe("Nema otvorenog popisa pečenjare.");
   });
 
@@ -513,6 +517,17 @@ describe("the grill's count", () => {
     expect(await greska(await zatvoriPopis({ preostalaJanjetinaKg: 5.001 }))).toBe(poruka);
     // Exactly what was there is fine, and additions count as available.
     expect((await json<{ popis: Popis }>(await zatvoriPopis({ preostaleKoke: 4, dodatneKoke: 1, preostalaJanjetinaKg: 5 }))).popis.prodaneKoke).toBe(0);
+  });
+
+  // A tablet still showing an earlier shift must not close the count of the shift opened since.
+  it("refuses a close for a shift that is no longer open, and leaves the open count alone", async () => {
+    await novaSmjena();
+    await json(await otvoriPopis({ pocetneKokePecene: 3 }));
+    const stara = randomUUID();
+    expect(await greska(await zatvoriPopis({ smjenaId: stara }))).toBe(
+      "Ta smjena više nije otvorena. Osvježite stranicu i provjerite koji popis zatvarate.",
+    );
+    expect((await json<{ popis: Popis | null }>(await popisGet(zahtjev("/api/pecenjara/smjena", { kolacici: k("pecenjara") })))).popis?.zatvoreno).toBeNull();
   });
 
   it("closes once: a double tap gets the first answer, a second device a refusal", async () => {

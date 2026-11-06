@@ -111,7 +111,7 @@ function Zatvaranje({ popis, cijene, osvjezi }: { popis: Popis; cijene: Pregled[
 
   async function zatvori() {
     if (!ispravno) return;
-    const r = await posalji(JSON.stringify(v), (requestId) => zovi("/api/pecenjara/smjena", "PATCH", { requestId, ...v }));
+    const r = await posalji(JSON.stringify(v), (requestId) => zovi("/api/pecenjara/smjena", "PATCH", { requestId, smjenaId: popis.smjenaId, ...v }));
     if (r) osvjezi();
     else postaviPotvrdu(false);
   }
