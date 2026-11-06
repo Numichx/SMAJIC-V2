@@ -208,7 +208,7 @@ function StavkaProizvoda({ proizvod, kategorija, kategorije, osvjezi }: {
               <p>Besplatni prilozi: {proizvod.besplatniPrilozi.length > 0 ? proizvod.besplatniPrilozi.join(", ") : "nema"}</p>
             </div>
             <div className="flex flex-wrap gap-2">
-              <button type="button" className={dugme} onClick={() => postaviUredi(true)}>Uredi</button>
+              <button type="button" className={dugme} aria-label={`Uredi ${proizvod.naziv}`} onClick={() => postaviUredi(true)}>Uredi</button>
               <button type="button" className={dugme} disabled={saljem} onClick={promijeniDostupnost}>
                 {saljem ? "Spremam…" : proizvod.aktivan ? "Označi rasprodano" : "Vrati u ponudu"}
               </button>

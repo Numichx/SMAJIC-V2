@@ -70,7 +70,7 @@ async function posalji(z: Zapis) {
     return true;
   }
   if (odluka === "odbaci") {
-    await ukloniIzReda(z.id, `Sto ${z.tijelo.stoId}: narudžba NIJE poslana (${z.opis}). Razlog: ${await greskaIz(odgovor)}`);
+    await ukloniIzReda(z.id, `Sto ${z.tijelo.stoId}: narudžba nije poslana (${z.opis}). Razlog: ${await greskaIz(odgovor)}`);
     return true;
   }
   if (odluka === "prijava") uPrijavu();
@@ -97,7 +97,7 @@ export async function isprazni() {
     const sada = Date.now();
     for (const z of await redPoRedu()) {
       if (prestaro(z, sada)) {
-        await ukloniIzReda(z.id, `Sto ${z.tijelo.stoId}: narudžba je predugo čekala vezu i NIJE poslana (${z.opis}). Ako je još potrebna, unesite je ponovo.`);
+        await ukloniIzReda(z.id, `Sto ${z.tijelo.stoId}: narudžba je predugo čekala vezu i nije poslana (${z.opis}). Ako je još potrebna, unesite je ponovo.`);
       }
     }
   } catch {

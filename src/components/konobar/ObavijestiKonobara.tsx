@@ -93,6 +93,7 @@ export default function ObavijestiKonobara() {
             <span className="flex-1 font-semibold">{opis(p)}</span>
             <button
               type="button"
+              aria-label={`Zatvori: ${opis(p)}`}
               onClick={() => postaviPrikaze((stare) => stare.filter((x) => x.kljuc !== p.kljuc))}
               className="min-h-12 min-w-12 rounded-lg border-2 border-okvir px-3"
             >

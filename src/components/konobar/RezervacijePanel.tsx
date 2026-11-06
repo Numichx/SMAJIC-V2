@@ -119,10 +119,10 @@ export default function RezervacijePanel() {
               <p className="font-semibold">{STATUS[r.status]}</p>
               {r.status === "aktivna" && (
                 <div className="flex flex-wrap gap-2">
-                  <button type="button" className={dugme} onClick={() => promijeni(r.id, "realizovana")}>
+                  <button type="button" className={dugme} aria-label={`Realizovana: ${satSarajevo(r.vrijeme)} ${r.ime}`} onClick={() => promijeni(r.id, "realizovana")}>
                     Realizovana
                   </button>
-                  <button type="button" className={dugme} onClick={() => promijeni(r.id, "otkazana")}>
+                  <button type="button" className={dugme} aria-label={`Otkazana: ${satSarajevo(r.vrijeme)} ${r.ime}`} onClick={() => promijeni(r.id, "otkazana")}>
                     Otkazana
                   </button>
                 </div>

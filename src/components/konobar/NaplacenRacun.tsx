@@ -56,7 +56,7 @@ function Listic({ r }: { r: Stampa }) {
         </>
       )}
       <div className="font-bold">
-        <Red lijevo="ZA PLATITI" desno={formatKM(r.ukupno)} />
+        <Red lijevo="Za platiti" desno={formatKM(r.ukupno)} />
       </div>
       {n && (
         <>

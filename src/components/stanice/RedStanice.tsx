@@ -205,14 +205,14 @@ export default function RedStanice({ stanica }: { stanica: Stanica }) {
         {red?.narudzbe.map((n) => (
           <li key={n.id} className="flex flex-col gap-3 rounded-lg border-2 border-okvir bg-povrsina p-3">
             <div className="flex flex-wrap items-baseline gap-x-3">
-              <strong className="text-xl">Narudžba {n.broj}</strong>
+              <h2 className="text-xl font-bold">Narudžba {n.broj}</h2>
               <span>Sto {n.stolovi.join(", ")}</span>
               <span>Konobar: {n.konobar}</span>
               <span>{n.status}</span>
             </div>
             <p>
               Čeka {minute(red.sada, n.kreirano)} min
-              {n.cekaDugo && <strong className="ml-2 text-greska">ČEKA DUGO (15 min ili više)</strong>}
+              {n.cekaDugo && <strong className="ml-2 text-greska">Čeka dugo (15 min ili više)</strong>}
             </p>
             <Stavke narudzba={n} />
             {forma === n.id && gotovoPecenjare(n) ? (
@@ -222,6 +222,7 @@ export default function RedStanice({ stanica }: { stanica: Stanica }) {
                 <button
                   type="button"
                   disabled={zauzeto !== null}
+                  aria-label={`${n.stavke.every((s) => s.stornoRazlog) ? "Ukloni storno" : n.sljedeci}, narudžba ${n.broj}`}
                   onClick={() => (gotovoPecenjare(n) ? postaviFormu(n.id) : posalji(n, { status: n.sljedeci }))}
                   className="min-h-14 rounded-lg bg-akcent px-4 text-lg font-bold text-akcent-tekst disabled:opacity-60"
                 >
@@ -229,7 +230,7 @@ export default function RedStanice({ stanica }: { stanica: Stanica }) {
                 </button>
               )
             )}
-            <button type="button" onClick={() => postaviIspis({ n })} className="min-h-12 rounded-lg border-2 border-okvir px-4">
+            <button type="button" aria-label={`Ispiši listić, narudžba ${n.broj}`} onClick={() => postaviIspis({ n })} className="min-h-12 rounded-lg border-2 border-okvir px-4">
               Ispiši listić
             </button>
           </li>

@@ -87,7 +87,7 @@ export default function DugPecenjare() {
                       className={polje}
                     />
                   </label>
-                  <button type="submit" className={dugme}>
+                  <button type="submit" className={dugme} aria-label={`Evidentiraj uplatu: ${d.ime}`}>
                     Evidentiraj uplatu
                   </button>
                 </form>

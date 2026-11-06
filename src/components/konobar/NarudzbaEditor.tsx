@@ -244,7 +244,7 @@ export default function NarudzbaEditor({ stoId }: { stoId: number }) {
         ))}
       {cekajuZaSto.length > 0 && (
         <p role="status" className="font-semibold">
-          Čeka slanje za ovaj sto: {cekajuZaSto.length}. To još NIJE u kuhinji ni na računu, a šalje se samo kad se veza vrati.
+          Čeka slanje za ovaj sto: {cekajuZaSto.length}. To još nije u kuhinji ni na računu, a šalje se samo kad se veza vrati.
           {imaTudjih && " Među njima je narudžba drugog konobara, koja ide tek kad se ta osoba prijavi. Naplata je ne čeka."}
         </p>
       )}

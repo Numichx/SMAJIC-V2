@@ -45,7 +45,7 @@ export default function RacunPrikaz({ racun, onStorno }: { racun: Racun; onStorn
           <span className={storno ? "line-through" : ""}>{naziv}</span>
           <span className={storno ? "line-through" : ""}>{storno ? formatKM(s.stornoVrijednost ?? 0) : prilog && s.cijena === 0 ? "uključeno" : formatKM(s.iznos)}</span>
         </div>
-        {storno && <p className="font-semibold">STORNO: {s.stornoRazlog}</p>}
+        {storno && <p className="font-semibold">Stornirano: {s.stornoRazlog}</p>}
         {!storno && (
           <button
             type="button"

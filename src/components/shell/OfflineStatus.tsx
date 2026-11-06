@@ -21,7 +21,7 @@ export default function OfflineStatus({ konobar }: { konobar: string }) {
       )}
       {red.length > 0 && (
         <div role="status" className="rounded-lg border-2 border-okvir bg-povrsina p-3">
-          <p className="font-semibold">Narudžbi na čekanju: {red.length}. Još NISU u kuhinji.</p>
+          <p className="font-semibold">Narudžbi na čekanju: {red.length}. Još nisu u kuhinji.</p>
           <ul>
             {red.map((z) => (
               <li key={z.id}>
@@ -37,7 +37,7 @@ export default function OfflineStatus({ konobar }: { konobar: string }) {
           {izvjestaji.map((i) => (
             <li key={i.id} className="flex items-center gap-3 rounded-lg border-2 border-greska bg-povrsina p-3">
               <span className="flex-1 font-semibold">{i.poruka}</span>
-              <button type="button" onClick={() => zatvoriIzvjestaj(i.id).catch(() => {})} className="min-h-12 min-w-12 rounded-lg border-2 border-okvir px-3">
+              <button type="button" aria-label={`Zatvori: ${i.poruka}`} onClick={() => zatvoriIzvjestaj(i.id).catch(() => {})} className="min-h-12 min-w-12 rounded-lg border-2 border-okvir px-3">
                 Zatvori
               </button>
             </li>
