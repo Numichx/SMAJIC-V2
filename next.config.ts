@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import { withBotId } from "botid/next/config";
 
 // Cache Components stays off: its prerendered shell cannot carry the per-request CSP nonce.
 const nextConfig: NextConfig = {
@@ -28,4 +29,5 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+// Adds the rewrites that let the BotID script and its checks run on this origin.
+export default withBotId(nextConfig);

@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { ApiGreska, procitajTijelo, ruta } from "@/lib/api/greske";
 import { rpc } from "@/lib/api/rpc";
+import { zahtijevajCovjeka } from "@/lib/auth/covjek";
 import { pinShema } from "@/lib/auth/pin";
 import {
   identitetZahtjeva,
@@ -51,6 +52,7 @@ export const GET = ruta(async (request: NextRequest) => {
 });
 
 export const POST = ruta(async (request: NextRequest) => {
+  await zahtijevajCovjeka();
   const tajna = tajnaSesije();
   const { uloga, zaposlenikId, pin } = await procitajTijelo(request, prijavaShema);
   if (SA_IMENOM.includes(uloga) && !zaposlenikId) throw new ApiGreska(400, "Podaci nisu ispravni. Osvježite stranicu i pokušajte ponovo.");

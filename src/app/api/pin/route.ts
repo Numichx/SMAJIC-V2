@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { procitajTijelo, ruta } from "@/lib/api/greske";
 import { rpc } from "@/lib/api/rpc";
+import { zahtijevajCovjeka } from "@/lib/auth/covjek";
 import { kodShema, pinShema } from "@/lib/auth/pin";
 import {
   identitetZahtjeva,
@@ -16,6 +17,7 @@ const pinTijelo = z.strictObject({ kod: kodShema, noviPin: pinShema });
 type Rezultat = { status: "ok" | "pogresan" | "zakljucano" | "zauzet"; retry_after: number };
 
 export const POST = ruta(async (request: NextRequest) => {
+  await zahtijevajCovjeka();
   const tajna = tajnaSesije();
   const { kod, noviPin } = await procitajTijelo(request, pinTijelo);
 
