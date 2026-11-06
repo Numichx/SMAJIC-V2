@@ -4,8 +4,6 @@ import { pripremiOkruzenje } from "./pomocnici";
 
 // The access review, as a test: any later migration that opens a door fails here, with no list to keep up to date.
 const ULOGE = ["anon", "authenticated", "service_role"];
-// Supabase installed this on the real project. It is not in the migrations, so it is not here locally either.
-const IZUZETA_FUNKCIJA = "rls_auto_enable";
 
 beforeAll(async () => {
   pripremiOkruzenje();
@@ -57,8 +55,8 @@ describe("access review of the public schema", () => {
   it.each(["anon", "authenticated"])("lets %s execute no function", async (uloga) => {
     const rows = await upit<{ proname: string }>(
       `select p.proname from pg_proc p join pg_namespace n on n.oid = p.pronamespace
-       where n.nspname = 'public' and p.proname <> $2 and has_function_privilege($1, p.oid, 'execute')`,
-      [uloga, IZUZETA_FUNKCIJA],
+       where n.nspname = 'public' and has_function_privilege($1, p.oid, 'execute')`,
+      [uloga],
     );
     expect(rows).toEqual([]);
   });
