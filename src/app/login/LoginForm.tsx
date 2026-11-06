@@ -187,22 +187,31 @@ export default function LoginForm({ uloga }: { uloga: Odjeljak }) {
         <p>Još nijedan zaposlenik nema PIN. Aktivacijski kod dobijate od šefice. Pritisnite „Imam aktivacijski kod“.</p>
       )}
       {saImenom && zaposlenici.length > 0 && (
-        <div role="group" aria-label="Ime zaposlenika" aria-describedby="greska-forme" className="grid gap-2 sm:grid-cols-2">
-          {zaposlenici.map((z) => (
-            <button
-              key={z.id}
-              type="button"
-              aria-pressed={odabran === z.id}
-              className={`${dugme} aria-pressed:border-akcent aria-pressed:bg-akcent aria-pressed:text-akcent-tekst`}
-              onClick={() => {
-                postaviOdabranog(z.id);
-                postaviGresku("");
-              }}
-            >
-              {z.ime}
-            </button>
-          ))}
-        </div>
+        // Native radios: one choice, arrow keys between names, and "1 of 3" from the screen reader.
+        <fieldset aria-describedby="greska-forme" className="flex flex-col gap-2">
+          <legend className="mb-2">Izaberite svoje ime</legend>
+          <div className="grid gap-2 sm:grid-cols-2">
+            {zaposlenici.map((z) => (
+              <label
+                key={z.id}
+                className={`${dugme} flex cursor-pointer items-center has-checked:border-akcent has-checked:bg-akcent has-checked:text-akcent-tekst has-focus-visible:outline-3 has-focus-visible:outline-offset-2 has-focus-visible:outline-akcent`}
+              >
+                <input
+                  type="radio"
+                  name="zaposlenik"
+                  value={z.id}
+                  checked={odabran === z.id}
+                  onChange={() => {
+                    postaviOdabranog(z.id);
+                    postaviGresku("");
+                  }}
+                  className="sr-only"
+                />
+                {z.ime}
+              </label>
+            ))}
+          </div>
+        </fieldset>
       )}
       <label className="flex flex-col gap-1">
         <span>

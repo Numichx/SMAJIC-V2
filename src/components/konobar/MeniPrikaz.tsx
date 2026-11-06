@@ -10,7 +10,7 @@ export function Kartica({ p, onDodaj }: { p: Proizvod; onDodaj?: (p: Proizvod) =
   return (
     <li className="mkartica">
       {p.slika && (
-        // eslint-disable-next-line @next/next/no-img-element -- plain img by design, the credit is the hover text
+        // eslint-disable-next-line @next/next/no-img-element -- plain img by design; the credit is the hover text and is listed on the help page
         <img src={p.slika.putanja} alt="" loading="lazy" className="mitem-img" title={p.slika.zasluge ?? undefined} />
       )}
       <p className="text-lg font-semibold">{p.naziv}</p>

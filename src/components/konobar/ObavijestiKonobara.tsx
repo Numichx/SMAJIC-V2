@@ -87,7 +87,8 @@ export default function ObavijestiKonobara() {
           Uključi zvuk i obavijesti
         </button>
       )}
-      <ul role="status" className="flex flex-col gap-2">
+      <div role="status">
+        <ul className="flex flex-col gap-2">
         {prikazi.map((p) => (
           <li key={p.kljuc} className="flex items-center gap-3 rounded-lg border-2 border-akcent bg-povrsina p-3">
             <span className="flex-1 font-semibold">{opis(p)}</span>
@@ -102,6 +103,7 @@ export default function ObavijestiKonobara() {
           </li>
         ))}
       </ul>
+      </div>
     </section>
   );
 }

@@ -47,6 +47,9 @@ export default async function AppShell({ odjeljak, children }: { odjeljak: Odjel
 
   return (
     <>
+      <a href="#sadrzaj" className="sr-only focus:not-sr-only focus:absolute focus:left-3 focus:top-3 focus:z-10 focus:rounded-lg focus:bg-akcent focus:p-3 focus:font-semibold focus:text-akcent-tekst">
+        Preskoči na sadržaj
+      </a>
       <DemoStatus />
       <header className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b-2 border-okvir p-3">
         <strong className="text-lg">Smajić – Narudžbe</strong>
@@ -59,7 +62,7 @@ export default async function AppShell({ odjeljak, children }: { odjeljak: Odjel
       </header>
       {sesija.uloga === "konobar" && <OfflineStatus konobar={sesija.ime} />}
       {sesija.uloga === "konobar" && <ObavijestiKonobara />}
-      <main className="mx-auto w-full max-w-5xl flex-1 p-4">{children}</main>
+      <main id="sadrzaj" tabIndex={-1} className="mx-auto w-full max-w-5xl flex-1 p-4">{children}</main>
     </>
   );
 }

@@ -1,4 +1,7 @@
+import { SLIKE } from "@/lib/data/slike";
 import { PRVA_PRIJAVA, VODIC } from "@/lib/pomoc/vodic";
+
+const ZASLUGE = Object.entries(SLIKE).filter(([, s]) => s.zasluge);
 
 export const metadata = { title: "Pomoć – Smajić" };
 
@@ -28,6 +31,23 @@ export default function Page() {
           </ol>
         </section>
       ))}
+      <details className="flex flex-col gap-3">
+        <summary className="min-h-12 cursor-pointer py-3 text-xl font-semibold">Fotografije menija</summary>
+        <ul className="space-y-1 pl-6">
+          {ZASLUGE.map(([kljuc, s]) => (
+            <li key={kljuc}>
+              {kljuc.split("/")[1]}:{" "}
+              {s.link ? (
+                <a href={s.link} rel="noreferrer" className="underline">
+                  {s.zasluge}
+                </a>
+              ) : (
+                s.zasluge
+              )}
+            </li>
+          ))}
+        </ul>
+      </details>
     </div>
   );
 }
