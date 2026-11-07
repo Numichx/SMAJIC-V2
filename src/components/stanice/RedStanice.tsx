@@ -26,6 +26,8 @@ type Narudzba = {
 const kol = (s: Pick<Stavka, "kolicina" | "jedinica">) => `${formatBroj(s.kolicina)} ${s.jedinica}`;
 // Order-state colours: the badge carries the colour, the card stays base-200.
 const ZNACKA: Record<string, string> = { Novo: "badge-outline badge-info", "U pripremi": "badge-warning", Gotovo: "badge-success", Izdato: "badge-ghost text-izdato" };
+// How long a status tap waits before it is sent, so a mis-tap in a rush can be taken back.
+const ODGODA_MS = 4000;
 const minute = (sada: string, kreirano: string) => Math.max(0, Math.floor((Date.parse(sada) - Date.parse(kreirano)) / 60000));
 
 // naPapiru: the 58 mm slip keeps the print font, not the 28 px screen size.
@@ -203,6 +205,48 @@ export default function RedStanice({ stanica }: { stanica: Stanica }) {
   const priprema = red ? zaPripremu(red.narudzbe) : [];
   const sada = red?.sada ?? "";
 
+  // The held tap is only delayed, never decided here: the server still checks every change.
+  const odgodaRef = useRef<{ n: Narudzba; tijelo: object; sat: ReturnType<typeof setTimeout> } | null>(null);
+  const [odgoda, postaviOdgodu] = useState<string | null>(null);
+
+  function posaljiOdgodu() {
+    const o = odgodaRef.current;
+    if (!o) return;
+    clearTimeout(o.sat);
+    // posalji drops a call while another is in flight, so wait for it instead of losing the tap.
+    if (zauzetoRef.current) {
+      o.sat = setTimeout(posaljiOdgodu, 200);
+      return;
+    }
+    odgodaRef.current = null;
+    postaviOdgodu(null);
+    return posalji(o.n, o.tijelo);
+  }
+
+  async function odgodi(n: Narudzba, tijelo: object) {
+    if (zauzetoRef.current) return;
+    await posaljiOdgodu(); // an earlier held tap goes out first
+    odgodaRef.current = { n, tijelo, sat: setTimeout(posaljiOdgodu, ODGODA_MS) };
+    postaviOdgodu(n.id);
+  }
+
+  function vrati() {
+    if (odgodaRef.current) clearTimeout(odgodaRef.current.sat);
+    odgodaRef.current = null;
+    postaviOdgodu(null);
+  }
+
+  // Leaving the page must not lose a held tap: send it now, even as the page unloads.
+  useEffect(
+    () => () => {
+      const o = odgodaRef.current;
+      if (!o) return;
+      clearTimeout(o.sat);
+      void fetch(`/api/narudzbe/${o.n.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(o.tijelo), keepalive: true }).catch(() => {});
+    },
+    [],
+  );
+
   const gotovoPecenjare = (n: Narudzba) => stanica === "pecenjara" && n.sljedeci === "Gotovo";
 
   return (
@@ -259,13 +303,17 @@ export default function RedStanice({ stanica }: { stanica: Stanica }) {
                     <Stavke narudzba={n} />
                     {forma === n.id && gotovoPecenjare(n) ? (
                       <FormaGotovo narudzba={n} zauzeto={zauzeto !== null} posalji={(t) => posalji(n, t)} />
+                    ) : odgoda === n.id ? (
+                      <button type="button" onClick={vrati} className={`${dugme} btn-xl btn-block`}>
+                        Vrati – šaljem „{n.sljedeci}“
+                      </button>
                     ) : (
                       n.sljedeci && (
                         <button
                           type="button"
                           disabled={zauzeto !== null}
                           aria-label={`${n.stavke.every((s) => s.stornoRazlog) ? "Ukloni storno" : n.sljedeci}, narudžba ${n.broj}`}
-                          onClick={() => (gotovoPecenjare(n) ? postaviFormu(n.id) : posalji(n, { status: n.sljedeci }))}
+                          onClick={() => (gotovoPecenjare(n) ? postaviFormu(n.id) : odgodi(n, { status: n.sljedeci }))}
                           className={`${glavno} btn-xl btn-block`}
                         >
                           {n.stavke.every((s) => s.stornoRazlog) ? "Ukloni storno" : n.sljedeci}

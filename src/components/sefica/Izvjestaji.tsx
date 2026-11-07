@@ -70,6 +70,20 @@ export default function Izvjestaji() {
             Period: {formatDatum(r.od)} – {formatDatum(r.do)} Račun se računa na dan kad je plaćen.
           </p>
           {r.racuni === 0 && r.mesnica.broj === 0 && <p>U ovom periodu nema naplaćenih računa.</p>}
+          <ul aria-label="Ključni brojevi" className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            {[
+              ["Za naplatu", formatKM(r.ukupno), "poslije popusta"],
+              ["Naplaćeno", formatKM(r.naplaceno), "bez računa na dug"],
+              ["Prosječan račun", r.racuni > 0 ? formatKM(r.ukupno / r.racuni) : "–", `${r.racuni} računa`],
+              ["Otvoreni računi", String(r.otvoreniRacuni), "trenutno"],
+            ].map(([naziv, vrijednost, opis]) => (
+              <li key={naziv} className="card gap-1 bg-base-200 p-4">
+                <span className="text-dim">{naziv}</span>
+                <span className="tabelarno font-broj text-h2 font-bold">{vrijednost}</span>
+                <span className="text-tabela text-dim">{opis}</span>
+              </li>
+            ))}
+          </ul>
           <section aria-label="Sažetak" className="flex flex-col gap-2">
             <h3 className="text-lg font-bold">Sažetak</h3>
             <Podaci

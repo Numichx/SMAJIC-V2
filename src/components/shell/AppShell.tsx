@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { sesijaStranice } from "@/lib/auth/requestSession";
 import type { Odjeljak, Uloga } from "@/lib/auth/session";
 import ObavijestiKonobara from "@/components/konobar/ObavijestiKonobara";
@@ -56,8 +57,14 @@ export default async function AppShell({ odjeljak, children }: { odjeljak: Odjel
       <header className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b-2 border-dim p-3">
         <strong className="text-lg">Smajić – Narudžbe</strong>
         <span>{sesija.ime}</span>
-        <Navigacija veze={[...navigacija[sesija.uloga], { href: "/pomoc", naziv: "Pomoć" }]} dno={dno} />
+        <Navigacija veze={dno ? navigacija.konobar : [...navigacija[sesija.uloga], { href: "/pomoc", naziv: "Pomoć" }]} dno={dno} />
         <div className="ml-auto flex gap-2">
+          {/* Six tabs do not fit a phone's bottom bar, so the waiter's Pomoć sits up here. */}
+          {dno && (
+            <Link href="/pomoc" className="btn btn-lg btn-outline border-dim font-bold">
+              Pomoć
+            </Link>
+          )}
           <PrekidacTeme />
           <Odjava />
         </div>
