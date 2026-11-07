@@ -60,17 +60,17 @@ export default function StoloviPregled() {
           <li key={s.id}>
             <Link
               href={`/konobar/stolovi/${s.id}`}
-              className={`card min-h-32 gap-1 border-2 p-2 md:p-3 ${
-                !s.racun ? "border-dashed border-dim" : s.racun.sveIzdato ? "border-transparent bg-base-200" : "border-warning bg-warning/15"
+              className={`card h-full min-h-32 gap-1 border-2 p-2 md:p-3 ${
+                !s.racun ? "border-dashed border-dim" : s.racun.sveIzdato ? "border-transparent bg-base-200" : "border-warning bg-base-200"
               }`}
             >
-              <span className="text-center">
+              <span>
                 <span className="text-dim">Sto </span>
                 <span className="font-broj text-broj font-extrabold md:text-broj-xl">{s.id}</span>
               </span>
               {s.racun ? (
                 <>
-                  <span className="text-end font-bold tabular-nums">{formatKM(s.racun.ukupno)}</span>
+                  <span className="font-bold tabular-nums">{formatKM(s.racun.ukupno)}</span>
                   <span>{s.racun.konobar}</span>
                   {s.racun.stolovi.length > 1 && <span>Spojeno: {s.racun.stolovi.join(", ")}</span>}
                   <span className={s.racun.sveIzdato ? "text-dim" : "font-bold text-warning"}>{s.racun.sveIzdato ? "Otvoren" : "Čeka izdavanje"}</span>

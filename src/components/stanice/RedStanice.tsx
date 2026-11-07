@@ -25,7 +25,7 @@ type Narudzba = {
 
 const kol = (s: Pick<Stavka, "kolicina" | "jedinica">) => `${formatBroj(s.kolicina)} ${s.jedinica}`;
 // Order-state colours: the badge carries the colour, the card stays base-200.
-const ZNACKA: Record<string, string> = { Novo: "badge-outline badge-info", "U pripremi": "badge-warning", Gotovo: "badge-success", Izdato: "badge-ghost text-izdato" };
+const ZNACKA: Record<string, string> = { Novo: "badge-info", "U pripremi": "badge-outline badge-warning", Gotovo: "badge-success", Izdato: "badge-ghost text-izdato" };
 // How long a status tap waits before it is sent, so a mis-tap in a rush can be taken back.
 const ODGODA_MS = 4000;
 const minute = (sada: string, kreirano: string) => Math.max(0, Math.floor((Date.parse(sada) - Date.parse(kreirano)) / 60000));
@@ -287,23 +287,27 @@ export default function RedStanice({ stanica }: { stanica: Stanica }) {
                   className={`card bg-base-200 text-base-content ${z.sina ? "rounded-t-none " : ""}${n.cekaDugo ? "border-4 border-error" : "border-2 border-base-300"}${n.status === "Gotovo" ? " listic-gotovo" : ""}`}
                 >
                   <div className="card-body gap-3 p-4">
-                    <div className="flex flex-wrap items-baseline gap-x-4">
-                      <h3 className="text-h2 font-bold">
-                        Narudžba <span className="font-broj text-broj-xl">{n.broj}</span>
+                    <div className="flex items-start justify-between gap-3">
+                      <h3 className="flex flex-col">
+                        <span className="font-broj text-broj-xl font-bold leading-none">Sto {n.stolovi.join(", ")}</span>
+                        <span className="text-dim">
+                          Narudžba {n.broj}, {n.konobar}
+                        </span>
                       </h3>
-                      <span>
-                        Sto <span className="font-broj text-broj-xl">{n.stolovi.join(", ")}</span>
-                      </span>
-                      <span>Konobar: {n.konobar}</span>
-                      <span className={`badge badge-lg h-auto py-1 text-h2 font-bold ${ZNACKA[n.status] ?? "badge-outline"}`}>
+                      <button type="button" aria-label={`Ispiši listić, narudžba ${n.broj}`} onClick={() => postaviIspis({ n })} className="btn btn-outline h-11 border-dim">
+                        Ispiši
+                      </button>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                      <span className={`badge badge-lg h-auto py-1 text-h3 font-bold ${ZNACKA[n.status] ?? "badge-outline"}`}>
                         {n.status === "Gotovo" && <span aria-hidden="true">✓</span>}
                         {n.status}
                       </span>
+                      <p>
+                        Čeka <span className={`font-broj text-broj-xl ${n.cekaDugo ? "text-error" : ""}`}>{minute(sada, n.kreirano)}</span> min
+                      </p>
                     </div>
-                    <p>
-                      Čeka <span className={`font-broj text-broj-xl${n.cekaDugo ? " text-error" : ""}`}>{minute(sada, n.kreirano)}</span> min
-                      {n.cekaDugo && <strong className="ml-2 text-error">Čeka dugo (15 min ili više)</strong>}
-                    </p>
+                    {n.cekaDugo && <strong className="text-error">Čeka dugo (15 min ili više)</strong>}
                     <Stavke narudzba={n} />
                     {forma === n.id && gotovoPecenjare(n) ? (
                       <FormaGotovo narudzba={n} zauzeto={zauzeto !== null} posalji={(t) => posalji(n, t)} />
@@ -324,9 +328,6 @@ export default function RedStanice({ stanica }: { stanica: Stanica }) {
                         </button>
                       )
                     )}
-                    <button type="button" aria-label={`Ispiši listić, narudžba ${n.broj}`} onClick={() => postaviIspis({ n })} className={dugme}>
-                      Ispiši listić
-                    </button>
                   </div>
                 </li>
               ))}
