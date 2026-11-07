@@ -60,24 +60,24 @@ export default function DugPecenjare() {
 
   return (
     <div className="flex flex-col gap-4">
-      <p role="alert" className="font-semibold text-greska">
+      <p role="alert" className="font-bold text-error">
         {greska}
       </p>
       <p role="status">{poruka}</p>
       {!pregled && !greska && <p role="status">Učitavam…</p>}
       {pregled && (
         <>
-          <p className="text-lg font-semibold">Ukupan dug konobara: {formatKM(pregled.ukupno)}</p>
+          <p className="text-lg font-bold">Ukupan dug konobara: {formatKM(pregled.ukupno)}</p>
           {pregled.dugovi.length === 0 && <p>Nijedan konobar nema narudžbi s cijenom pečenjare.</p>}
-          <ul className="grid gap-3 lg:grid-cols-2">
+          <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
             {pregled.dugovi.map((d) => (
               <li key={d.konobarId}>
-                <form onSubmit={(e) => uplati(e, d)} aria-label={d.ime} className="flex flex-col gap-2 rounded-lg border-2 border-okvir bg-povrsina p-3">
+                <form onSubmit={(e) => uplati(e, d)} aria-label={d.ime} className="flex flex-col gap-2 rounded-box border-2 border-dim bg-base-200 p-3">
                   <strong className="text-lg">{d.ime}</strong>
                   <p>
                     Izdato: {formatKM(d.izdato)}, plaćeno: {formatKM(d.placeno)}
                   </p>
-                  <p className="font-semibold">Dug: {formatKM(d.dug)}</p>
+                  <p className="font-bold">Dug: {formatKM(d.dug)}</p>
                   <label className="flex flex-col gap-1">
                     Uplata (KM)
                     <input

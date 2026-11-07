@@ -7,7 +7,7 @@ export const metadata = { title: "Šank – Smajić" };
 export default function Page() {
   return (
     <>
-      <h1 className="mb-4 text-2xl font-semibold">Šank</h1>
+      <h1 className="mb-4 text-2xl font-bold">Šank</h1>
       <p className="mb-4">
         <Link href="/sank/smjena" className={`${dugme} inline-flex items-center`}>
           Smjena šanka (popis, dopune, zatvaranje)

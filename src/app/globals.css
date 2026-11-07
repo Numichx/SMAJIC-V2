@@ -76,19 +76,12 @@
 
 @import "../styles/tema.css";
 @import "../styles/meni.css";
+@import "../styles/stanice.css";
 @import "../styles/stampa.css";
 
 @theme inline {
   --color-dim: var(--dim);
   --color-izdato: var(--izdato);
-  /* Stari nazivi klasa (bg-povrsina, border-okvir, …) dok se ne prebace po ulogama. */
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-povrsina: var(--povrsina);
-  --color-okvir: var(--okvir);
-  --color-akcent: var(--akcent);
-  --color-akcent-tekst: var(--akcent-tekst);
-  --color-greska: var(--greska);
   --font-sans: var(--font-atkinson), Arial, Helvetica, sans-serif;
   --font-broj: var(--font-big-shoulders), var(--font-atkinson), sans-serif;
 }

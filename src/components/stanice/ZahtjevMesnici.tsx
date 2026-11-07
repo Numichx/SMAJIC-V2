@@ -66,8 +66,8 @@ export default function ZahtjevMesnici() {
 
   return (
     <div className="flex flex-col gap-4">
-      <form onSubmit={posalji} className="flex flex-col gap-3 rounded-lg border-2 border-okvir p-3" aria-label="Novi zahtjev">
-        <h2 className="text-xl font-semibold">Zahtjev mesnici</h2>
+      <form onSubmit={posalji} className="flex flex-col gap-3 rounded-box border-2 border-dim p-3" aria-label="Novi zahtjev">
+        <h2 className="text-xl font-bold">Zahtjev mesnici</h2>
         <label className="flex flex-col gap-1">
           Artikal
           <select value={artikal} onChange={(e) => postaviArtikal(e.target.value)} className={polje}>
@@ -87,19 +87,21 @@ export default function ZahtjevMesnici() {
           Pošalji zahtjev
         </button>
       </form>
-      <p role="alert" className="font-semibold text-greska">
+      <p role="alert" className="font-bold text-error">
         {greska || lista.greska}
       </p>
       <p role="status">{poruka}</p>
 
       <section aria-label="Zahtjevi" className="flex flex-col gap-2">
-        <h2 className="text-xl font-semibold">Zahtjevi</h2>
+        <h2 className="text-xl font-bold">Zahtjevi</h2>
         {lista.stavke?.length === 0 && <p>Još nema zahtjeva.</p>}
         <ul className="flex flex-col gap-2">
           {lista.stavke?.map((z) => (
-            <li key={z.id} className="rounded-lg border-2 border-okvir bg-povrsina p-3">
+            <li key={z.id} className="card card-border border-dim bg-base-200 p-4">
               <strong>{z.artikal}</strong>, traženo: {z.trazeno === null ? "bez količine" : `${formatBroj(z.trazeno)} ${z.jedinica}`}
-              <p className="font-semibold">{STATUS(z)}</p>
+              <p>
+                <span className="badge badge-lg badge-outline h-auto py-1 font-bold">{STATUS(z)}</span>
+              </p>
               <p className="text-sm">
                 {z.kreirao}, {vrijemeSarajevo(z.kreirano)}
                 {z.obradio && `. Obradio: ${z.obradio}`}

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { dugme, glavno, polje } from "@/components/konobar/stil";
 import { NEMA_VEZE } from "@/components/konobar/useMeni";
 import { greskaIz } from "@/lib/api/greskaIz";
 import { formatBroj, NAZIV_STANICE } from "@/lib/format";
@@ -23,18 +24,21 @@ type Narudzba = {
 };
 
 const kol = (s: Stavka) => `${formatBroj(s.kolicina)} ${s.jedinica}`;
+// Order-state colours: the badge carries the colour, the card stays base-200.
+const ZNACKA: Record<string, string> = { Novo: "badge-outline badge-info", "U pripremi": "badge-warning", Gotovo: "badge-success", Izdato: "badge-ghost text-izdato" };
 const minute = (sada: string, kreirano: string) => Math.max(0, Math.floor((Date.parse(sada) - Date.parse(kreirano)) / 60000));
 
-function Stavke({ narudzba }: { narudzba: Narudzba }) {
+// naPapiru: the 58 mm slip keeps the print font, not the 28 px screen size.
+function Stavke({ narudzba, naPapiru = false }: { narudzba: Narudzba; naPapiru?: boolean }) {
   return (
     <ul className="flex flex-col gap-2">
       {poredajStavke(narudzba.stavke).map(({ stavka, prilozi, uz }) => (
         <li key={stavka.id}>
-          <span className={`text-lg font-semibold${stavka.stornoRazlog ? " line-through" : ""}`}>
+          <span className={`font-bold${naPapiru ? "" : " text-h2"}${stavka.stornoRazlog ? " line-through" : ""}`}>
             {kol(stavka)} {stavka.naziv}
             {uz && ` uz ${uz}`}
           </span>
-          {stavka.stornoRazlog && <p className="font-bold">STORNO: {stavka.stornoRazlog}</p>}
+          {stavka.stornoRazlog && <p className="font-bold">Stornirano: {stavka.stornoRazlog}</p>}
           {stavka.napomena && <p>Napomena: {stavka.napomena}</p>}
           {prilozi.length > 0 && (
             <ul className="ml-6 list-disc">
@@ -43,7 +47,7 @@ function Stavke({ narudzba }: { narudzba: Narudzba }) {
                   <span className={p.stornoRazlog ? "line-through" : ""}>
                     {kol(p)} {p.naziv} (uz)
                   </span>
-                  {p.stornoRazlog && <p className="font-bold">STORNO: {p.stornoRazlog}</p>}
+                  {p.stornoRazlog && <p className="font-bold">Stornirano: {p.stornoRazlog}</p>}
                   {p.napomena && <p>Napomena: {p.napomena}</p>}
                 </li>
               ))}
@@ -67,7 +71,7 @@ function Listic({ narudzba, stanica }: { narudzba: Narudzba; stanica: Stanica })
       <p>Konobar: {narudzba.konobar}</p>
       <p>{new Date(narudzba.kreirano).toLocaleString("bs-BA")}</p>
       <hr />
-      <Stavke narudzba={narudzba} />
+      <Stavke narudzba={narudzba} naPapiru />
     </div>,
     document.body,
   );
@@ -95,10 +99,10 @@ function FormaGotovo({ narudzba, zauzeto, posalji }: { narudzba: Narudzba; zauze
 
   const upozorenje = upozoren === potpis;
   return (
-    <form onSubmit={predaj} className="flex flex-col gap-3 rounded-lg border-2 border-okvir p-3">
+    <form onSubmit={predaj} className="flex flex-col gap-3 rounded-box border-2 border-dim p-3">
       <label className="flex flex-col gap-1">
         Cijena koju konobar plaća pečenjari (KM)
-        <input inputMode="decimal" value={cijena} onChange={(e) => postaviCijenu(e.target.value)} className="min-h-12 rounded-lg border-2 border-okvir px-3" />
+        <input inputMode="decimal" value={cijena} onChange={(e) => postaviCijenu(e.target.value)} className={polje} />
       </label>
       {jagnjetina.map((s) => (
         <label key={s.id} className="flex flex-col gap-1">
@@ -107,20 +111,20 @@ function FormaGotovo({ narudzba, zauzeto, posalji }: { narudzba: Narudzba; zauze
             inputMode="decimal"
             value={tezine[s.id] ?? ""}
             onChange={(e) => postaviTezine({ ...tezine, [s.id]: e.target.value })}
-            className="min-h-12 rounded-lg border-2 border-okvir px-3"
+            className={polje}
           />
         </label>
       ))}
       {upozorenje && (
-        <p role="alert" className="font-semibold text-greska">
+        <p role="alert" className="font-bold text-error">
           Provjerite težinu. Naručeno:{" "}
           {jagnjetina.map((s) => `${kol(s)}, upisano: ${tezine[s.id]} kg`).join("; ")}. Težina se ne može ispraviti. Ako je tačna, dodirnite ponovo.
         </p>
       )}
-      <p role="alert" className="font-semibold text-greska">
+      <p role="alert" className="font-bold text-error">
         {greska}
       </p>
-      <button type="submit" disabled={zauzeto} className="min-h-14 rounded-lg bg-akcent px-4 text-lg font-bold text-akcent-tekst disabled:opacity-60">
+      <button type="submit" disabled={zauzeto} className={`${glavno} btn-xl btn-block`}>
         {upozorenje ? "Težina je tačna, označi Gotovo" : "Gotovo"}
       </button>
     </form>
@@ -196,43 +200,55 @@ export default function RedStanice({ stanica }: { stanica: Stanica }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <p role="alert" className="font-semibold text-greska">
+      <p role="alert" className="font-bold text-error">
         {greska}
       </p>
       {!red && !greska && <p role="status">Učitavam red…</p>}
-      {red?.narudzbe.length === 0 && <p role="status">Nema narudžbi.</p>}
-      <ul className="grid gap-3 lg:grid-cols-2">
+      {red?.narudzbe.length === 0 && <p role="status">Nema narudžbi. Nove se pojavljuju same.</p>}
+      <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {red?.narudzbe.map((n) => (
-          <li key={n.id} className="flex flex-col gap-3 rounded-lg border-2 border-okvir bg-povrsina p-3">
-            <div className="flex flex-wrap items-baseline gap-x-3">
-              <h2 className="text-xl font-bold">Narudžba {n.broj}</h2>
-              <span>Sto {n.stolovi.join(", ")}</span>
-              <span>Konobar: {n.konobar}</span>
-              <span>{n.status}</span>
+          <li
+            key={n.id}
+            className={`card card-border bg-base-200 ${n.cekaDugo ? "border-4 border-error" : "border-dim"}${n.status === "U pripremi" ? " border-s-8 border-s-warning" : ""}${n.status === "Gotovo" ? " listic-gotovo" : ""}`}
+          >
+            <div className="card-body gap-3 p-4">
+              <div className="flex flex-wrap items-baseline gap-x-4">
+                <h2 className="text-h2 font-bold">
+                  Narudžba <span className="font-broj text-broj-xl">{n.broj}</span>
+                </h2>
+                <span>
+                  Sto <span className="font-broj text-broj-xl">{n.stolovi.join(", ")}</span>
+                </span>
+                <span>Konobar: {n.konobar}</span>
+                <span className={`badge badge-lg h-auto py-1 text-h2 font-bold ${ZNACKA[n.status] ?? "badge-outline"}`}>
+                  {n.status === "Gotovo" && <span aria-hidden="true">✓</span>}
+                  {n.status}
+                </span>
+              </div>
+              <p>
+                Čeka <span className={`font-broj text-broj-xl${n.cekaDugo ? " text-error" : ""}`}>{minute(red.sada, n.kreirano)}</span> min
+                {n.cekaDugo && <strong className="ml-2 text-error">Čeka dugo (15 min ili više)</strong>}
+              </p>
+              <Stavke narudzba={n} />
+              {forma === n.id && gotovoPecenjare(n) ? (
+                <FormaGotovo narudzba={n} zauzeto={zauzeto !== null} posalji={(t) => posalji(n, t)} />
+              ) : (
+                n.sljedeci && (
+                  <button
+                    type="button"
+                    disabled={zauzeto !== null}
+                    aria-label={`${n.stavke.every((s) => s.stornoRazlog) ? "Ukloni storno" : n.sljedeci}, narudžba ${n.broj}`}
+                    onClick={() => (gotovoPecenjare(n) ? postaviFormu(n.id) : posalji(n, { status: n.sljedeci }))}
+                    className={`${glavno} btn-xl btn-block`}
+                  >
+                    {n.stavke.every((s) => s.stornoRazlog) ? "Ukloni storno" : n.sljedeci}
+                  </button>
+                )
+              )}
+              <button type="button" aria-label={`Ispiši listić, narudžba ${n.broj}`} onClick={() => postaviIspis({ n })} className={dugme}>
+                Ispiši listić
+              </button>
             </div>
-            <p>
-              Čeka {minute(red.sada, n.kreirano)} min
-              {n.cekaDugo && <strong className="ml-2 text-greska">Čeka dugo (15 min ili više)</strong>}
-            </p>
-            <Stavke narudzba={n} />
-            {forma === n.id && gotovoPecenjare(n) ? (
-              <FormaGotovo narudzba={n} zauzeto={zauzeto !== null} posalji={(t) => posalji(n, t)} />
-            ) : (
-              n.sljedeci && (
-                <button
-                  type="button"
-                  disabled={zauzeto !== null}
-                  aria-label={`${n.stavke.every((s) => s.stornoRazlog) ? "Ukloni storno" : n.sljedeci}, narudžba ${n.broj}`}
-                  onClick={() => (gotovoPecenjare(n) ? postaviFormu(n.id) : posalji(n, { status: n.sljedeci }))}
-                  className="min-h-14 rounded-lg bg-akcent px-4 text-lg font-bold text-akcent-tekst disabled:opacity-60"
-                >
-                  {n.stavke.every((s) => s.stornoRazlog) ? "Ukloni storno" : n.sljedeci}
-                </button>
-              )
-            )}
-            <button type="button" aria-label={`Ispiši listić, narudžba ${n.broj}`} onClick={() => postaviIspis({ n })} className="min-h-12 rounded-lg border-2 border-okvir px-4">
-              Ispiši listić
-            </button>
           </li>
         ))}
       </ul>

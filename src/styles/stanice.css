@@ -1,0 +1,12 @@
+/* One 300 ms pulse when a ticket becomes Gotovo; static with reduced motion. */
+@keyframes listic-puls {
+  50% {
+    scale: 1.02;
+  }
+}
+
+@utility listic-gotovo {
+  @media (prefers-reduced-motion: no-preference) {
+    animation: listic-puls 300ms ease-out 1;
+  }
+}
