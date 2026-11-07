@@ -1,3 +1,5 @@
-export const dugme = "min-h-12 min-w-12 rounded-lg border-2 border-okvir bg-povrsina px-4 font-semibold";
-export const glavno = "min-h-12 rounded-lg bg-akcent px-4 text-lg font-semibold text-akcent-tekst aria-disabled:opacity-60";
-export const polje = "min-h-12 w-full rounded-lg border-2 border-okvir bg-background px-3 text-lg";
+// Shared daisyUI looks. Busy buttons keep aria-disabled and their fill; real disabled gets daisyUI's dimmed look.
+export const dugme = "btn btn-lg btn-outline min-w-12 border-dim font-bold aria-disabled:cursor-progress";
+export const glavno = "btn btn-lg btn-primary font-bold aria-disabled:cursor-progress";
+export const polje = "input input-lg polje-rub w-full";
+export const izbor = "select select-lg polje-rub w-full";

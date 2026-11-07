@@ -1,5 +1,6 @@
 "use client";
 
+import { dugme, glavno, polje } from "@/components/konobar/stil";
 import { useEffect, useRef, useState } from "react";
 import { greskaIz } from "@/lib/api/greskaIz";
 import type { Odjeljak } from "@/lib/auth/session";
@@ -8,9 +9,6 @@ type Zaposlenik = { id: string; ime: string };
 
 const NEMA_VEZE = "Nema veze sa serverom. Pokušajte ponovo.";
 
-const dugme = "min-h-12 rounded-lg border-2 border-okvir bg-povrsina px-4 text-lg font-semibold";
-const glavno = "min-h-12 rounded-lg bg-akcent px-4 text-lg font-semibold text-akcent-tekst aria-disabled:opacity-60";
-const polje = "min-h-12 w-full rounded-lg border-2 border-okvir bg-background px-3 text-lg";
 
 export default function LoginForm({ uloga }: { uloga: Odjeljak }) {
   const [aktivacija, postaviAktivaciju] = useState(false);
@@ -194,7 +192,7 @@ export default function LoginForm({ uloga }: { uloga: Odjeljak }) {
             {zaposlenici.map((z) => (
               <label
                 key={z.id}
-                className={`${dugme} flex cursor-pointer items-center has-checked:border-akcent has-checked:bg-akcent has-checked:text-akcent-tekst has-focus-visible:outline-3 has-focus-visible:outline-offset-2 has-focus-visible:outline-akcent`}
+                className={`${dugme} flex cursor-pointer items-center has-checked:border-base-content has-checked:bg-base-content has-checked:text-base-100 has-focus-visible:outline-3 has-focus-visible:outline-offset-2 has-focus-visible:outline-base-content`}
               >
                 <input
                   type="radio"

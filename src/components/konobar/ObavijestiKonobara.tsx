@@ -1,5 +1,6 @@
 "use client";
 
+import { dugme } from "@/components/konobar/stil";
 import { useEffect, useRef, useState } from "react";
 import { formatBroj, NAZIV_STANICE } from "@/lib/format";
 import { CEKANJE_MS } from "@/lib/offline/sync";
@@ -96,7 +97,7 @@ export default function ObavijestiKonobara() {
               type="button"
               aria-label={`Zatvori: ${opis(p)}`}
               onClick={() => postaviPrikaze((stare) => stare.filter((x) => x.kljuc !== p.kljuc))}
-              className="min-h-12 min-w-12 rounded-lg border-2 border-okvir px-3"
+              className={dugme}
             >
               Zatvori
             </button>

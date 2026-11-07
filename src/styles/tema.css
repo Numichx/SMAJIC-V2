@@ -1,35 +1,22 @@
+/* Boje bez daisyUI uloge, po temi. Tamna je zadana. */
+:root,
+[data-theme="tamna"] {
+  --dim: #9aa39f;
+  --izdato: #8a948e;
+}
+
+[data-theme="svijetla"] {
+  --dim: #616764;
+  --izdato: #616864;
+}
+
+/* Stari nazivi vode na nove; brišu se kad ih grep više ne nađe. */
 :root {
-  color-scheme: light;
-  --background: #ffffff;
-  --foreground: #171717;
-  --povrsina: #f2f2f2;
-  --okvir: #767676;
-  --akcent: #0b5cad;
-  --akcent-tekst: #ffffff;
-  --greska: #b00020;
-}
-
-/* Bez izbora teme slijedi se sistem; data-tema ima prednost u oba smjera. */
-@media (prefers-color-scheme: dark) {
-  :root:not([data-tema]) {
-    color-scheme: dark;
-    --background: #0a0a0a;
-    --foreground: #ededed;
-    --povrsina: #1c1c1c;
-    --okvir: #8a8a8a;
-    --akcent: #6cb2f5;
-    --akcent-tekst: #0a0a0a;
-    --greska: #ff8a80;
-  }
-}
-
-:root[data-tema="tamna"] {
-  color-scheme: dark;
-  --background: #0a0a0a;
-  --foreground: #ededed;
-  --povrsina: #1c1c1c;
-  --okvir: #8a8a8a;
-  --akcent: #6cb2f5;
-  --akcent-tekst: #0a0a0a;
-  --greska: #ff8a80;
+  --background: var(--color-base-100);
+  --foreground: var(--color-base-content);
+  --povrsina: var(--color-base-200);
+  --okvir: var(--dim);
+  --akcent: var(--color-primary);
+  --akcent-tekst: var(--color-primary-content);
+  --greska: var(--color-error);
 }

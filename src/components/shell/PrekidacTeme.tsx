@@ -1,26 +1,26 @@
 "use client";
 
 import { useState, useSyncExternalStore } from "react";
+import { dugme } from "@/components/konobar/stil";
 
+// Dark is the default: only an explicit "svijetla" turns the app light.
 function jeTamna() {
-  const tema = document.documentElement.dataset.tema;
-  return tema ? tema === "tamna" : window.matchMedia("(prefers-color-scheme: dark)").matches;
+  return document.documentElement.dataset.theme !== "svijetla";
 }
 
 export default function PrekidacTeme() {
   const [, osvjezi] = useState(0);
-  // The server cannot know the system theme, so the label corrects itself after hydration.
-  const tamna = useSyncExternalStore(() => () => {}, jeTamna, () => false);
+  const tamna = useSyncExternalStore(() => () => {}, jeTamna, () => true);
 
   function prebaci() {
     const nova = tamna ? "svijetla" : "tamna";
-    document.documentElement.dataset.tema = nova;
+    document.documentElement.dataset.theme = nova;
     document.cookie = `tema=${nova}; path=/; max-age=31536000; samesite=lax`;
     osvjezi((n) => n + 1);
   }
 
   return (
-    <button type="button" onClick={prebaci} className="min-h-12 rounded-lg border-2 border-okvir px-4">
+    <button type="button" onClick={prebaci} className={dugme}>
       {tamna ? "Svijetla tema" : "Tamna tema"}
     </button>
   );

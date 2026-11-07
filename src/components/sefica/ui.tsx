@@ -1,3 +1,4 @@
+import { polje } from "@/components/konobar/stil";
 import type { ReactNode } from "react";
 
 // A wide table scrolls inside its own box, so the page never scrolls sideways.
@@ -64,7 +65,7 @@ export function Polje({
     <label className="flex flex-col gap-1">
       {oznaka}
       <input
-        className="min-h-12 w-full rounded-lg border-2 border-okvir bg-background px-3 text-lg"
+        className={polje}
         value={vrijednost}
         onChange={(e) => onChange(e.target.value)}
         inputMode={tip}

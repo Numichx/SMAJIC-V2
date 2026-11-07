@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { dugme, glavno, polje } from "@/components/konobar/stil";
+import { dugme, glavno, izbor } from "@/components/konobar/stil";
 import { formatBroj, formatKM } from "@/lib/format";
 import { useSlanje, useUcitaj, zovi } from "./api";
 import { formatVrijeme, kolicinaIzUnosa } from "./pomocno";
@@ -45,7 +45,7 @@ function PopisForma({ a, gotovo }: { a: Artikal; gotovo: (poruka: string) => voi
       <Polje oznaka={`Stvarno stanje na polici (${a.jedinica})`} vrijednost={stanje} onChange={postaviStanje} />
       <label className="flex flex-col gap-1">
         Razlog
-        <select className={polje} value={razlog} onChange={(e) => postaviRazlog(e.target.value)}>
+        <select className={izbor} value={razlog} onChange={(e) => postaviRazlog(e.target.value)}>
           {RAZLOZI.map((r) => (
             <option key={r}>{r}</option>
           ))}
@@ -230,7 +230,7 @@ function Prometi({ zaliha, verzija }: { zaliha: Artikal[]; verzija: number }) {
       <div className="grid gap-2 sm:grid-cols-2">
         <label className="flex flex-col gap-1">
           Artikal
-          <select className={polje} value={artikal} onChange={(e) => (postaviArtikal(e.target.value), postaviStranu(1))}>
+          <select className={izbor} value={artikal} onChange={(e) => (postaviArtikal(e.target.value), postaviStranu(1))}>
             <option value="">Svi artikli</option>
             {zaliha.map((a) => (
               <option key={a.id} value={a.id}>
@@ -241,7 +241,7 @@ function Prometi({ zaliha, verzija }: { zaliha: Artikal[]; verzija: number }) {
         </label>
         <label className="flex flex-col gap-1">
           Vrsta
-          <select className={polje} value={vrsta} onChange={(e) => (postaviVrstu(e.target.value), postaviStranu(1))}>
+          <select className={izbor} value={vrsta} onChange={(e) => (postaviVrstu(e.target.value), postaviStranu(1))}>
             <option value="">Sve vrste</option>
             {Object.entries(VRSTA).map(([k, v]) => (
               <option key={k} value={k}>

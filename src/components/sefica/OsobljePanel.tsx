@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { dugme, glavno, polje } from "@/components/konobar/stil";
+import { dugme, glavno, izbor } from "@/components/konobar/stil";
 import type { Uloga } from "@/lib/auth/session";
 import { useSlanje, useUcitaj, zovi } from "./api";
 import { Greska, Polje } from "./ui";
@@ -23,7 +23,7 @@ function UlogaIzbor({ vrijednost, onChange, onemoguceno }: { vrijednost: Uloga; 
   return (
     <label className="flex flex-col gap-1">
       Uloga
-      <select className={polje} value={vrijednost} disabled={onemoguceno} onChange={(e) => onChange(e.target.value as Uloga)}>
+      <select className={izbor} value={vrijednost} disabled={onemoguceno} onChange={(e) => onChange(e.target.value as Uloga)}>
         {ULOGE.map((u) => (
           <option key={u} value={u}>
             {nazivi[u]}
@@ -189,7 +189,7 @@ export default function OsobljePanel() {
                       onClick={() => noviPin(z)}
                       aria-disabled={saljemId === z.id}
                       aria-label={`Izdaj kod za ${z.ime}`}
-                      className="min-h-12 rounded-lg bg-akcent px-4 font-semibold text-akcent-tekst"
+                      className={glavno}
                     >
                       {saljemId === z.id ? "Izdajem…" : "Izdaj kod"}
                     </button>

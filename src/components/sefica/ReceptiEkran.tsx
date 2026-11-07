@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { dugme, glavno, polje } from "@/components/konobar/stil";
+import { dugme, glavno, izbor } from "@/components/konobar/stil";
 import { formatBroj, formatKM } from "@/lib/format";
 import { useSlanje, useUcitaj, zovi } from "./api";
 import { kolicinaIzUnosa } from "./pomocno";
@@ -50,7 +50,7 @@ function Uredjivac({ proizvodId, naziv, postojeci, zaliha, gotovo }: { proizvodI
           <li key={i} className="grid gap-2 rounded-lg border-2 border-okvir p-3 sm:grid-cols-[1fr_8rem_auto] sm:items-end">
             <label className="flex flex-col gap-1">
               Sastojak {i + 1}
-              <select className={polje} value={r.zalihaId} onChange={(e) => izmijeni(i, { zalihaId: e.target.value })}>
+              <select className={izbor} value={r.zalihaId} onChange={(e) => izmijeni(i, { zalihaId: e.target.value })}>
                 <option value="">Izaberite artikal</option>
                 {zaliha.map((a) => (
                   <option key={a.id} value={a.id}>
@@ -138,7 +138,7 @@ export default function ReceptiEkran() {
             {zaliha.podaci!.zaliha.length === 0 && <p>Zaliha je prazna, pa nema sastojaka za recepte.</p>}
             <label className="flex flex-col gap-1">
               Jelo
-              <select className={polje} value={izbor} onChange={(e) => (postaviIzbor(e.target.value), postaviPoruku(""))}>
+              <select className={izbor} value={izbor} onChange={(e) => (postaviIzbor(e.target.value), postaviPoruku(""))}>
                 <option value="">Izaberite jelo</option>
                 {meni.podaci!.kategorije.map((k) => (
                   <optgroup key={k.id} label={k.naziv}>

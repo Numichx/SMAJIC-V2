@@ -1,5 +1,6 @@
 "use client";
 
+import { glavno, polje } from "@/components/konobar/stil";
 import { useState } from "react";
 import { formatKM } from "@/lib/format";
 import type { Meni, Proizvod } from "./tipovi";
@@ -21,7 +22,7 @@ export function Kartica({ p, onDodaj }: { p: Proizvod; onDodaj?: (p: Proizvod) =
         <button
           type="button"
           onClick={() => onDodaj(p)}
-          className="min-h-12 rounded-lg bg-akcent px-4 font-semibold text-akcent-tekst"
+          className={glavno}
         >
           Dodaj
         </button>
@@ -48,7 +49,7 @@ export default function MeniPrikaz({ meni, onDodaj }: { meni: Meni; onDodaj?: (p
           value={trazi}
           onChange={(e) => postaviTrazi(e.target.value)}
           autoComplete="off"
-          className="min-h-12 w-full rounded-lg border-2 border-okvir bg-background px-3 text-lg"
+          className={polje}
         />
       </label>
       {!upit && (

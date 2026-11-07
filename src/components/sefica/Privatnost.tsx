@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { glavno } from "@/components/konobar/stil";
+import { dugme, glavno } from "@/components/konobar/stil";
 import { formatBroj } from "@/lib/format";
 import { useSlanje, zovi } from "./api";
 import { Greska, Polje } from "./ui";
@@ -101,7 +101,7 @@ export default function Privatnost() {
             <button type="button" className={glavno} disabled={saljem} onClick={anonimiziraj}>
               {saljem ? "Obrađujem…" : "Da, anonimiziraj"}
             </button>
-            <button type="button" className="min-h-12 min-w-12 rounded-lg border-2 border-okvir bg-povrsina px-4 font-semibold" onClick={() => postaviPotvrdu(false)}>
+            <button type="button" className={dugme} onClick={() => postaviPotvrdu(false)}>
               Odustani
             </button>
           </div>
