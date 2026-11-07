@@ -21,9 +21,9 @@ export default async function Page({ searchParams }: { searchParams: Promise<{ u
 
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-6 p-6">
-      <h1 className="text-2xl font-semibold">Prijava – {nazivi[uloga]}</h1>
+      <h1 className="text-h1 font-bold">Prijava – {nazivi[uloga]}</h1>
       <LoginForm uloga={uloga} />
-      <Link href="/" className="flex min-h-12 items-center underline">
+      <Link href="/" className="link flex min-h-12 items-center">
         Druga uloga
       </Link>
     </main>

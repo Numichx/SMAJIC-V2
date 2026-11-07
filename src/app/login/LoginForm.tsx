@@ -114,7 +114,7 @@ export default function LoginForm({ uloga }: { uloga: Odjeljak }) {
   const poruke = (
     <div>
       <p role="status">{poruka}</p>
-      <p id="greska-forme" role="alert" className="font-semibold text-greska">
+      <p id="greska-forme" role="alert" className="font-bold text-error">
         {greska}
       </p>
     </div>
@@ -139,7 +139,7 @@ export default function LoginForm({ uloga }: { uloga: Odjeljak }) {
         </label>
         <label className="flex flex-col gap-1">
           <span>
-            Novi PIN <span id="novi-pin-savjet" className="text-base">4 do 8 cifara</span>
+            Novi PIN <span id="novi-pin-savjet" className="text-dim">4 do 8 cifara</span>
           </span>
           <input
             className={polje}
@@ -155,7 +155,7 @@ export default function LoginForm({ uloga }: { uloga: Odjeljak }) {
         </label>
         <label className="flex flex-col gap-1">
           <span>
-            Ponovite PIN <span id="ponovljeni-pin-savjet" className="text-base">4 do 8 cifara</span>
+            Ponovite PIN <span id="ponovljeni-pin-savjet" className="text-dim">4 do 8 cifara</span>
           </span>
           <input
             className={polje}
@@ -182,17 +182,17 @@ export default function LoginForm({ uloga }: { uloga: Odjeljak }) {
   return (
     <form onSubmit={prijavi} noValidate className="flex flex-col gap-4">
       {saImenom && ucitano && zaposlenici.length === 0 && (
-        <p>Još nijedan zaposlenik nema PIN. Aktivacijski kod dobijate od šefice. Pritisnite „Imam aktivacijski kod“.</p>
+        <p className="alert alert-info">Još nijedan zaposlenik nema PIN. Aktivacijski kod dobijate od šefice. Pritisnite „Imam aktivacijski kod“.</p>
       )}
       {saImenom && zaposlenici.length > 0 && (
         // Native radios: one choice, arrow keys between names, and "1 of 3" from the screen reader.
         <fieldset aria-describedby="greska-forme" className="flex flex-col gap-2">
           <legend className="mb-2">Izaberite svoje ime</legend>
-          <div className="grid gap-2 sm:grid-cols-2">
+          <div className="grid gap-2 md:grid-cols-2">
             {zaposlenici.map((z) => (
               <label
                 key={z.id}
-                className={`${dugme} flex cursor-pointer items-center has-checked:border-base-content has-checked:bg-base-content has-checked:text-base-100 has-focus-visible:outline-3 has-focus-visible:outline-offset-2 has-focus-visible:outline-base-content`}
+                className={`${dugme} cursor-pointer justify-start has-checked:border-base-content has-checked:bg-base-content has-checked:text-base-100 has-focus-visible:outline-3 has-focus-visible:outline-offset-2 has-focus-visible:outline-base-content`}
               >
                 <input
                   type="radio"
@@ -213,7 +213,7 @@ export default function LoginForm({ uloga }: { uloga: Odjeljak }) {
       )}
       <label className="flex flex-col gap-1">
         <span>
-          PIN <span id="pin-savjet" className="text-base">4 do 8 cifara</span>
+          PIN <span id="pin-savjet" className="text-dim">4 do 8 cifara</span>
         </span>
         <input
           className={polje}
