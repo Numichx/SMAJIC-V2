@@ -1,11 +1,10 @@
 import type { Metadata } from "next";
-import { Atkinson_Hyperlegible_Next, Big_Shoulders } from "next/font/google";
+import { Barlow } from "next/font/google";
 import { cookies } from "next/headers";
 import "./globals.css";
 
-const atkinson = Atkinson_Hyperlegible_Next({ subsets: ["latin", "latin-ext"], weight: ["400", "700"], variable: "--font-atkinson" });
-// Variable font so the optical-size axis is kept for the big numbers; condensed figures fit more digits at 3 m.
-const bigShoulders = Big_Shoulders({ subsets: ["latin", "latin-ext"], axes: ["opsz"], variable: "--font-big-shoulders" });
+// One family for text and numbers; Barlow has the č, ć, đ, š, ž of latin-ext and tabular figures.
+const barlow = Barlow({ subsets: ["latin", "latin-ext"], weight: ["400", "500", "600", "700", "800"], variable: "--font-barlow" });
 
 export const viewport = { viewportFit: "cover" as const };
 
@@ -22,7 +21,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="bs"
       data-theme={tema === "svijetla" ? "svijetla" : "tamna"}
-      className={`h-full antialiased ${atkinson.variable} ${bigShoulders.variable}`}
+      className={`h-full antialiased ${barlow.variable}`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
     </html>

@@ -9,28 +9,28 @@
   default: true;
   prefersdark: true;
   color-scheme: dark;
-  --color-base-100: #13201c;
-  --color-base-200: #1d2d28;
-  --color-base-300: #2c403a;
-  --color-base-content: #f2e6cc;
-  --color-primary: #cf8a45;
-  --color-primary-content: #13201c;
-  --color-secondary: #2c403a;
-  --color-secondary-content: #f2e6cc;
-  --color-accent: #2c403a;
-  --color-accent-content: #f2e6cc;
-  --color-neutral: #2c403a;
-  --color-neutral-content: #f2e6cc;
-  --color-info: #8fb4e3;
-  --color-info-content: #13201c;
-  --color-success: #6fc3a6;
-  --color-success-content: #13201c;
-  --color-warning: #e8c25a;
-  --color-warning-content: #13201c;
-  --color-error: #ef7a64;
-  --color-error-content: #13201c;
-  --radius-selector: 1.5rem;
-  --radius-field: 0.875rem;
+  --color-base-100: #1f1d2b;
+  --color-base-200: #252836;
+  --color-base-300: #2d303e;
+  --color-base-content: #ffffff;
+  --color-primary: #ea7c69;
+  --color-primary-content: #1f1d2b;
+  --color-secondary: #9290fe;
+  --color-secondary-content: #1f1d2b;
+  --color-accent: #2d303e;
+  --color-accent-content: #ffffff;
+  --color-neutral: #2d303e;
+  --color-neutral-content: #ffffff;
+  --color-info: #86aedd;
+  --color-info-content: #1f1d2b;
+  --color-success: #50d1aa;
+  --color-success-content: #1f1d2b;
+  --color-warning: #ffb572;
+  --color-warning-content: #1f1d2b;
+  --color-error: #ff8a80;
+  --color-error-content: #1f1d2b;
+  --radius-selector: 0.75rem;
+  --radius-field: 0.75rem;
   --radius-box: 1.25rem;
   --size-selector: 0.3125rem;
   --size-field: 0.3125rem;
@@ -48,10 +48,10 @@
   --color-base-200: #f7f3ec;
   --color-base-300: #e0d8c8;
   --color-base-content: #171c1b;
-  --color-primary: #895c29;
-  --color-primary-content: #f7f3ec;
-  --color-secondary: #616764;
-  --color-secondary-content: #f7f3ec;
+  --color-primary: #a83e2b;
+  --color-primary-content: #ffffff;
+  --color-secondary: #5651c7;
+  --color-secondary-content: #ffffff;
   --color-accent: #616764;
   --color-accent-content: #f7f3ec;
   --color-neutral: #616764;
@@ -64,8 +64,8 @@
   --color-warning-content: #f7f3ec;
   --color-error: #a24940;
   --color-error-content: #f7f3ec;
-  --radius-selector: 1.5rem;
-  --radius-field: 0.875rem;
+  --radius-selector: 0.75rem;
+  --radius-field: 0.75rem;
   --radius-box: 1.25rem;
   --size-selector: 0.3125rem;
   --size-field: 0.3125rem;
@@ -82,8 +82,8 @@
 @theme inline {
   --color-dim: var(--dim);
   --color-izdato: var(--izdato);
-  --font-sans: var(--font-atkinson), Arial, Helvetica, sans-serif;
-  --font-broj: var(--font-big-shoulders), var(--font-atkinson), sans-serif;
+  --font-sans: var(--font-barlow), Arial, Helvetica, sans-serif;
+  --font-broj: var(--font-barlow), Arial, sans-serif;
 }
 
 @theme {

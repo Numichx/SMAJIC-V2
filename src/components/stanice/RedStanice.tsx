@@ -25,7 +25,11 @@ type Narudzba = {
 
 const kol = (s: Pick<Stavka, "kolicina" | "jedinica">) => `${formatBroj(s.kolicina)} ${s.jedinica}`;
 // Order-state colours: the badge carries the colour, the card stays base-200.
-const ZNACKA: Record<string, string> = { Novo: "badge-info", "U pripremi": "badge-outline badge-warning", Gotovo: "badge-success", Izdato: "badge-ghost text-izdato" };
+const ZNACKA: Record<string, string> = { Novo: "badge-primary", "U pripremi": "badge-secondary", Gotovo: "badge-success", Izdato: "badge-ghost text-izdato" };
+// Column headings carry the same colour as their badge.
+const BOJA: Record<string, string> = { Novo: "text-primary", "U pripremi": "text-secondary", Gotovo: "text-success", Izdato: "text-izdato" };
+// The action button takes the colour of the state it moves the order into.
+const SLJEDECI: Record<string, string> = { "U pripremi": "btn-secondary", Gotovo: "btn-success", Izdato: "btn-outline" };
 // How long a status tap waits before it is sent, so a mis-tap in a rush can be taken back.
 const ODGODA_MS = 4000;
 const minute = (sada: string, kreirano: string) => Math.max(0, Math.floor((Date.parse(sada) - Date.parse(kreirano)) / 60000));
@@ -198,13 +202,11 @@ export default function RedStanice({ stanica }: { stanica: Stanica }) {
     await ucitaj();
   }
 
-  // A kitchen ticket rail: orders to cook hang oldest first (the server's order), finished ones wait on the pass.
-  // Any other state lands on the pass, so no order is ever hidden.
-  const naSini = (n: Narudzba) => n.status === "Novo" || n.status === "U pripremi";
-  const zone = [
-    { naslov: "Priprema", sina: true, narudzbe: red?.narudzbe.filter(naSini) ?? [] },
-    { naslov: "Za izdavanje", sina: false, narudzbe: red?.narudzbe.filter((n) => !naSini(n)) ?? [] },
-  ].filter((z) => z.narudzbe.length > 0);
+  // One column per state, in the order an order moves, oldest first inside each (the server's order).
+  // An unknown state still gets a column, so no order is ever hidden.
+  const kolone = [...new Set([...Object.keys(ZNACKA), ...(red?.narudzbe.map((n) => n.status) ?? [])])]
+    .map((status) => ({ status, narudzbe: red?.narudzbe.filter((n) => n.status === status) ?? [] }))
+    .filter((k) => k.narudzbe.length > 0);
   const priprema = red ? zaPripremu(red.narudzbe) : [];
   const sada = red?.sada ?? "";
 
@@ -272,19 +274,18 @@ export default function RedStanice({ stanica }: { stanica: Stanica }) {
           ))}
         </section>
       )}
-      <div className="flex flex-col gap-6">
-        {zone.map((z) => (
-          <section key={z.naslov} aria-labelledby={z.sina ? "zona-priprema" : "zona-izdavanje"} className="flex flex-col gap-3">
-            <h2 id={z.sina ? "zona-priprema" : "zona-izdavanje"} className="text-h3 font-bold">
-              {z.naslov} <span className="text-dim">{z.narudzbe.length}</span>
+      <div className="grid items-start gap-4 xl:auto-cols-fr xl:grid-flow-col">
+        {kolone.map((k) => (
+          <section key={k.status} aria-label={k.status} className="flex flex-col gap-3 rounded-box bg-base-200 p-3">
+            <h2 className={`flex items-center justify-between text-h3 font-extrabold uppercase tracking-wide ${BOJA[k.status] ?? ""}`}>
+              {k.status}
+              <span className="badge badge-lg border-0 bg-base-300 text-base-content">{k.narudzbe.length}</span>
             </h2>
-            {/* The rail is copper; each slip is paper, so it takes the light theme even on the dark screen. */}
-            <ul className={`grid grid-cols-[repeat(auto-fill,minmax(min(17rem,100%),1fr))] items-start gap-3 ${z.sina ? "border-t-8 border-primary" : ""}`}>
-              {z.narudzbe.map((n) => (
+            <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(17rem,100%),1fr))] items-start gap-3">
+              {k.narudzbe.map((n) => (
                 <li
                   key={n.id}
-                  data-theme="svijetla"
-                  className={`card bg-base-200 text-base-content ${z.sina ? "rounded-t-none " : ""}${n.cekaDugo ? "border-4 border-error" : "border-2 border-base-300"}${n.status === "Gotovo" ? " listic-gotovo" : ""}`}
+                  className={`card bg-base-300 ${n.cekaDugo ? "border-4 border-error" : "border-2 border-transparent"}${n.status === "Gotovo" ? " listic-gotovo" : ""}`}
                 >
                   <div className="card-body gap-3 p-4">
                     <div className="flex items-start justify-between gap-3">
@@ -322,7 +323,7 @@ export default function RedStanice({ stanica }: { stanica: Stanica }) {
                           disabled={zauzeto !== null}
                           aria-label={`${n.stavke.every((s) => s.stornoRazlog) ? "Ukloni storno" : n.sljedeci}, narudžba ${n.broj}`}
                           onClick={() => (gotovoPecenjare(n) ? postaviFormu(n.id) : odgodi(n, { status: n.sljedeci }))}
-                          className={`${glavno} btn-xl btn-block`}
+                          className={`btn btn-xl btn-block font-bold aria-disabled:cursor-progress ${SLJEDECI[n.sljedeci] ?? "btn-primary"}`}
                         >
                           {n.stavke.every((s) => s.stornoRazlog) ? "Ukloni storno" : n.sljedeci}
                         </button>

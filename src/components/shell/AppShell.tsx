@@ -49,6 +49,8 @@ export default async function AppShell({ odjeljak, children }: { odjeljak: Odjel
   const dno = sesija.uloga === "konobar";
   // Station screens are wall-mounted tablets: give the ticket rail the full width.
   const stanica = odjeljak === "kuhinja" || odjeljak === "pecenjara" || odjeljak === "mesnica";
+  // Everyone else gets a sidebar from md up; stations keep the top bar so the queue has the width.
+  const bocno = !stanica;
 
   return (
     <>
@@ -56,25 +58,36 @@ export default async function AppShell({ odjeljak, children }: { odjeljak: Odjel
         Preskoči na sadržaj
       </a>
       <DemoStatus />
-      <header className={`flex flex-wrap items-center gap-x-4 gap-y-2 border-b-2 border-dim ${dno ? "p-2 md:p-3" : "p-3"}`}>
-        <strong className={`text-lg ${dno ? "max-md:hidden" : ""}`}>Smajić – Narudžbe</strong>
-        <span>{sesija.ime}</span>
-        <Navigacija veze={dno ? navigacija.konobar : [...navigacija[sesija.uloga], { href: "/pomoc", naziv: "Pomoć" }]} dno={dno} />
-        {/* On the waiter's phone every pixel above the tables counts: same buttons, 44 px instead of 48. */}
-        <div className={`ml-auto flex gap-2 ${dno ? "max-md:[&_.btn]:h-11 max-md:[&_.btn]:px-3 max-md:[&_.btn]:text-sm" : ""}`}>
-          {/* Six tabs do not fit a phone's bottom bar, so the waiter's Pomoć sits up here. */}
-          {dno && (
-            <Link href="/pomoc" className="btn btn-lg btn-outline border-dim font-bold">
-              Pomoć
-            </Link>
-          )}
-          <PrekidacTeme />
-          <Odjava />
+      <div className={`flex flex-1 flex-col ${bocno ? "md:flex-row" : ""}`}>
+        <header
+          className={`flex flex-wrap items-center gap-x-4 gap-y-2 border-b-2 border-dim bg-base-200 ${dno ? "p-2 md:p-3" : "p-3"} ${
+            bocno ? "md:sticky md:top-0 md:h-dvh md:w-60 md:flex-none md:flex-col md:flex-nowrap md:items-stretch md:gap-4 md:overflow-y-auto md:border-b-0 md:p-5" : ""
+          }`}
+        >
+          <strong className={`flex flex-col leading-none text-primary ${dno ? "max-md:hidden" : ""}`}>
+            <span className="text-2xl font-extrabold">Smajić</span>
+            <span className="text-sm font-semibold tracking-widest">NARUDŽBE</span>
+          </strong>
+          <span className="font-semibold">{sesija.ime}</span>
+          <Navigacija veze={dno ? navigacija.konobar : [...navigacija[sesija.uloga], { href: "/pomoc", naziv: "Pomoć" }]} dno={dno} bocno={bocno} />
+          {/* On the waiter's phone every pixel above the tables counts: same buttons, 44 px instead of 48. */}
+          <div className={`ml-auto flex gap-2 ${dno ? "max-md:[&_.btn]:h-11 max-md:[&_.btn]:px-3 max-md:[&_.btn]:text-sm" : ""} ${bocno ? "md:mt-auto md:ml-0 md:flex-col" : ""}`}>
+            {/* Six tabs do not fit a phone's bottom bar, so the waiter's Pomoć sits up here. */}
+            {dno && (
+              <Link href="/pomoc" className="btn btn-lg btn-outline border-dim font-bold">
+                Pomoć
+              </Link>
+            )}
+            <PrekidacTeme />
+            <Odjava />
+          </div>
+        </header>
+        <div className="flex min-w-0 flex-1 flex-col">
+          {sesija.uloga === "konobar" && <OfflineStatus konobar={sesija.ime} />}
+          {sesija.uloga === "konobar" && <ObavijestiKonobara />}
+          <main id="sadrzaj" tabIndex={-1} className={`mx-auto w-full flex-1 p-4 md:p-6 ${stanica ? "max-w-screen-2xl" : "max-w-5xl"}${dno ? " pb-24 md:pb-6" : ""}`}>{children}</main>
         </div>
-      </header>
-      {sesija.uloga === "konobar" && <OfflineStatus konobar={sesija.ime} />}
-      {sesija.uloga === "konobar" && <ObavijestiKonobara />}
-      <main id="sadrzaj" tabIndex={-1} className={`mx-auto w-full flex-1 p-4 md:p-6 ${stanica ? "max-w-screen-2xl" : "max-w-5xl"}${dno ? " pb-24 md:pb-6" : ""}`}>{children}</main>
+      </div>
     </>
   );
 }
