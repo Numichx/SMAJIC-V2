@@ -30,3 +30,11 @@
   border-radius: var(--radius-box);
   background: var(--color-base-200);
 }
+
+/* On a phone the name needs the width more than the photo does. */
+@media (max-width: 40rem) {
+  .mitem-img {
+    width: 4rem;
+    height: 4rem;
+  }
+}

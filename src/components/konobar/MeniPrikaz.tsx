@@ -17,7 +17,7 @@ export function Kartica({ p, onDodaj }: { p: Proizvod; onDodaj?: (p: Proizvod) =
       <div className="flex min-w-0 flex-1 flex-col">
         <p className="text-lg leading-tight font-bold">{p.naziv}</p>
         <p className="text-dim">{p.jedinica}</p>
-        <p className="tabelarno text-h3 font-extrabold text-primary">{formatKM(p.cijena)}</p>
+        <p className="tabelarno text-h3 font-extrabold whitespace-nowrap text-primary">{formatKM(p.cijena)}</p>
       </div>
       {onDodaj && (
         <button type="button" onClick={() => onDodaj(p)} aria-label={`Dodaj: ${p.naziv}`} className={`${glavno} btn-square size-14 text-h2`}>
@@ -59,7 +59,7 @@ export default function MeniPrikaz({ meni, onDodaj }: { meni: Meni; onDodaj?: (p
         </div>
       )}
       {proizvodi.length === 0 && <p role="status">Nema rezultata.</p>}
-      <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+      <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(19rem,100%),1fr))] gap-3">
         {proizvodi.map((p) => (
           <Kartica key={p.id} p={p} onDodaj={onDodaj} />
         ))}
