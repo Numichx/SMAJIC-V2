@@ -198,10 +198,13 @@ export default function RedStanice({ stanica }: { stanica: Stanica }) {
     await ucitaj();
   }
 
-  // One column per state, in the order the order moves; an unknown state still gets one, so no order is hidden.
-  const kolone = [...new Set([...Object.keys(ZNACKA), ...(red?.narudzbe.map((n) => n.status) ?? [])])]
-    .map((status) => ({ status, narudzbe: red?.narudzbe.filter((n) => n.status === status) ?? [] }))
-    .filter((k) => k.narudzbe.length > 0);
+  // A kitchen ticket rail: orders to cook hang oldest first (the server's order), finished ones wait on the pass.
+  // Any other state lands on the pass, so no order is ever hidden.
+  const naSini = (n: Narudzba) => n.status === "Novo" || n.status === "U pripremi";
+  const zone = [
+    { naslov: "Priprema", sina: true, narudzbe: red?.narudzbe.filter(naSini) ?? [] },
+    { naslov: "Za izdavanje", sina: false, narudzbe: red?.narudzbe.filter((n) => !naSini(n)) ?? [] },
+  ].filter((z) => z.narudzbe.length > 0);
   const priprema = red ? zaPripremu(red.narudzbe) : [];
   const sada = red?.sada ?? "";
 
@@ -258,8 +261,8 @@ export default function RedStanice({ stanica }: { stanica: Stanica }) {
       {red?.narudzbe.length === 0 && <p role="status">Nema narudžbi. Nove se pojavljuju same.</p>}
       {priprema.length > 0 && (
         <section aria-labelledby="za-pripremu" className="flex flex-wrap items-center gap-2">
-          <h2 id="za-pripremu" className="font-bold uppercase tracking-wide text-dim">
-            Za pripremu
+          <h2 id="za-pripremu" className="font-bold text-dim">
+            Ukupno za pripremu:
           </h2>
           {priprema.map((z) => (
             <span key={`${z.naziv} ${z.jedinica}`} className="badge badge-lg h-auto gap-2 border-0 bg-base-200 py-2 font-bold">
@@ -269,18 +272,19 @@ export default function RedStanice({ stanica }: { stanica: Stanica }) {
           ))}
         </section>
       )}
-      <div className="grid gap-4 xl:auto-cols-fr xl:grid-flow-col">
-        {kolone.map((k) => (
-          <section key={k.status} aria-label={k.status} className="flex flex-col gap-3">
-            <h2 className="flex items-center gap-2 text-h3 font-bold">
-              <span className={`badge badge-sm ${ZNACKA[k.status] ?? "badge-outline"}`} aria-hidden="true" />
-              {k.status} <span className="text-dim">{k.narudzbe.length}</span>
+      <div className="flex flex-col gap-6">
+        {zone.map((z) => (
+          <section key={z.naslov} aria-labelledby={z.sina ? "zona-priprema" : "zona-izdavanje"} className="flex flex-col gap-3">
+            <h2 id={z.sina ? "zona-priprema" : "zona-izdavanje"} className="text-h3 font-bold">
+              {z.naslov} <span className="text-dim">{z.narudzbe.length}</span>
             </h2>
-            <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-1">
-              {k.narudzbe.map((n) => (
+            {/* The rail is copper; each slip is paper, so it takes the light theme even on the dark screen. */}
+            <ul className={`grid grid-cols-[repeat(auto-fill,minmax(min(17rem,100%),1fr))] items-start gap-3 ${z.sina ? "border-t-8 border-primary" : ""}`}>
+              {z.narudzbe.map((n) => (
                 <li
                   key={n.id}
-                  className={`card card-border bg-base-200 ${n.cekaDugo ? "border-4 border-error" : "border-transparent"}${n.status === "Gotovo" ? " listic-gotovo" : ""}`}
+                  data-theme="svijetla"
+                  className={`card bg-base-200 text-base-content ${z.sina ? "rounded-t-none " : ""}${n.cekaDugo ? "border-4 border-error" : "border-2 border-base-300"}${n.status === "Gotovo" ? " listic-gotovo" : ""}`}
                 >
                   <div className="card-body gap-3 p-4">
                     <div className="flex flex-wrap items-baseline gap-x-4">

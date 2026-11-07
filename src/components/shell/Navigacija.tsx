@@ -25,8 +25,8 @@ export default function Navigacija({ veze, dno = false }: { veze: { href: string
           key={v.href}
           href={v.href}
           aria-current={aktivna === v.href ? "page" : undefined}
-          className={`btn btn-lg btn-outline border-dim font-bold aria-[current=page]:border-base-content aria-[current=page]:bg-base-content aria-[current=page]:text-base-100${
-            dno ? " max-md:h-14 max-md:border-0 max-md:px-1 max-md:text-xs max-md:leading-tight max-md:whitespace-normal" : ""
+          className={`btn btn-lg btn-outline border-dim font-bold aria-[current=page]:border-base-content aria-[current=page]:bg-base-content aria-[current=page]:text-base-100 ${
+            dno ? "max-md:h-14 max-md:border-0 max-md:px-1 max-md:text-xs max-md:leading-tight max-md:whitespace-normal" : ""
           }`}
         >
           {v.naziv}

@@ -64,7 +64,10 @@ export default function StoloviPregled() {
                 !s.racun ? "border-dashed border-dim" : s.racun.sveIzdato ? "border-transparent bg-base-200" : "border-warning bg-warning/15"
               }`}
             >
-              <span className="text-center font-broj text-broj font-extrabold md:text-broj-xl">Sto {s.id}</span>
+              <span className="text-center">
+                <span className="text-dim">Sto </span>
+                <span className="font-broj text-broj font-extrabold md:text-broj-xl">{s.id}</span>
+              </span>
               {s.racun ? (
                 <>
                   <span className="text-end font-bold tabular-nums">{formatKM(s.racun.ukupno)}</span>

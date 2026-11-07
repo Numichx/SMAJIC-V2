@@ -47,6 +47,8 @@ export default async function AppShell({ odjeljak, children }: { odjeljak: Odjel
   const sesija = await sesijaStranice(odjeljak);
   // Waiters carry phones: their navigation moves to a bottom bar.
   const dno = sesija.uloga === "konobar";
+  // Station screens are wall-mounted tablets: give the ticket rail the full width.
+  const stanica = odjeljak === "kuhinja" || odjeljak === "pecenjara" || odjeljak === "mesnica";
 
   return (
     <>
@@ -71,7 +73,7 @@ export default async function AppShell({ odjeljak, children }: { odjeljak: Odjel
       </header>
       {sesija.uloga === "konobar" && <OfflineStatus konobar={sesija.ime} />}
       {sesija.uloga === "konobar" && <ObavijestiKonobara />}
-      <main id="sadrzaj" tabIndex={-1} className={`mx-auto w-full max-w-5xl flex-1 p-4 md:p-6${dno ? " pb-24 md:pb-6" : ""}`}>{children}</main>
+      <main id="sadrzaj" tabIndex={-1} className={`mx-auto w-full flex-1 p-4 md:p-6 ${stanica ? "max-w-screen-2xl" : "max-w-5xl"}${dno ? " pb-24 md:pb-6" : ""}`}>{children}</main>
     </>
   );
 }
