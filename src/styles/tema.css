@@ -10,13 +10,3 @@
   --izdato: #616864;
 }
 
-/* Stari nazivi vode na nove; brišu se kad ih grep više ne nađe. */
-:root {
-  --background: var(--color-base-100);
-  --foreground: var(--color-base-content);
-  --povrsina: var(--color-base-200);
-  --okvir: var(--dim);
-  --akcent: var(--color-primary);
-  --akcent-tekst: var(--color-primary-content);
-  --greska: var(--color-error);
-}

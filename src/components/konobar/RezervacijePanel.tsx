@@ -106,7 +106,7 @@ export default function RezervacijePanel() {
         {lista.stavke?.length === 0 && <p role="status">Nema rezervacija za ovaj dan.</p>}
         <ul className="grid gap-3 xl:grid-cols-2">
           {lista.stavke?.map((r) => (
-            <li key={r.id} className="flex flex-col gap-1 rounded-lg border-2 border-okvir bg-povrsina p-3">
+            <li key={r.id} className="flex flex-col gap-1 rounded-lg border-2 border-dim bg-base-200 p-3">
               <strong className="text-lg">
                 {satSarajevo(r.vrijeme)} {r.ime}
               </strong>
@@ -137,7 +137,7 @@ export default function RezervacijePanel() {
         )}
       </section>
 
-      <form onSubmit={nova} aria-label="Nova rezervacija" className="flex flex-col gap-3 rounded-lg border-2 border-okvir p-3">
+      <form onSubmit={nova} aria-label="Nova rezervacija" className="flex flex-col gap-3 rounded-lg border-2 border-dim p-3">
         <h2 className="text-xl font-bold">Nova rezervacija</h2>
         <label className="flex flex-col gap-1">
           Ime gosta

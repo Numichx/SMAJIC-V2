@@ -261,7 +261,7 @@ export default function NarudzbaEditor({ stoId }: { stoId: number }) {
             const slobodnoJos = !cijene.includes(0);
             const dostupni = (meni?.prilozi ?? []).filter((id) => !s.prilozi.some((x) => x.id === id));
             return (
-              <li key={s.kljuc} className="flex flex-col gap-2 rounded-lg border-2 border-okvir p-3">
+              <li key={s.kljuc} className="flex flex-col gap-2 rounded-lg border-2 border-dim p-3">
                 <p className="text-lg font-bold">
                   {p.naziv} <span className="font-normal">{formatKM(p.cijena)}/{p.jedinica}</span>
                 </p>

@@ -59,7 +59,7 @@ export default function StatistikaKonobara() {
             ["Baksiš", formatKM(s.baksis)],
             ["Na dug", formatKM(s.dug)],
           ].map(([naziv, vrijednost]) => (
-            <div key={naziv} className="rounded-lg border-2 border-okvir bg-povrsina p-3">
+            <div key={naziv} className="rounded-lg border-2 border-dim bg-base-200 p-3">
               <dt>{naziv}</dt>
               <dd className="text-2xl font-bold">{vrijednost}</dd>
             </div>

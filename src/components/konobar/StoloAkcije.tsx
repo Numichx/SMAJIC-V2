@@ -84,7 +84,7 @@ export default function StoloAkcije({
                 postaviCilj(e.target.value);
                 postaviPotvrdu(false);
               }}
-              className="min-h-12 rounded-lg border-2 border-okvir bg-background px-3 text-lg"
+              className="min-h-12 rounded-lg border-2 border-dim bg-base-100 px-3 text-lg"
             >
               <option value="">Izaberite sto</option>
               {izbor.map((id) => (

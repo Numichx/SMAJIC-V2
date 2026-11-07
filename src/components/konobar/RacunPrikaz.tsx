@@ -50,7 +50,7 @@ export default function RacunPrikaz({ racun, onStorno }: { racun: Racun; onStorn
         {!storno && (
           <button
             type="button"
-            className="min-h-12 rounded-lg border-2 border-okvir px-3"
+            className="min-h-12 rounded-lg border-2 border-dim px-3"
             aria-label={`Storno ${s.naziv}`}
             aria-expanded={izabrana === s.id}
             onClick={() => postaviIzabranu(izabrana === s.id ? null : s.id)}
@@ -85,7 +85,7 @@ export default function RacunPrikaz({ racun, onStorno }: { racun: Racun; onStorn
         Račun {racun.broj} · {racun.konobar}
       </h2>
       {racun.narudzbe.map((n) => (
-        <div key={n.id} className="rounded-lg border-2 border-okvir p-3">
+        <div key={n.id} className="rounded-lg border-2 border-dim p-3">
           <p className="font-bold">
             {NAZIV_STANICE[n.stanica] ?? n.stanica} · {n.status}
           </p>

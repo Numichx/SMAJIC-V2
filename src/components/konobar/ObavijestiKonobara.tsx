@@ -84,14 +84,14 @@ export default function ObavijestiKonobara() {
   return (
     <section aria-label="Obavijesti" className="flex flex-col gap-2 p-3 empty:hidden">
       {!ukljuceno && (
-        <button type="button" onClick={ukljuci} className="min-h-12 self-start rounded-lg border-2 border-okvir px-4">
+        <button type="button" onClick={ukljuci} className="min-h-12 self-start rounded-lg border-2 border-dim px-4">
           Uključi zvuk i obavijesti
         </button>
       )}
       <div role="status">
         <ul className="flex flex-col gap-2">
         {prikazi.map((p) => (
-          <li key={p.kljuc} className="flex items-center gap-3 rounded-lg border-2 border-akcent bg-povrsina p-3">
+          <li key={p.kljuc} className="flex items-center gap-3 rounded-lg border-2 border-base-content bg-base-200 p-3">
             <span className="flex-1 font-bold">{opis(p)}</span>
             <button
               type="button"
