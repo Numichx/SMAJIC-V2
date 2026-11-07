@@ -268,7 +268,7 @@ export default function RedStanice({ stanica }: { stanica: Stanica }) {
           </h2>
           {priprema.map((z) => (
             <span key={`${z.naziv} ${z.jedinica}`} className="badge badge-lg h-auto gap-2 border-0 bg-base-200 py-2 font-bold">
-              <span className="font-broj text-h3 text-primary">{kol(z)}</span>
+              <span className="font-broj text-h3 whitespace-nowrap text-primary">{kol(z)}</span>
               {z.naziv}
             </span>
           ))}
