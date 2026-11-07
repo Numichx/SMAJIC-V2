@@ -230,15 +230,18 @@ export default function NarudzbaEditor({ stoId }: { stoId: number }) {
       </div>
 
       {placeno && <NaplacenRacun p={placeno} />}
+      {/* From lg the menu sits left and this panel right, sticky, so the order and its total stay in view while adding. */}
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_24rem] lg:items-start">
+      <aside className="flex flex-col gap-4 lg:sticky lg:top-4 lg:col-start-2 lg:row-start-1 lg:max-h-[calc(100dvh-2rem)] lg:overflow-y-auto">
       {!ucitano && !greska && <p>Učitavam račun…</p>}
       {ucitano &&
         !placeno &&
         (racun ? (
-          <>
+          <div className="flex flex-col gap-4 rounded-box bg-base-200 p-4">
             <RacunPrikaz racun={racun} onStorno={storno} />
             <Naplata racun={racun} neposlano={neposlano} onPlaceno={postaviPlaceno} onOsvjezi={() => osvjezi((n) => n + 1)} />
             <StoloAkcije stoId={stoId} slobodni={slobodni} zauzeti={zauzeti} onGotovo={nakonPrenosa} />
-          </>
+          </div>
         ) : (
           <p>Sto je slobodan.</p>
         ))}
@@ -249,9 +252,11 @@ export default function NarudzbaEditor({ stoId }: { stoId: number }) {
         </p>
       )}
 
-      <section aria-label="Nova narudžba" hidden={!!placeno} className="flex flex-col gap-3">
-        <h2 className="text-xl font-bold">Nova narudžba</h2>
-        {korpa.length === 0 && <p>Korpa je prazna.</p>}
+      <section aria-label="Nova narudžba" hidden={!!placeno} className="flex flex-col gap-3 rounded-box bg-base-200 p-4">
+        <h2 className="flex items-baseline justify-between text-xl font-bold">
+          Nova narudžba <span className="text-base font-semibold text-dim">Stavki: {korpa.length}</span>
+        </h2>
+        {korpa.length === 0 && <p className="text-dim">Korpa je prazna. Dodaj jelo iz menija.</p>}
         <ul className="flex flex-col gap-3">
           {korpa.map((s) => {
             const p = proizvodi.get(s.proizvodId);
@@ -261,10 +266,19 @@ export default function NarudzbaEditor({ stoId }: { stoId: number }) {
             const slobodnoJos = !cijene.includes(0);
             const dostupni = (meni?.prilozi ?? []).filter((id) => !s.prilozi.some((x) => x.id === id));
             return (
-              <li key={s.kljuc} className="flex flex-col gap-2 rounded-lg border-2 border-dim p-3">
-                <p className="text-lg font-bold">
-                  {p.naziv} <span className="font-normal">{formatKM(p.cijena)}/{p.jedinica}</span>
-                </p>
+              <li key={s.kljuc} className="flex flex-col gap-2 rounded-box bg-base-300 p-3">
+                <div className="flex items-center gap-3">
+                  {p.slika && (
+                    // eslint-disable-next-line @next/next/no-img-element -- same plain img as the menu card
+                    <img src={p.slika.putanja} alt="" className="size-11 flex-none rounded-full object-cover" />
+                  )}
+                  <p className="min-w-0 flex-1 leading-tight">
+                    <span className="block font-bold">{p.naziv}</span>
+                    <span className="tabelarno text-dim">
+                      {formatKM(p.cijena)}/{p.jedinica}
+                    </span>
+                  </p>
+                </div>
                 <div className="flex flex-wrap items-end gap-2">
                   <button
                     type="button"
@@ -277,10 +291,11 @@ export default function NarudzbaEditor({ stoId }: { stoId: number }) {
                   >
                     −
                   </button>
-                  <label className="flex flex-col gap-1">
-                    {kg ? "Količina (kg)" : "Količina"}
+                  {/* The shared field style is full width, so the label sets the width and the stepper stays on one line. */}
+                  <label className="flex w-24 flex-col gap-1">
+                    <span className={kg ? "" : "sr-only"}>{kg ? "Količina (kg)" : "Količina"}</span>
                     <input
-                      className={`${polje} w-28`}
+                      className={`${polje} text-center text-h3 font-bold`}
                       value={s.kolicina}
                       onChange={(e) => izmijeni(s.kljuc, { kolicina: e.target.value })}
                       inputMode={kg ? "decimal" : "numeric"}
@@ -339,7 +354,7 @@ export default function NarudzbaEditor({ stoId }: { stoId: number }) {
                       ))}
                     </ul>
                     {s.prilozi.length < MAX_PRILOGA ? (
-                      <div role="group" aria-label={`Dodaj prilog uz ${p.naziv}`} className="flex flex-wrap gap-2">
+                      <div role="group" aria-label={`Dodaj prilog uz ${p.naziv}`} className="flex flex-wrap gap-2 [&_.btn]:h-11 [&_.btn]:text-base">
                         {dostupni.map((id) => (
                           <button key={id} type="button" className={dugme} onClick={() => izmijeni(s.kljuc, { prilozi: [...s.prilozi, { id, poseban: false }] })}>
                             + {nazivPriloga(id)} ({slobodnoJos && p.prilog?.besplatni.includes(id) ? "uključeno" : formatKM(cijenaPriloga(id))})
@@ -371,20 +386,25 @@ export default function NarudzbaEditor({ stoId }: { stoId: number }) {
         )}
         {korpa.length > 0 && (
           <>
-            <p className="text-lg font-bold">Procjena: {formatKM(procjena)}</p>
-            <button type="button" className={glavno} aria-disabled={saljem} onClick={posalji}>
+            <p className="flex items-baseline justify-between border-t border-base-300 pt-3">
+              <span className="font-semibold text-dim">Procjena</span>
+              <span className="tabelarno text-h1 font-extrabold text-primary">{formatKM(procjena)}</span>
+            </p>
+            <button type="button" className={`${glavno} btn-xl btn-block`} aria-disabled={saljem} onClick={posalji}>
               {saljem ? "Šaljem…" : "Pošalji narudžbu"}
             </button>
           </>
         )}
       </section>
+      </aside>
 
-      <section aria-label="Meni" hidden={!!placeno} className="flex flex-col gap-3">
+      <section aria-label="Meni" hidden={!!placeno} className="flex flex-col gap-3 lg:col-start-1 lg:row-start-1">
         <h2 className="text-xl font-bold">Meni</h2>
         {izKopije && <p role="status">Prikazana je zadnja spremljena kopija menija. Cijene potvrđuje server pri slanju.</p>}
         {!meni && !greskaMenija && <p role="status">Učitavam meni…</p>}
         {meni && <MeniPrikaz meni={meni} onDodaj={dodaj} />}
       </section>
+      </div>
     </div>
   );
 }

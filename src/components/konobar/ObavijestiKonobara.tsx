@@ -82,9 +82,9 @@ export default function ObavijestiKonobara() {
   }, []);
 
   return (
-    <section aria-label="Obavijesti" className="flex flex-col gap-2 p-3 empty:hidden">
+    <section aria-label="Obavijesti" className="flex flex-col gap-2 px-3 py-2 empty:hidden">
       {!ukljuceno && (
-        <button type="button" onClick={ukljuci} className="min-h-12 self-start rounded-lg border-2 border-dim px-4">
+        <button type="button" onClick={ukljuci} className="min-h-11 self-start rounded-lg border-2 border-dim px-3">
           Uključi zvuk i obavijesti
         </button>
       )}

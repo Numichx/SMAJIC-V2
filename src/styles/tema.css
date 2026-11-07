@@ -1,8 +1,8 @@
 /* Boje bez daisyUI uloge, po temi. Tamna je zadana. */
 :root,
 [data-theme="tamna"] {
-  --dim: #9aa39f;
-  --izdato: #8a948e;
+  --dim: #abbbc2;
+  --izdato: #98a2ae;
 }
 
 [data-theme="svijetla"] {

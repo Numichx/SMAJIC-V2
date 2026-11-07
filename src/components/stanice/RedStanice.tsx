@@ -8,7 +8,7 @@ import { greskaIz } from "@/lib/api/greskaIz";
 import { formatBroj, NAZIV_STANICE } from "@/lib/format";
 import { CEKANJE_MS } from "@/lib/offline/sync";
 import { useIspis } from "./useIspis";
-import { brojIzUnosa, poredajStavke, sumnjivaTezina, type Stavka } from "./unos";
+import { brojIzUnosa, poredajStavke, sumnjivaTezina, zaPripremu, type Stavka } from "./unos";
 
 type Stanica = "kuhinja" | "pecenjara" | "sank";
 type Narudzba = {
@@ -23,9 +23,15 @@ type Narudzba = {
   stavke: Stavka[];
 };
 
-const kol = (s: Stavka) => `${formatBroj(s.kolicina)} ${s.jedinica}`;
+const kol = (s: Pick<Stavka, "kolicina" | "jedinica">) => `${formatBroj(s.kolicina)} ${s.jedinica}`;
 // Order-state colours: the badge carries the colour, the card stays base-200.
-const ZNACKA: Record<string, string> = { Novo: "badge-outline badge-info", "U pripremi": "badge-warning", Gotovo: "badge-success", Izdato: "badge-ghost text-izdato" };
+const ZNACKA: Record<string, string> = { Novo: "badge-primary", "U pripremi": "badge-secondary", Gotovo: "badge-success", Izdato: "badge-ghost text-izdato" };
+// Column headings carry the same colour as their badge.
+const BOJA: Record<string, string> = { Novo: "text-primary", "U pripremi": "text-secondary", Gotovo: "text-success", Izdato: "text-izdato" };
+// The action button takes the colour of the state it moves the order into.
+const SLJEDECI: Record<string, string> = { "U pripremi": "btn-secondary", Gotovo: "btn-success", Izdato: "btn-outline" };
+// How long a status tap waits before it is sent, so a mis-tap in a rush can be taken back.
+const ODGODA_MS = 4000;
 const minute = (sada: string, kreirano: string) => Math.max(0, Math.floor((Date.parse(sada) - Date.parse(kreirano)) / 60000));
 
 // naPapiru: the 58 mm slip keeps the print font, not the 28 px screen size.
@@ -196,6 +202,56 @@ export default function RedStanice({ stanica }: { stanica: Stanica }) {
     await ucitaj();
   }
 
+  // One column per state, in the order an order moves, oldest first inside each (the server's order).
+  // An unknown state still gets a column, so no order is ever hidden.
+  const kolone = [...new Set([...Object.keys(ZNACKA), ...(red?.narudzbe.map((n) => n.status) ?? [])])]
+    .map((status) => ({ status, narudzbe: red?.narudzbe.filter((n) => n.status === status) ?? [] }))
+    .filter((k) => k.narudzbe.length > 0);
+  const priprema = red ? zaPripremu(red.narudzbe) : [];
+  const sada = red?.sada ?? "";
+
+  // The held tap is only delayed, never decided here: the server still checks every change.
+  const odgodaRef = useRef<{ n: Narudzba; tijelo: object; sat: ReturnType<typeof setTimeout> } | null>(null);
+  const [odgoda, postaviOdgodu] = useState<string | null>(null);
+
+  function posaljiOdgodu() {
+    const o = odgodaRef.current;
+    if (!o) return;
+    clearTimeout(o.sat);
+    // posalji drops a call while another is in flight, so wait for it instead of losing the tap.
+    if (zauzetoRef.current) {
+      o.sat = setTimeout(posaljiOdgodu, 200);
+      return;
+    }
+    odgodaRef.current = null;
+    postaviOdgodu(null);
+    return posalji(o.n, o.tijelo);
+  }
+
+  async function odgodi(n: Narudzba, tijelo: object) {
+    if (zauzetoRef.current) return;
+    await posaljiOdgodu(); // an earlier held tap goes out first
+    odgodaRef.current = { n, tijelo, sat: setTimeout(posaljiOdgodu, ODGODA_MS) };
+    postaviOdgodu(n.id);
+  }
+
+  function vrati() {
+    if (odgodaRef.current) clearTimeout(odgodaRef.current.sat);
+    odgodaRef.current = null;
+    postaviOdgodu(null);
+  }
+
+  // Leaving the page must not lose a held tap: send it now, even as the page unloads.
+  useEffect(
+    () => () => {
+      const o = odgodaRef.current;
+      if (!o) return;
+      clearTimeout(o.sat);
+      void fetch(`/api/narudzbe/${o.n.id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify(o.tijelo), keepalive: true }).catch(() => {});
+    },
+    [],
+  );
+
   const gotovoPecenjare = (n: Narudzba) => stanica === "pecenjara" && n.sljedeci === "Gotovo";
 
   return (
@@ -205,53 +261,81 @@ export default function RedStanice({ stanica }: { stanica: Stanica }) {
       </p>
       {!red && !greska && <p role="status">Učitavam red…</p>}
       {red?.narudzbe.length === 0 && <p role="status">Nema narudžbi. Nove se pojavljuju same.</p>}
-      <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-        {red?.narudzbe.map((n) => (
-          <li
-            key={n.id}
-            className={`card card-border bg-base-200 ${n.cekaDugo ? "border-4 border-error" : "border-dim"}${n.status === "U pripremi" ? " border-s-8 border-s-warning" : ""}${n.status === "Gotovo" ? " listic-gotovo" : ""}`}
-          >
-            <div className="card-body gap-3 p-4">
-              <div className="flex flex-wrap items-baseline gap-x-4">
-                <h2 className="text-h2 font-bold">
-                  Narudžba <span className="font-broj text-broj-xl">{n.broj}</span>
-                </h2>
-                <span>
-                  Sto <span className="font-broj text-broj-xl">{n.stolovi.join(", ")}</span>
-                </span>
-                <span>Konobar: {n.konobar}</span>
-                <span className={`badge badge-lg h-auto py-1 text-h2 font-bold ${ZNACKA[n.status] ?? "badge-outline"}`}>
-                  {n.status === "Gotovo" && <span aria-hidden="true">✓</span>}
-                  {n.status}
-                </span>
-              </div>
-              <p>
-                Čeka <span className={`font-broj text-broj-xl${n.cekaDugo ? " text-error" : ""}`}>{minute(red.sada, n.kreirano)}</span> min
-                {n.cekaDugo && <strong className="ml-2 text-error">Čeka dugo (15 min ili više)</strong>}
-              </p>
-              <Stavke narudzba={n} />
-              {forma === n.id && gotovoPecenjare(n) ? (
-                <FormaGotovo narudzba={n} zauzeto={zauzeto !== null} posalji={(t) => posalji(n, t)} />
-              ) : (
-                n.sljedeci && (
-                  <button
-                    type="button"
-                    disabled={zauzeto !== null}
-                    aria-label={`${n.stavke.every((s) => s.stornoRazlog) ? "Ukloni storno" : n.sljedeci}, narudžba ${n.broj}`}
-                    onClick={() => (gotovoPecenjare(n) ? postaviFormu(n.id) : posalji(n, { status: n.sljedeci }))}
-                    className={`${glavno} btn-xl btn-block`}
-                  >
-                    {n.stavke.every((s) => s.stornoRazlog) ? "Ukloni storno" : n.sljedeci}
-                  </button>
-                )
-              )}
-              <button type="button" aria-label={`Ispiši listić, narudžba ${n.broj}`} onClick={() => postaviIspis({ n })} className={dugme}>
-                Ispiši listić
-              </button>
-            </div>
-          </li>
+      {priprema.length > 0 && (
+        <section aria-labelledby="za-pripremu" className="flex flex-wrap items-center gap-2">
+          <h2 id="za-pripremu" className="font-bold text-dim">
+            Ukupno za pripremu:
+          </h2>
+          {priprema.map((z) => (
+            <span key={`${z.naziv} ${z.jedinica}`} className="badge badge-lg h-auto gap-2 border-0 bg-base-200 py-2 font-bold">
+              <span className="font-broj text-h3 text-primary">{kol(z)}</span>
+              {z.naziv}
+            </span>
+          ))}
+        </section>
+      )}
+      <div className="grid items-start gap-4 xl:auto-cols-fr xl:grid-flow-col">
+        {kolone.map((k) => (
+          <section key={k.status} aria-label={k.status} className="flex flex-col gap-3 rounded-box bg-base-200 p-3">
+            <h2 className={`flex items-center justify-between text-h3 font-extrabold uppercase tracking-wide ${BOJA[k.status] ?? ""}`}>
+              {k.status}
+              <span className="badge badge-lg border-0 bg-base-300 text-base-content">{k.narudzbe.length}</span>
+            </h2>
+            <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(17rem,100%),1fr))] items-start gap-3">
+              {k.narudzbe.map((n) => (
+                <li
+                  key={n.id}
+                  className={`card bg-base-300 ${n.cekaDugo ? "border-4 border-error" : "border-2 border-transparent"}${n.status === "Gotovo" ? " listic-gotovo" : ""}`}
+                >
+                  <div className="card-body gap-3 p-4">
+                    <div className="flex items-start justify-between gap-3">
+                      <h3 className="flex flex-col">
+                        <span className="font-broj text-broj-xl font-bold leading-none">Sto {n.stolovi.join(", ")}</span>
+                        <span className="text-dim">
+                          Narudžba {n.broj}, {n.konobar}
+                        </span>
+                      </h3>
+                      <button type="button" aria-label={`Ispiši listić, narudžba ${n.broj}`} onClick={() => postaviIspis({ n })} className="btn btn-outline h-11 border-dim">
+                        Ispiši
+                      </button>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+                      <span className={`badge badge-lg h-auto py-1 text-h3 font-bold ${ZNACKA[n.status] ?? "badge-outline"}`}>
+                        {n.status === "Gotovo" && <span aria-hidden="true">✓</span>}
+                        {n.status}
+                      </span>
+                      <p>
+                        Čeka <span className={`font-broj text-broj-xl ${n.cekaDugo ? "text-error" : ""}`}>{minute(sada, n.kreirano)}</span> min
+                      </p>
+                    </div>
+                    {n.cekaDugo && <strong className="text-error">Čeka dugo (15 min ili više)</strong>}
+                    <Stavke narudzba={n} />
+                    {forma === n.id && gotovoPecenjare(n) ? (
+                      <FormaGotovo narudzba={n} zauzeto={zauzeto !== null} posalji={(t) => posalji(n, t)} />
+                    ) : odgoda === n.id ? (
+                      <button type="button" onClick={vrati} className={`${dugme} btn-xl btn-block`}>
+                        Vrati – šaljem „{n.sljedeci}“
+                      </button>
+                    ) : (
+                      n.sljedeci && (
+                        <button
+                          type="button"
+                          disabled={zauzeto !== null}
+                          aria-label={`${n.stavke.every((s) => s.stornoRazlog) ? "Ukloni storno" : n.sljedeci}, narudžba ${n.broj}`}
+                          onClick={() => (gotovoPecenjare(n) ? postaviFormu(n.id) : odgodi(n, { status: n.sljedeci }))}
+                          className={`btn btn-xl btn-block font-bold aria-disabled:cursor-progress ${SLJEDECI[n.sljedeci] ?? "btn-primary"}`}
+                        >
+                          {n.stavke.every((s) => s.stornoRazlog) ? "Ukloni storno" : n.sljedeci}
+                        </button>
+                      )
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </section>
         ))}
-      </ul>
+      </div>
       {ispis && <Listic narudzba={ispis.n} stanica={stanica} />}
     </div>
   );

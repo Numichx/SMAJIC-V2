@@ -14,17 +14,14 @@ export function Kartica({ p, onDodaj }: { p: Proizvod; onDodaj?: (p: Proizvod) =
         // eslint-disable-next-line @next/next/no-img-element -- plain img by design; the credit is the hover text and is listed on the help page
         <img src={p.slika.putanja} alt="" loading="lazy" className="mitem-img" title={p.slika.zasluge ?? undefined} />
       )}
-      <p className="text-lg font-bold">{p.naziv}</p>
-      <p>
-        {formatKM(p.cijena)}/{p.jedinica}
-      </p>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <p className="text-lg leading-tight font-bold">{p.naziv}</p>
+        <p className="text-dim">{p.jedinica}</p>
+        <p className="tabelarno text-h3 font-extrabold whitespace-nowrap text-primary">{formatKM(p.cijena)}</p>
+      </div>
       {onDodaj && (
-        <button
-          type="button"
-          onClick={() => onDodaj(p)}
-          className={glavno}
-        >
-          Dodaj
+        <button type="button" onClick={() => onDodaj(p)} aria-label={`Dodaj: ${p.naziv}`} className={`${glavno} btn-square size-14 text-h2`}>
+          +
         </button>
       )}
     </li>
@@ -53,7 +50,7 @@ export default function MeniPrikaz({ meni, onDodaj }: { meni: Meni; onDodaj?: (p
         />
       </label>
       {!upit && (
-        <div role="group" aria-label="Kategorije" className="flex flex-wrap gap-2">
+        <div role="group" aria-label="Kategorije" className="flex flex-wrap gap-x-6 gap-y-1 border-b border-base-300">
           {meni.kategorije.map((k) => (
             <button key={k.id} type="button" className="mkat" aria-pressed={kategorija === k.id} onClick={() => postaviKategoriju(k.id)}>
               {k.naziv}
@@ -62,7 +59,7 @@ export default function MeniPrikaz({ meni, onDodaj }: { meni: Meni; onDodaj?: (p
         </div>
       )}
       {proizvodi.length === 0 && <p role="status">Nema rezultata.</p>}
-      <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+      <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(19rem,100%),1fr))] gap-3">
         {proizvodi.map((p) => (
           <Kartica key={p.id} p={p} onDodaj={onDodaj} />
         ))}
