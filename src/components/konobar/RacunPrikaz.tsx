@@ -1,5 +1,6 @@
 "use client";
 
+import { dugme } from "./stil";
 import { useState } from "react";
 import { RAZLOZI_STORNA } from "@/lib/domain/naplata";
 import { formatBroj, formatKM, NAZIV_STANICE } from "@/lib/format";
@@ -45,7 +46,7 @@ export default function RacunPrikaz({ racun, onStorno }: { racun: Racun; onStorn
           <span className={storno ? "line-through" : ""}>{naziv}</span>
           <span className={storno ? "line-through" : ""}>{storno ? formatKM(s.stornoVrijednost ?? 0) : prilog && s.cijena === 0 ? "uključeno" : formatKM(s.iznos)}</span>
         </div>
-        {storno && <p className="font-semibold">Stornirano: {s.stornoRazlog}</p>}
+        {storno && <p className="font-bold">Stornirano: {s.stornoRazlog}</p>}
         {!storno && (
           <button
             type="button"
@@ -63,7 +64,7 @@ export default function RacunPrikaz({ racun, onStorno }: { racun: Racun; onStorn
               <button
                 key={r}
                 type="button"
-                className="min-h-12 rounded-lg border-2 border-okvir bg-povrsina px-3 font-semibold"
+                className={dugme}
                 onClick={async () => {
                   await onStorno(s.id, r);
                   postaviIzabranu(null);
@@ -80,12 +81,12 @@ export default function RacunPrikaz({ racun, onStorno }: { racun: Racun; onStorn
 
   return (
     <section aria-label="Otvoreni račun" className="flex flex-col gap-3">
-      <h2 className="text-xl font-semibold">
+      <h2 className="text-xl font-bold">
         Račun {racun.broj} · {racun.konobar}
       </h2>
       {racun.narudzbe.map((n) => (
         <div key={n.id} className="rounded-lg border-2 border-okvir p-3">
-          <p className="font-semibold">
+          <p className="font-bold">
             {NAZIV_STANICE[n.stanica] ?? n.stanica} · {n.status}
           </p>
           <ul className="mt-2 flex flex-col gap-2">

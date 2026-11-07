@@ -92,7 +92,7 @@ export default function ObavijestiKonobara() {
         <ul className="flex flex-col gap-2">
         {prikazi.map((p) => (
           <li key={p.kljuc} className="flex items-center gap-3 rounded-lg border-2 border-akcent bg-povrsina p-3">
-            <span className="flex-1 font-semibold">{opis(p)}</span>
+            <span className="flex-1 font-bold">{opis(p)}</span>
             <button
               type="button"
               aria-label={`Zatvori: ${opis(p)}`}

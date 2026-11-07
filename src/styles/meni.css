@@ -16,9 +16,9 @@
 }
 
 .mkat[aria-pressed="true"] {
-  border-color: var(--akcent);
-  background: var(--akcent);
-  color: var(--akcent-tekst);
+  border-color: var(--color-base-content);
+  background: var(--color-base-content);
+  color: var(--color-base-100);
 }
 
 .mkartica {

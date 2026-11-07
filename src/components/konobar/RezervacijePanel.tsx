@@ -85,7 +85,7 @@ export default function RezervacijePanel() {
 
   return (
     <div className="flex flex-col gap-4">
-      <p role="alert" className="font-semibold text-greska">
+      <p role="alert" className="font-bold text-error">
         {greska || lista.greska}
       </p>
 
@@ -104,7 +104,7 @@ export default function RezervacijePanel() {
         </div>
         {!lista.stavke && !lista.greska && <p role="status">Učitavam…</p>}
         {lista.stavke?.length === 0 && <p role="status">Nema rezervacija za ovaj dan.</p>}
-        <ul className="grid gap-3 lg:grid-cols-2">
+        <ul className="grid gap-3 xl:grid-cols-2">
           {lista.stavke?.map((r) => (
             <li key={r.id} className="flex flex-col gap-1 rounded-lg border-2 border-okvir bg-povrsina p-3">
               <strong className="text-lg">
@@ -116,7 +116,7 @@ export default function RezervacijePanel() {
               </p>
               {r.telefon && <p>Telefon: {r.telefon}</p>}
               {r.napomena && <p>Napomena: {r.napomena}</p>}
-              <p className="font-semibold">{STATUS[r.status]}</p>
+              <p className="font-bold">{STATUS[r.status]}</p>
               {r.status === "aktivna" && (
                 <div className="flex flex-wrap gap-2">
                   <button type="button" className={dugme} aria-label={`Realizovana: ${satSarajevo(r.vrijeme)} ${r.ime}`} onClick={() => promijeni(r.id, "realizovana")}>
@@ -138,7 +138,7 @@ export default function RezervacijePanel() {
       </section>
 
       <form onSubmit={nova} aria-label="Nova rezervacija" className="flex flex-col gap-3 rounded-lg border-2 border-okvir p-3">
-        <h2 className="text-xl font-semibold">Nova rezervacija</h2>
+        <h2 className="text-xl font-bold">Nova rezervacija</h2>
         <label className="flex flex-col gap-1">
           Ime gosta
           <input value={ime} onChange={(e) => postaviIme(e.target.value)} maxLength={100} className={polje} />

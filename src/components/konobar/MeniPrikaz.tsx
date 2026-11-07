@@ -14,7 +14,7 @@ export function Kartica({ p, onDodaj }: { p: Proizvod; onDodaj?: (p: Proizvod) =
         // eslint-disable-next-line @next/next/no-img-element -- plain img by design; the credit is the hover text and is listed on the help page
         <img src={p.slika.putanja} alt="" loading="lazy" className="mitem-img" title={p.slika.zasluge ?? undefined} />
       )}
-      <p className="text-lg font-semibold">{p.naziv}</p>
+      <p className="text-lg font-bold">{p.naziv}</p>
       <p>
         {formatKM(p.cijena)}/{p.jedinica}
       </p>
@@ -62,7 +62,7 @@ export default function MeniPrikaz({ meni, onDodaj }: { meni: Meni; onDodaj?: (p
         </div>
       )}
       {proizvodi.length === 0 && <p role="status">Nema rezultata.</p>}
-      <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {proizvodi.map((p) => (
           <Kartica key={p.id} p={p} onDodaj={onDodaj} />
         ))}

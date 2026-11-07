@@ -95,7 +95,7 @@ export default function StoloAkcije({
             </select>
           </label>
           {potvrda && (
-            <p role="alert" className="font-semibold">
+            <p role="alert" className="font-bold">
               Spajanje se ne može poništiti. Spojiti sto {stoId} sa stolom {cilj}?
             </p>
           )}
@@ -107,7 +107,7 @@ export default function StoloAkcije({
           </button>
         </form>
       )}
-      <p role="alert" className="font-semibold text-greska">
+      <p role="alert" className="font-bold text-error">
         {greska}
       </p>
     </section>

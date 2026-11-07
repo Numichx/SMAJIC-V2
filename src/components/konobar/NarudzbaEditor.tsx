@@ -220,10 +220,10 @@ export default function NarudzbaEditor({ stoId }: { stoId: number }) {
         <Link href="/konobar" className="inline-flex min-h-12 items-center underline">
           Nazad na stolove
         </Link>
-        <h1 className="text-2xl font-semibold">Sto {stoId}</h1>
+        <h1 className="text-2xl font-bold">Sto {stoId}</h1>
       </div>
       <div>
-        <p role="alert" className="font-semibold text-greska">
+        <p role="alert" className="font-bold text-error">
           {greska || greskaMenija}
         </p>
         <p role="status">{poruka}</p>
@@ -243,14 +243,14 @@ export default function NarudzbaEditor({ stoId }: { stoId: number }) {
           <p>Sto je slobodan.</p>
         ))}
       {cekajuZaSto.length > 0 && (
-        <p role="status" className="font-semibold">
+        <p role="status" className="font-bold">
           Čeka slanje za ovaj sto: {cekajuZaSto.length}. To još nije u kuhinji ni na računu, a šalje se samo kad se veza vrati.
           {imaTudjih && " Među njima je narudžba drugog konobara, koja ide tek kad se ta osoba prijavi. Naplata je ne čeka."}
         </p>
       )}
 
       <section aria-label="Nova narudžba" hidden={!!placeno} className="flex flex-col gap-3">
-        <h2 className="text-xl font-semibold">Nova narudžba</h2>
+        <h2 className="text-xl font-bold">Nova narudžba</h2>
         {korpa.length === 0 && <p>Korpa je prazna.</p>}
         <ul className="flex flex-col gap-3">
           {korpa.map((s) => {
@@ -262,7 +262,7 @@ export default function NarudzbaEditor({ stoId }: { stoId: number }) {
             const dostupni = (meni?.prilozi ?? []).filter((id) => !s.prilozi.some((x) => x.id === id));
             return (
               <li key={s.kljuc} className="flex flex-col gap-2 rounded-lg border-2 border-okvir p-3">
-                <p className="text-lg font-semibold">
+                <p className="text-lg font-bold">
                   {p.naziv} <span className="font-normal">{formatKM(p.cijena)}/{p.jedinica}</span>
                 </p>
                 <div className="flex flex-wrap items-end gap-2">
@@ -314,7 +314,7 @@ export default function NarudzbaEditor({ stoId }: { stoId: number }) {
                 </label>
                 {p.prilog && (
                   <div className="flex flex-col gap-2">
-                    <p className="font-semibold">
+                    <p className="font-bold">
                       Prilozi{p.prilog.jednaPorcija && " (jedna porcija)"} · najviše {MAX_PRILOGA}
                     </p>
                     <ul className="flex flex-col gap-1">
@@ -371,7 +371,7 @@ export default function NarudzbaEditor({ stoId }: { stoId: number }) {
         )}
         {korpa.length > 0 && (
           <>
-            <p className="text-lg font-semibold">Procjena: {formatKM(procjena)}</p>
+            <p className="text-lg font-bold">Procjena: {formatKM(procjena)}</p>
             <button type="button" className={glavno} aria-disabled={saljem} onClick={posalji}>
               {saljem ? "Šaljem…" : "Pošalji narudžbu"}
             </button>
@@ -380,7 +380,7 @@ export default function NarudzbaEditor({ stoId }: { stoId: number }) {
       </section>
 
       <section aria-label="Meni" hidden={!!placeno} className="flex flex-col gap-3">
-        <h2 className="text-xl font-semibold">Meni</h2>
+        <h2 className="text-xl font-bold">Meni</h2>
         {izKopije && <p role="status">Prikazana je zadnja spremljena kopija menija. Cijene potvrđuje server pri slanju.</p>}
         {!meni && !greskaMenija && <p role="status">Učitavam meni…</p>}
         {meni && <MeniPrikaz meni={meni} onDodaj={dodaj} />}

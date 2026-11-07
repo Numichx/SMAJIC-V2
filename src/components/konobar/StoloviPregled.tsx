@@ -51,26 +51,31 @@ export default function StoloviPregled() {
 
   return (
     <div className="flex flex-col gap-4">
-      <p role="alert" className="font-semibold text-greska">
+      <p role="alert" className="font-bold text-error">
         {greska}
       </p>
       {!stolovi && !greska && <p role="status">Učitavam stolove…</p>}
-      <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+      <ul className="grid grid-cols-3 gap-2 md:grid-cols-4 md:gap-3 xl:grid-cols-5">
         {stolovi?.map((s) => (
           <li key={s.id}>
             <Link
               href={`/konobar/stolovi/${s.id}`}
-              className={`flex min-h-28 flex-col justify-center gap-1 rounded-lg border-2 p-3 ${s.racun ? "border-akcent bg-povrsina" : "border-okvir"}`}
+              className={`card min-h-32 gap-1 p-2 md:p-3 ${
+                !s.racun
+                  ? "border-2 border-dim"
+                  : `border-4 border-base-content bg-base-200 ${s.racun.sveIzdato ? "" : "border-s-8 border-s-warning"}`
+              }`}
             >
-              <span className="text-xl font-bold">Sto {s.id}</span>
+              <span className="text-center font-broj text-broj font-extrabold md:text-broj-xl">Sto {s.id}</span>
               {s.racun ? (
                 <>
-                  <span className="text-lg font-semibold">{formatKM(s.racun.ukupno)}</span>
+                  <span className="text-end font-bold tabular-nums">{formatKM(s.racun.ukupno)}</span>
                   <span>{s.racun.konobar}</span>
                   {s.racun.stolovi.length > 1 && <span>Spojeno: {s.racun.stolovi.join(", ")}</span>}
+                  <span className="text-dim">{s.racun.sveIzdato ? "Otvoren" : "Čeka izdavanje"}</span>
                 </>
               ) : (
-                <span>Slobodan</span>
+                <span className="text-dim">Slobodan</span>
               )}
             </Link>
           </li>
