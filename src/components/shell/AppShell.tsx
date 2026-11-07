@@ -44,6 +44,8 @@ const navigacija: Record<Uloga, { href: string; naziv: string }[]> = {
 
 export default async function AppShell({ odjeljak, children }: { odjeljak: Odjeljak; children: React.ReactNode }) {
   const sesija = await sesijaStranice(odjeljak);
+  // Waiters carry phones: their navigation moves to a bottom bar.
+  const dno = sesija.uloga === "konobar";
 
   return (
     <>
@@ -54,7 +56,7 @@ export default async function AppShell({ odjeljak, children }: { odjeljak: Odjel
       <header className="flex flex-wrap items-center gap-x-4 gap-y-2 border-b-2 border-dim p-3">
         <strong className="text-lg">Smajić – Narudžbe</strong>
         <span>{sesija.ime}</span>
-        <Navigacija veze={[...navigacija[sesija.uloga], { href: "/pomoc", naziv: "Pomoć" }]} />
+        <Navigacija veze={[...navigacija[sesija.uloga], { href: "/pomoc", naziv: "Pomoć" }]} dno={dno} />
         <div className="ml-auto flex gap-2">
           <PrekidacTeme />
           <Odjava />
@@ -62,7 +64,7 @@ export default async function AppShell({ odjeljak, children }: { odjeljak: Odjel
       </header>
       {sesija.uloga === "konobar" && <OfflineStatus konobar={sesija.ime} />}
       {sesija.uloga === "konobar" && <ObavijestiKonobara />}
-      <main id="sadrzaj" tabIndex={-1} className="mx-auto w-full max-w-5xl flex-1 p-4 md:p-6">{children}</main>
+      <main id="sadrzaj" tabIndex={-1} className={`mx-auto w-full max-w-5xl flex-1 p-4 md:p-6${dno ? " pb-24 md:pb-6" : ""}`}>{children}</main>
     </>
   );
 }

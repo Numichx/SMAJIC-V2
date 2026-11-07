@@ -9,29 +9,29 @@
   default: true;
   prefersdark: true;
   color-scheme: dark;
-  --color-base-100: #171c1b;
-  --color-base-200: #232a28;
-  --color-base-300: #2e3633;
+  --color-base-100: #121615;
+  --color-base-200: #1f2624;
+  --color-base-300: #333d3a;
   --color-base-content: #ece6da;
-  --color-primary: #c9873c;
-  --color-primary-content: #171c1b;
-  --color-secondary: #2e3633;
+  --color-primary: #e8a65c;
+  --color-primary-content: #121615;
+  --color-secondary: #333d3a;
   --color-secondary-content: #ece6da;
-  --color-accent: #2e3633;
+  --color-accent: #333d3a;
   --color-accent-content: #ece6da;
-  --color-neutral: #2e3633;
+  --color-neutral: #333d3a;
   --color-neutral-content: #ece6da;
   --color-info: #86aedd;
-  --color-info-content: #171c1b;
+  --color-info-content: #121615;
   --color-success: #72c08e;
-  --color-success-content: #171c1b;
+  --color-success-content: #121615;
   --color-warning: #e2b54e;
-  --color-warning-content: #171c1b;
-  --color-error: #e8695c;
-  --color-error-content: #171c1b;
-  --radius-selector: 0.5rem;
-  --radius-field: 0.5rem;
-  --radius-box: 1rem;
+  --color-warning-content: #121615;
+  --color-error: #f08a7e;
+  --color-error-content: #121615;
+  --radius-selector: 1.5rem;
+  --radius-field: 0.875rem;
+  --radius-box: 1.25rem;
   --size-selector: 0.3125rem;
   --size-field: 0.3125rem;
   --border: 2px;
@@ -64,9 +64,9 @@
   --color-warning-content: #f7f3ec;
   --color-error: #a24940;
   --color-error-content: #f7f3ec;
-  --radius-selector: 0.5rem;
-  --radius-field: 0.5rem;
-  --radius-box: 1rem;
+  --radius-selector: 1.5rem;
+  --radius-field: 0.875rem;
+  --radius-box: 1.25rem;
   --size-selector: 0.3125rem;
   --size-field: 0.3125rem;
   --border: 2px;
@@ -83,7 +83,7 @@
   --color-dim: var(--dim);
   --color-izdato: var(--izdato);
   --font-sans: var(--font-atkinson), Arial, Helvetica, sans-serif;
-  --font-broj: var(--font-big-shoulders), var(--font-atkinson), sans-serif;
+  --font-broj: var(--font-space-grotesk), var(--font-atkinson), sans-serif;
 }
 
 @theme {

@@ -8,7 +8,7 @@ import { greskaIz } from "@/lib/api/greskaIz";
 import { formatBroj, NAZIV_STANICE } from "@/lib/format";
 import { CEKANJE_MS } from "@/lib/offline/sync";
 import { useIspis } from "./useIspis";
-import { brojIzUnosa, poredajStavke, sumnjivaTezina, type Stavka } from "./unos";
+import { brojIzUnosa, poredajStavke, sumnjivaTezina, zaPripremu, type Stavka } from "./unos";
 
 type Stanica = "kuhinja" | "pecenjara" | "sank";
 type Narudzba = {
@@ -23,7 +23,7 @@ type Narudzba = {
   stavke: Stavka[];
 };
 
-const kol = (s: Stavka) => `${formatBroj(s.kolicina)} ${s.jedinica}`;
+const kol = (s: Pick<Stavka, "kolicina" | "jedinica">) => `${formatBroj(s.kolicina)} ${s.jedinica}`;
 // Order-state colours: the badge carries the colour, the card stays base-200.
 const ZNACKA: Record<string, string> = { Novo: "badge-outline badge-info", "U pripremi": "badge-warning", Gotovo: "badge-success", Izdato: "badge-ghost text-izdato" };
 const minute = (sada: string, kreirano: string) => Math.max(0, Math.floor((Date.parse(sada) - Date.parse(kreirano)) / 60000));
@@ -196,6 +196,13 @@ export default function RedStanice({ stanica }: { stanica: Stanica }) {
     await ucitaj();
   }
 
+  // One column per state, in the order the order moves; an unknown state still gets one, so no order is hidden.
+  const kolone = [...new Set([...Object.keys(ZNACKA), ...(red?.narudzbe.map((n) => n.status) ?? [])])]
+    .map((status) => ({ status, narudzbe: red?.narudzbe.filter((n) => n.status === status) ?? [] }))
+    .filter((k) => k.narudzbe.length > 0);
+  const priprema = red ? zaPripremu(red.narudzbe) : [];
+  const sada = red?.sada ?? "";
+
   const gotovoPecenjare = (n: Narudzba) => stanica === "pecenjara" && n.sljedeci === "Gotovo";
 
   return (
@@ -205,53 +212,76 @@ export default function RedStanice({ stanica }: { stanica: Stanica }) {
       </p>
       {!red && !greska && <p role="status">Učitavam red…</p>}
       {red?.narudzbe.length === 0 && <p role="status">Nema narudžbi. Nove se pojavljuju same.</p>}
-      <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-        {red?.narudzbe.map((n) => (
-          <li
-            key={n.id}
-            className={`card card-border bg-base-200 ${n.cekaDugo ? "border-4 border-error" : "border-dim"}${n.status === "U pripremi" ? " border-s-8 border-s-warning" : ""}${n.status === "Gotovo" ? " listic-gotovo" : ""}`}
-          >
-            <div className="card-body gap-3 p-4">
-              <div className="flex flex-wrap items-baseline gap-x-4">
-                <h2 className="text-h2 font-bold">
-                  Narudžba <span className="font-broj text-broj-xl">{n.broj}</span>
-                </h2>
-                <span>
-                  Sto <span className="font-broj text-broj-xl">{n.stolovi.join(", ")}</span>
-                </span>
-                <span>Konobar: {n.konobar}</span>
-                <span className={`badge badge-lg h-auto py-1 text-h2 font-bold ${ZNACKA[n.status] ?? "badge-outline"}`}>
-                  {n.status === "Gotovo" && <span aria-hidden="true">✓</span>}
-                  {n.status}
-                </span>
-              </div>
-              <p>
-                Čeka <span className={`font-broj text-broj-xl${n.cekaDugo ? " text-error" : ""}`}>{minute(red.sada, n.kreirano)}</span> min
-                {n.cekaDugo && <strong className="ml-2 text-error">Čeka dugo (15 min ili više)</strong>}
-              </p>
-              <Stavke narudzba={n} />
-              {forma === n.id && gotovoPecenjare(n) ? (
-                <FormaGotovo narudzba={n} zauzeto={zauzeto !== null} posalji={(t) => posalji(n, t)} />
-              ) : (
-                n.sljedeci && (
-                  <button
-                    type="button"
-                    disabled={zauzeto !== null}
-                    aria-label={`${n.stavke.every((s) => s.stornoRazlog) ? "Ukloni storno" : n.sljedeci}, narudžba ${n.broj}`}
-                    onClick={() => (gotovoPecenjare(n) ? postaviFormu(n.id) : posalji(n, { status: n.sljedeci }))}
-                    className={`${glavno} btn-xl btn-block`}
-                  >
-                    {n.stavke.every((s) => s.stornoRazlog) ? "Ukloni storno" : n.sljedeci}
-                  </button>
-                )
-              )}
-              <button type="button" aria-label={`Ispiši listić, narudžba ${n.broj}`} onClick={() => postaviIspis({ n })} className={dugme}>
-                Ispiši listić
-              </button>
-            </div>
-          </li>
+      {priprema.length > 0 && (
+        <section aria-labelledby="za-pripremu" className="flex flex-wrap items-center gap-2">
+          <h2 id="za-pripremu" className="font-bold uppercase tracking-wide text-dim">
+            Za pripremu
+          </h2>
+          {priprema.map((z) => (
+            <span key={`${z.naziv} ${z.jedinica}`} className="badge badge-lg h-auto gap-2 border-0 bg-base-200 py-2 font-bold">
+              <span className="font-broj text-h3 text-primary">{kol(z)}</span>
+              {z.naziv}
+            </span>
+          ))}
+        </section>
+      )}
+      <div className="grid gap-4 xl:auto-cols-fr xl:grid-flow-col">
+        {kolone.map((k) => (
+          <section key={k.status} aria-label={k.status} className="flex flex-col gap-3">
+            <h2 className="flex items-center gap-2 text-h3 font-bold">
+              <span className={`badge badge-sm ${ZNACKA[k.status] ?? "badge-outline"}`} aria-hidden="true" />
+              {k.status} <span className="text-dim">{k.narudzbe.length}</span>
+            </h2>
+            <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-1">
+              {k.narudzbe.map((n) => (
+                <li
+                  key={n.id}
+                  className={`card card-border bg-base-200 ${n.cekaDugo ? "border-4 border-error" : "border-transparent"}${n.status === "Gotovo" ? " listic-gotovo" : ""}`}
+                >
+                  <div className="card-body gap-3 p-4">
+                    <div className="flex flex-wrap items-baseline gap-x-4">
+                      <h3 className="text-h2 font-bold">
+                        Narudžba <span className="font-broj text-broj-xl">{n.broj}</span>
+                      </h3>
+                      <span>
+                        Sto <span className="font-broj text-broj-xl">{n.stolovi.join(", ")}</span>
+                      </span>
+                      <span>Konobar: {n.konobar}</span>
+                      <span className={`badge badge-lg h-auto py-1 text-h2 font-bold ${ZNACKA[n.status] ?? "badge-outline"}`}>
+                        {n.status === "Gotovo" && <span aria-hidden="true">✓</span>}
+                        {n.status}
+                      </span>
+                    </div>
+                    <p>
+                      Čeka <span className={`font-broj text-broj-xl${n.cekaDugo ? " text-error" : ""}`}>{minute(sada, n.kreirano)}</span> min
+                      {n.cekaDugo && <strong className="ml-2 text-error">Čeka dugo (15 min ili više)</strong>}
+                    </p>
+                    <Stavke narudzba={n} />
+                    {forma === n.id && gotovoPecenjare(n) ? (
+                      <FormaGotovo narudzba={n} zauzeto={zauzeto !== null} posalji={(t) => posalji(n, t)} />
+                    ) : (
+                      n.sljedeci && (
+                        <button
+                          type="button"
+                          disabled={zauzeto !== null}
+                          aria-label={`${n.stavke.every((s) => s.stornoRazlog) ? "Ukloni storno" : n.sljedeci}, narudžba ${n.broj}`}
+                          onClick={() => (gotovoPecenjare(n) ? postaviFormu(n.id) : posalji(n, { status: n.sljedeci }))}
+                          className={`${glavno} btn-xl btn-block`}
+                        >
+                          {n.stavke.every((s) => s.stornoRazlog) ? "Ukloni storno" : n.sljedeci}
+                        </button>
+                      )
+                    )}
+                    <button type="button" aria-label={`Ispiši listić, narudžba ${n.broj}`} onClick={() => postaviIspis({ n })} className={dugme}>
+                      Ispiši listić
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </section>
         ))}
-      </ul>
+      </div>
       {ispis && <Listic narudzba={ispis.n} stanica={stanica} />}
     </div>
   );

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { brojIzUnosa, poredajStavke, sumnjivaTezina, type Stavka } from "@/components/stanice/unos";
+import { brojIzUnosa, poredajStavke, sumnjivaTezina, zaPripremu, type Stavka } from "@/components/stanice/unos";
 
 const s = (id: number, naziv: string, prilogUz: number | null = null, prilogUzNaziv: string | null = null): Stavka => ({
   id, naziv, jedinica: "porcija", kolicina: 1, napomena: null, prilogUz, prilogUzNaziv, trebaTezinu: false, stornoRazlog: null,
@@ -23,6 +23,22 @@ describe("unos stanice", () => {
     expect(r.map((x) => [x.stavka.id, x.prilozi.map((p) => p.id), x.uz])).toEqual([
       [1, [2], null],
       [3, [], "Ćevapi"],
+    ]);
+  });
+
+  it("zbraja samo otvorene, nestornirane stavke po nazivu i jedinici", () => {
+    const st = (id: number, naziv: string, kolicina: number, jedinica = "porcija", stornoRazlog: string | null = null): Stavka => ({
+      id, naziv, jedinica, kolicina, napomena: null, prilogUz: null, prilogUzNaziv: null, trebaTezinu: false, stornoRazlog,
+    });
+    expect(
+      zaPripremu([
+        { status: "Novo", stavke: [st(1, "Pljeskavica", 2), st(2, "Janjetina", 0.1, "kg")] },
+        { status: "U pripremi", stavke: [st(3, "Pljeskavica", 1), st(4, "Janjetina", 0.2, "kg"), st(5, "Pljeskavica", 5, "porcija", "greška")] },
+        { status: "Gotovo", stavke: [st(6, "Pljeskavica", 9)] },
+      ]),
+    ).toEqual([
+      { naziv: "Pljeskavica", jedinica: "porcija", kolicina: 3 },
+      { naziv: "Janjetina", jedinica: "kg", kolicina: 0.3 },
     ]);
   });
 });

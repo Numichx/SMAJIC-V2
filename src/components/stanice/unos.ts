@@ -33,3 +33,20 @@ export function poredajStavke(stavke: Stavka[]): Red[] {
     prilozi: stavke.filter((p) => p.prilogUz === s.id),
   }));
 }
+
+// What is still to cook across open orders, summed per dish: in a rush the grill works from this line.
+export function zaPripremu(narudzbe: { status: string; stavke: Stavka[] }[]) {
+  const zbir = new Map<string, { naziv: string; jedinica: string; kolicina: number }>();
+  for (const n of narudzbe) {
+    if (n.status !== "Novo" && n.status !== "U pripremi") continue;
+    for (const s of n.stavke) {
+      if (s.stornoRazlog) continue;
+      const kljuc = `${s.naziv}\u0000${s.jedinica}`;
+      const z = zbir.get(kljuc) ?? { naziv: s.naziv, jedinica: s.jedinica, kolicina: 0 };
+      // Kilograms add up in floats; three decimals is the scale's precision.
+      z.kolicina = Math.round((z.kolicina + s.kolicina) * 1000) / 1000;
+      zbir.set(kljuc, z);
+    }
+  }
+  return [...zbir.values()];
+}

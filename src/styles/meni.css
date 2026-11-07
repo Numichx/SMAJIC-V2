@@ -3,14 +3,15 @@
   width: 100%;
   aspect-ratio: 4 / 3;
   object-fit: cover;
-  border-radius: 0.5rem;
+  border-radius: 0.875rem;
 }
 
 .mkat {
+  flex: none;
   min-height: 3rem;
-  padding: 0 1rem;
-  border: 2px solid var(--color-dim);
-  border-radius: 0.5rem;
+  padding: 0 1.125rem;
+  border: 2px solid var(--color-base-300);
+  border-radius: 999px;
   background: var(--color-base-200);
   font-weight: 600;
 }
@@ -26,6 +27,7 @@
   flex-direction: column;
   gap: 0.5rem;
   padding: 0.75rem;
-  border: 2px solid var(--color-dim);
-  border-radius: 0.5rem;
+  border: 2px solid transparent;
+  border-radius: var(--radius-box);
+  background: var(--color-base-200);
 }
