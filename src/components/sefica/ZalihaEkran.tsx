@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { dugme, glavno, polje } from "@/components/konobar/stil";
+import { dugme, glavno, izbor } from "@/components/konobar/stil";
 import { formatBroj, formatKM } from "@/lib/format";
 import { useSlanje, useUcitaj, zovi } from "./api";
 import { formatVrijeme, kolicinaIzUnosa } from "./pomocno";
 import MesnicaZahtjevi from "./MesnicaZahtjevi";
-import { Greska, Polje, Tabela } from "./ui";
+import { Greska, kartica, Polje, Strane, Tabela } from "./ui";
 
 export type Artikal = {
   id: string;
@@ -41,11 +41,11 @@ function PopisForma({ a, gotovo }: { a: Artikal; gotovo: (poruka: string) => voi
   }
 
   return (
-    <section aria-label={`Popis: ${a.naziv}`} className="flex flex-col gap-3 border-t-2 border-okvir pt-3">
+    <section aria-label={`Popis: ${a.naziv}`} className="flex flex-col gap-3 border-t-2 border-dim pt-3">
       <Polje oznaka={`Stvarno stanje na polici (${a.jedinica})`} vrijednost={stanje} onChange={postaviStanje} />
       <label className="flex flex-col gap-1">
         Razlog
-        <select className={polje} value={razlog} onChange={(e) => postaviRazlog(e.target.value)}>
+        <select className={izbor} value={razlog} onChange={(e) => postaviRazlog(e.target.value)}>
           {RAZLOZI.map((r) => (
             <option key={r}>{r}</option>
           ))}
@@ -82,7 +82,7 @@ function UrediForma({ a, gotovo }: { a: Artikal; gotovo: (poruka: string) => voi
   }
 
   return (
-    <section aria-label={`Izmjena: ${a.naziv}`} className="flex flex-col gap-3 border-t-2 border-okvir pt-3">
+    <section aria-label={`Izmjena: ${a.naziv}`} className="flex flex-col gap-3 border-t-2 border-dim pt-3">
       <Polje oznaka={`Minimum (${a.jedinica})`} vrijednost={minimum} onChange={postaviMinimum} />
       <Polje oznaka="Nabavna cijena (KM)" vrijednost={nabavna} onChange={postaviNabavnu} />
       <Polje oznaka="Prodajna cijena u mesnici (KM)" vrijednost={prodajna} onChange={postaviProdajnu} />
@@ -119,9 +119,9 @@ function ProdajaForma({ a, gotovo }: { a: Artikal; gotovo: (poruka: string) => v
   }
 
   return (
-    <section aria-label={`Prodaja: ${a.naziv}`} className="flex flex-col gap-3 border-t-2 border-okvir pt-3">
+    <section aria-label={`Prodaja: ${a.naziv}`} className="flex flex-col gap-3 border-t-2 border-dim pt-3">
       {a.prodajnaCijena === null ? (
-        <p role="alert" className="font-semibold text-greska">
+        <p role="alert" className="font-bold text-error">
           Prodajna cijena nije postavljena, pa prodaja nije moguća. Javite se šefici.
         </p>
       ) : (
@@ -154,7 +154,7 @@ function Lista({ uloga, zaliha, osvjezi }: { uloga: Uloga; zaliha: Artikal[]; os
   const dugmeZa = (a: Artikal, vrsta: "popis" | "uredi" | "prodaja", naziv: string) => (
     <button
       type="button"
-      className={dugme}
+      className={`${dugme} aria-expanded:border-base-content`}
       aria-expanded={otvoreno?.id === a.id && otvoreno.vrsta === vrsta}
       aria-label={`${naziv}: ${a.naziv}`}
       onClick={() => postaviOtvoreno(otvoreno?.id === a.id && otvoreno.vrsta === vrsta ? null : { id: a.id, vrsta })}
@@ -165,17 +165,17 @@ function Lista({ uloga, zaliha, osvjezi }: { uloga: Uloga; zaliha: Artikal[]; os
 
   return (
     <section aria-label="Zaliha" className="flex flex-col gap-3">
-      <h3 className="text-lg font-semibold">Zaliha</h3>
-      {poruka && <p role="status" className="font-semibold">{poruka}</p>}
+      <h3 className="text-lg font-bold">Zaliha</h3>
+      {poruka && <p role="status" className="font-bold">{poruka}</p>}
       <Polje oznaka="Traži artikal" vrijednost={filter} onChange={postaviFilter} tip="text" />
       {zaliha.length === 0 && <p>Zaliha je prazna: nijedan artikal još nije unesen.</p>}
       {zaliha.length > 0 && prikaz.length === 0 && <p>Nijedan artikal ne odgovara pretrazi.</p>}
       <ul className="flex flex-col gap-2">
         {prikaz.map((a) => (
-          <li key={a.id} className="flex flex-col gap-2 rounded-lg border-2 border-okvir p-3">
+          <li key={a.id} className={`${kartica} gap-2`}>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
               <div className="min-w-0 flex-1">
-                <p className="text-lg font-semibold break-words">{a.naziv}</p>
+                <p className="text-lg font-bold break-words">{a.naziv}</p>
                 <p>
                   Stanje: <strong>{formatBroj(a.stanje)} {a.jedinica}</strong>
                   {a.stanje === 0 ? " · Nema na stanju" : a.ispodMinimuma ? " · Ispod minimuma" : ""}
@@ -226,11 +226,11 @@ function Prometi({ zaliha, verzija }: { zaliha: Artikal[]; verzija: number }) {
 
   return (
     <section aria-label="Historija prometa" className="flex flex-col gap-3">
-      <h3 className="text-lg font-semibold">Historija prometa</h3>
-      <div className="grid gap-2 sm:grid-cols-2">
+      <h3 className="text-lg font-bold">Historija prometa</h3>
+      <div className="grid gap-2 md:grid-cols-2">
         <label className="flex flex-col gap-1">
           Artikal
-          <select className={polje} value={artikal} onChange={(e) => (postaviArtikal(e.target.value), postaviStranu(1))}>
+          <select className={izbor} value={artikal} onChange={(e) => (postaviArtikal(e.target.value), postaviStranu(1))}>
             <option value="">Svi artikli</option>
             {zaliha.map((a) => (
               <option key={a.id} value={a.id}>
@@ -241,7 +241,7 @@ function Prometi({ zaliha, verzija }: { zaliha: Artikal[]; verzija: number }) {
         </label>
         <label className="flex flex-col gap-1">
           Vrsta
-          <select className={polje} value={vrsta} onChange={(e) => (postaviVrstu(e.target.value), postaviStranu(1))}>
+          <select className={izbor} value={vrsta} onChange={(e) => (postaviVrstu(e.target.value), postaviStranu(1))}>
             <option value="">Sve vrste</option>
             {Object.entries(VRSTA).map(([k, v]) => (
               <option key={k} value={k}>
@@ -268,16 +268,9 @@ function Prometi({ zaliha, verzija }: { zaliha: Artikal[]; verzija: number }) {
               t.zaposlenik,
             ])}
             prazno="Još nema prometa zalihe."
+            tekstKolone={[0, 1, 2, 5, 6]}
           />
-          <div className="flex gap-2">
-            <button type="button" className={dugme} disabled={strana === 1} onClick={() => postaviStranu(strana - 1)}>
-              Novije
-            </button>
-            <span className="flex items-center">Strana {strana}</span>
-            <button type="button" className={dugme} disabled={!p.imaJos} onClick={() => postaviStranu(strana + 1)}>
-              Starije
-            </button>
-          </div>
+          <Strane strana={strana} prethodna={strana > 1 ? () => postaviStranu(strana - 1) : undefined} sljedeca={p.imaJos ? () => postaviStranu(strana + 1) : undefined} />
         </>
       )}
     </section>

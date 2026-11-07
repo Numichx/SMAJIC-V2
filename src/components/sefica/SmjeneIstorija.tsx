@@ -1,11 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { dugme } from "@/components/konobar/stil";
 import { formatKM } from "@/lib/format";
 import { useUcitaj } from "./api";
-import { formatVrijeme } from "./pomocno";
-import { Greska, Tabela } from "./ui";
+import { formatVrijeme, razlikaTekst } from "./pomocno";
+import { Greska, Strane, Tabela } from "./ui";
 
 type Smjena = {
   id: string;
@@ -23,11 +22,6 @@ type Smjena = {
 };
 type Odgovor = { otvorena: { oznaka: string; pocetak: string; otvorio: string } | null; smjene: Smjena[]; imaJos: boolean };
 
-function Razlika({ iznos }: { iznos: number }) {
-  if (iznos === 0) return <>0,00 KM (tačno)</>;
-  return <>{iznos < 0 ? `Manjak ${formatKM(-iznos)}` : `Višak ${formatKM(iznos)}`}</>;
-}
-
 export default function SmjeneIstorija() {
   const [strana, postaviStranu] = useState(1);
   const { podaci: p, greska, ucitano } = useUcitaj<Odgovor>(`/api/smjene?strana=${strana}`);
@@ -39,7 +33,7 @@ export default function SmjeneIstorija() {
       {p && (
         <>
           {p.otvorena ? (
-            <p role="status" className="font-semibold">
+            <p role="status" className="font-bold">
               Otvorena je smjena {p.otvorena.oznaka} od {formatVrijeme(p.otvorena.pocetak)} ({p.otvorena.otvorio}).
             </p>
           ) : (
@@ -59,22 +53,15 @@ export default function SmjeneIstorija() {
               formatKM(s.pazarStanica),
               formatKM(s.ocekivaniPazar),
               formatKM(s.predaniPazar),
-              <Razlika key="r" iznos={s.razlika} />,
+              razlikaTekst(s.razlika),
               s.naplate
                 ? `popusti ${formatKM(s.naplate.popust)}, na dug ${formatKM(s.naplate.dug)}, kartica ${formatKM(s.naplate.kartica)}, bakšiš ${formatKM(s.naplate.baksis)}`
                 : "–",
             ])}
             prazno="Još nema zatvorenih smjena."
+            tekstKolone={[0, 1, 7]}
           />
-          <div className="flex gap-2">
-            <button type="button" className={dugme} disabled={strana === 1} onClick={() => postaviStranu(strana - 1)}>
-              Novije
-            </button>
-            <span className="flex items-center">Strana {strana}</span>
-            <button type="button" className={dugme} disabled={!p.imaJos} onClick={() => postaviStranu(strana + 1)}>
-              Starije
-            </button>
-          </div>
+          <Strane strana={strana} prethodna={strana > 1 ? () => postaviStranu(strana - 1) : undefined} sljedeca={p.imaJos ? () => postaviStranu(strana + 1) : undefined} />
         </>
       )}
     </div>

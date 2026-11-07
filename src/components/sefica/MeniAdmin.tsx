@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { dugme, glavno, polje } from "@/components/konobar/stil";
+import { dugme, glavno, izbor } from "@/components/konobar/stil";
 import { formatKM } from "@/lib/format";
 import { useSlanje, useUcitaj, zovi } from "./api";
 import { cijenaIzUnosa, potvrdaCijenePotrebna, redoslijedIzUnosa } from "./meniAdminPomocno";
-import { Greska, Polje } from "./ui";
+import { Greska, kartica, Polje } from "./ui";
 
 type Kategorija = { id: string; naziv: string };
 type Proizvod = {
@@ -43,6 +43,8 @@ const STANICE = [
   ["pecenjara", "Pečenjara"],
   ["sank", "Šank"],
 ] as const;
+// Labels for the stored ids, so the list never shows a raw id.
+const NAZIV: Record<string, string> = Object.fromEntries([...JEDINICE, ...STANICE]);
 
 function polja(proizvod?: Proizvod): PoljaProizvoda {
   return {
@@ -114,38 +116,38 @@ function ProizvodForma({
   }
 
   return (
-    <section aria-label={proizvod ? `Izmjena: ${proizvod.naziv}` : "Novi proizvod"} className="flex flex-col gap-3 rounded-lg border-2 border-okvir p-3">
-      <h3 className="text-lg font-semibold">{proizvod ? `Izmjena: ${proizvod.naziv}` : "Novi proizvod"}</h3>
+    <section aria-label={proizvod ? `Izmjena: ${proizvod.naziv}` : "Novi proizvod"} className={`${kartica} gap-3`}>
+      <h3 className="text-lg font-bold">{proizvod ? `Izmjena: ${proizvod.naziv}` : "Novi proizvod"}</h3>
       <Polje oznaka="Naziv" vrijednost={vrijednosti.naziv} onChange={(v) => promijeni("naziv", v)} tip="text" maxLength={100} />
       <label className="flex flex-col gap-1">
         Kategorija
-        <select className={polje} value={vrijednosti.kategorijaId} onChange={(e) => promijeni("kategorijaId", e.target.value)}>
+        <select className={izbor} value={vrijednosti.kategorijaId} onChange={(e) => promijeni("kategorijaId", e.target.value)}>
           <option value="">Izaberite kategoriju</option>
           {kategorije.map((k) => (
             <option key={k.id} value={k.id}>{k.naziv}</option>
           ))}
         </select>
       </label>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-3 md:grid-cols-2">
         <Polje oznaka="Cijena (KM)" vrijednost={vrijednosti.cijena} onChange={(v) => promijeni("cijena", v)} />
         <Polje oznaka="Redoslijed" vrijednost={vrijednosti.redoslijed} onChange={(v) => promijeni("redoslijed", v)} tip="numeric" />
       </div>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <div className="grid gap-3 md:grid-cols-2">
         <label className="flex flex-col gap-1">
           Jedinica
-          <select className={polje} value={vrijednosti.jedinica} onChange={(e) => promijeni("jedinica", e.target.value)}>
+          <select className={izbor} value={vrijednosti.jedinica} onChange={(e) => promijeni("jedinica", e.target.value)}>
             {JEDINICE.map(([id, naziv]) => <option key={id} value={id}>{naziv}</option>)}
           </select>
         </label>
         <label className="flex flex-col gap-1">
           Stanica
-          <select className={polje} value={vrijednosti.stanica} onChange={(e) => promijeni("stanica", e.target.value)}>
+          <select className={izbor} value={vrijednosti.stanica} onChange={(e) => promijeni("stanica", e.target.value)}>
             {STANICE.map(([id, naziv]) => <option key={id} value={id}>{naziv}</option>)}
           </select>
         </label>
       </div>
       {proizvod && (
-        <div className="rounded-lg bg-povrsina p-3">
+        <div className="rounded-box bg-base-100 p-3">
           <p>Automatska pravila se ne uređuju ovdje.</p>
           <p>Važe se: {proizvod.tezina ? "da" : "ne"}</p>
           <p>Prilog: {proizvod.jePrilog ? "da" : "ne"}</p>
@@ -155,7 +157,7 @@ function ProizvodForma({
       )}
       <Greska tekst={lokalnaGreska || greska} />
       {potvrda && cijenaPotvrde !== null && potvrdaCijenePotrebna(proizvod?.cijena, cijenaPotvrde) && (
-        <p role="status" className="font-semibold">
+        <p role="status" className="font-bold">
           {proizvod
             ? `Cijena se mijenja sa ${formatKM(proizvod.cijena)} na ${formatKM(cijenaPotvrde)}.`
             : `Novi proizvod će biti ponuđen po cijeni ${formatKM(cijenaPotvrde)}.`}
@@ -167,8 +169,8 @@ function ProizvodForma({
           {saljem
             ? "Spremam…"
             : potvrda && cijenaPotvrde !== null && potvrdaCijenePotrebna(proizvod?.cijena, cijenaPotvrde)
-              ? "Potvrdi i sačuvaj"
-              : "Sačuvaj"}
+              ? "Potvrdi i spremi"
+              : "Spremi"}
         </button>
         {odustani && <button type="button" className={dugme} onClick={odustani}>Odustani</button>}
       </div>
@@ -196,13 +198,13 @@ function StavkaProizvoda({ proizvod, kategorija, kategorije, osvjezi }: {
   }
 
   return (
-    <li className="flex flex-col gap-3 rounded-lg border-2 border-okvir p-3">
+    <li className={`${kartica} gap-3`}>
       {!uredi ? (
         <>
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-lg font-semibold break-words">{proizvod.naziv}</p>
-              <p>{formatKM(proizvod.cijena)} · {proizvod.jedinica} · {proizvod.stanica}</p>
+              <p className="text-lg font-bold break-words">{proizvod.naziv}</p>
+              <p>{formatKM(proizvod.cijena)} · {NAZIV[proizvod.jedinica] ?? proizvod.jedinica} · {NAZIV[proizvod.stanica] ?? proizvod.stanica}</p>
               <p>Redoslijed: {proizvod.redoslijed} · {proizvod.aktivan ? "U ponudi" : "Rasprodano / skriveno"}</p>
               <p>Važe se: {proizvod.tezina ? "da" : "ne"} · Prilog: {proizvod.jePrilog ? "da" : "ne"}</p>
               <p>Besplatni prilozi: {proizvod.besplatniPrilozi.length > 0 ? proizvod.besplatniPrilozi.join(", ") : "nema"}</p>
@@ -256,7 +258,7 @@ export default function MeniAdmin() {
             const proizvodi = (podaci?.proizvodi ?? []).filter((p) => p.kategorijaId === k.id);
             return (
               <section key={k.id} aria-label={k.naziv} className="flex flex-col gap-3">
-                <h2 className="text-xl font-semibold">{k.naziv}</h2>
+                <h2 className="text-xl font-bold">{k.naziv}</h2>
                 {proizvodi.length === 0 ? <p>Nema proizvoda u kategoriji.</p> : (
                   <ul className="flex flex-col gap-2">
                     {proizvodi.map((p) => (

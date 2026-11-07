@@ -1,5 +1,6 @@
 "use client";
 
+import { dugme, glavno } from "./stil";
 import Link from "next/link";
 import { useCallback, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -108,7 +109,7 @@ export default function NaplacenRacun({ p }: { p: Placeno }) {
 
   return (
     <section aria-label="Naplaćeno" className="flex flex-col gap-2">
-      <h2 className="text-xl font-semibold">Račun je {p.nacin === "dug" ? "upisan na dug" : "naplaćen"}</h2>
+      <h2 className="text-xl font-bold">Račun je {p.nacin === "dug" ? "upisan na dug" : "naplaćen"}</h2>
       <p>Način: {NACIN[p.nacin] ?? p.nacin}</p>
       {p.popust > 0 && <p>Ukupno bez popusta: {formatKM(p.bruto)} · popust: {formatKM(p.popust)}</p>}
       <p className="text-xl font-bold">Ukupno: {formatKM(p.ukupno)}</p>
@@ -125,14 +126,14 @@ export default function NaplacenRacun({ p }: { p: Placeno }) {
           ))}
         </ul>
       )}
-      <p role="alert" className="font-semibold text-greska">
+      <p role="alert" className="font-bold text-error">
         {greska}
       </p>
       <div className="flex flex-wrap gap-2">
-        <button type="button" className="min-h-12 rounded-lg border-2 border-okvir bg-povrsina px-4 font-semibold" onClick={ispisi}>
+        <button type="button" className={dugme} onClick={ispisi}>
           Ispiši račun
         </button>
-        <Link href="/konobar" className="inline-flex min-h-12 items-center rounded-lg bg-akcent px-4 font-semibold text-akcent-tekst">
+        <Link href="/konobar" className={glavno}>
           Nazad na stolove
         </Link>
       </div>

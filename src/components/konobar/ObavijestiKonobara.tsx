@@ -1,5 +1,6 @@
 "use client";
 
+import { dugme } from "@/components/konobar/stil";
 import { useEffect, useRef, useState } from "react";
 import { formatBroj, NAZIV_STANICE } from "@/lib/format";
 import { CEKANJE_MS } from "@/lib/offline/sync";
@@ -83,20 +84,20 @@ export default function ObavijestiKonobara() {
   return (
     <section aria-label="Obavijesti" className="flex flex-col gap-2 p-3 empty:hidden">
       {!ukljuceno && (
-        <button type="button" onClick={ukljuci} className="min-h-12 self-start rounded-lg border-2 border-okvir px-4">
+        <button type="button" onClick={ukljuci} className="min-h-12 self-start rounded-lg border-2 border-dim px-4">
           Uključi zvuk i obavijesti
         </button>
       )}
       <div role="status">
         <ul className="flex flex-col gap-2">
         {prikazi.map((p) => (
-          <li key={p.kljuc} className="flex items-center gap-3 rounded-lg border-2 border-akcent bg-povrsina p-3">
-            <span className="flex-1 font-semibold">{opis(p)}</span>
+          <li key={p.kljuc} className="flex items-center gap-3 rounded-lg border-2 border-base-content bg-base-200 p-3">
+            <span className="flex-1 font-bold">{opis(p)}</span>
             <button
               type="button"
               aria-label={`Zatvori: ${opis(p)}`}
               onClick={() => postaviPrikaze((stare) => stare.filter((x) => x.kljuc !== p.kljuc))}
-              className="min-h-12 min-w-12 rounded-lg border-2 border-okvir px-3"
+              className={dugme}
             >
               Zatvori
             </button>

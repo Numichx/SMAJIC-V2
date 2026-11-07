@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { dugme, glavno, polje } from "@/components/konobar/stil";
+// izborStil: the screen keeps a state called izbor.
+import { dugme, glavno, izbor as izborStil } from "@/components/konobar/stil";
 import { formatBroj, formatKM } from "@/lib/format";
 import { useSlanje, useUcitaj, zovi } from "./api";
 import { kolicinaIzUnosa } from "./pomocno";
-import { Greska, Polje, Tabela } from "./ui";
+import { Greska, kartica, Polje, Tabela } from "./ui";
 
 type Meni = { kategorije: { id: string; naziv: string; proizvodi: { id: string; naziv: string }[] }[] };
 type Stavka = { id: string; naziv: string; jedinica: string };
@@ -43,14 +44,14 @@ function Uredjivac({ proizvodId, naziv, postojeci, zaliha, gotovo }: { proizvodI
 
   return (
     <section aria-label={`Recept: ${naziv}`} className="flex flex-col gap-3">
-      <h3 className="text-lg font-semibold break-words">Recept: {naziv}</h3>
+      <h3 className="text-lg font-bold break-words">Recept: {naziv}</h3>
       {redovi.length === 0 && <p>Jelo nema recept. Dodajte sastojke, ili ostavite prazno.</p>}
       <ul className="flex flex-col gap-3">
         {redovi.map((r, i) => (
-          <li key={i} className="grid gap-2 rounded-lg border-2 border-okvir p-3 sm:grid-cols-[1fr_8rem_auto] sm:items-end">
+          <li key={i} className={`${kartica} grid gap-2 md:grid-cols-[1fr_8rem_auto] md:items-end`}>
             <label className="flex flex-col gap-1">
               Sastojak {i + 1}
-              <select className={polje} value={r.zalihaId} onChange={(e) => izmijeni(i, { zalihaId: e.target.value })}>
+              <select className={izborStil} value={r.zalihaId} onChange={(e) => izmijeni(i, { zalihaId: e.target.value })}>
                 <option value="">Izaberite artikal</option>
                 {zaliha.map((a) => (
                   <option key={a.id} value={a.id}>
@@ -85,7 +86,7 @@ function Prijedlog({ verzija }: { verzija: number }) {
   const potrebno = p?.nabavka.filter((a) => a.predlozenaNabavka > 0) ?? [];
   return (
     <section aria-label="Prijedlog nabavke" className="flex flex-col gap-3">
-      <h2 className="text-xl font-semibold">Prijedlog nabavke</h2>
+      <h2 className="text-xl font-bold">Prijedlog nabavke</h2>
       <p>
         Računa se iz recepata prodatih jela i prodaje mesnice u zadnjih 7 dana, plus 20 %. Stanje na zalihi je prikazano, ali nije oduzeto.
         Artikli bez recepta nemaju potrošnju, pa ni prijedlog.
@@ -132,13 +133,13 @@ export default function ReceptiEkran() {
       {spremno && (
         <>
           <section aria-label="Recepti" className="flex flex-col gap-3">
-            <h2 className="text-xl font-semibold">Recepti</h2>
+            <h2 className="text-xl font-bold">Recepti</h2>
             <p>Recept kaže koliko zalihe jedna porcija jela troši. Samo jela s receptom ulaze u prijedlog nabavke.</p>
-            {poruka && <p role="status" className="font-semibold">{poruka}</p>}
+            {poruka && <p role="status" className="font-bold">{poruka}</p>}
             {zaliha.podaci!.zaliha.length === 0 && <p>Zaliha je prazna, pa nema sastojaka za recepte.</p>}
             <label className="flex flex-col gap-1">
               Jelo
-              <select className={polje} value={izbor} onChange={(e) => (postaviIzbor(e.target.value), postaviPoruku(""))}>
+              <select className={izborStil} value={izbor} onChange={(e) => (postaviIzbor(e.target.value), postaviPoruku(""))}>
                 <option value="">Izaberite jelo</option>
                 {meni.podaci!.kategorije.map((k) => (
                   <optgroup key={k.id} label={k.naziv}>
@@ -171,6 +172,7 @@ export default function ReceptiEkran() {
               kolone={["Jelo", "Sastojci"]}
               redovi={recepti.podaci!.recepti.map((r) => [r.naziv, r.sastojci.map((s) => `${s.naziv} ${formatBroj(s.kolicina)} ${s.jedinica}`).join(", ")])}
               prazno="Još nijedno jelo nema recept."
+              tekstKolone={[0, 1]}
             />
           </section>
           <Prijedlog verzija={verzija} />

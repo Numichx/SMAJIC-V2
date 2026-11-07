@@ -5,7 +5,7 @@ import { dugme, glavno, polje } from "@/components/konobar/stil";
 import { formatKM } from "@/lib/format";
 import { useSlanje, useUcitaj, zovi } from "./api";
 import { formatDatum, formatVrijeme, jednako, prethodniDan } from "./pomocno";
-import { Greska, Podaci } from "./ui";
+import { Greska, kartica, Podaci } from "./ui";
 
 type Izvjestaj = {
   racuni: number;
@@ -69,12 +69,12 @@ export default function ZatvaranjeDana() {
         </button>
       </div>
       <Greska tekst={greska || greskaSlanja} />
-      {gotovo && <p role="status" className="font-semibold">{gotovo}</p>}
+      {gotovo && <p role="status" className="font-bold">{gotovo}</p>}
       {!p && !greska && <p role="status">Učitavam…</p>}
       {p && (
         <>
           <section aria-label="Trenutni podaci dana" className="flex flex-col gap-2">
-            <h3 className="text-lg font-semibold">Dan {formatDatum(p.datum)}</h3>
+            <h3 className="text-lg font-bold">Dan {formatDatum(p.datum)}</h3>
             <Podaci
               stavke={[
                 ["Naplaćenih računa", p.pregled.racuni],
@@ -93,8 +93,8 @@ export default function ZatvaranjeDana() {
           </section>
 
           {blokirano && (
-            <section aria-label="Šta sprječava zatvaranje" className="rounded-lg border-2 border-greska p-3">
-              <p className="font-semibold">Dan se ne može zatvoriti dok:</p>
+            <section aria-label="Šta sprječava zatvaranje" className="card card-border border-error bg-base-200 gap-2 p-4">
+              <p className="font-bold">Dan se ne može zatvoriti dok:</p>
               <ul className="list-disc pl-6">
                 {p.otvoreniRacuni > 0 && <li>ima otvorenih računa iz tog dana: {p.otvoreniRacuni}</li>}
                 {p.otvorenaSmjena && <li>je smjena otvorena (zatvara se na šanku)</li>}
@@ -103,8 +103,8 @@ export default function ZatvaranjeDana() {
           )}
 
           {p.zakljucak && (
-            <section aria-label="Zaključak" className="rounded-lg border-2 border-okvir p-3">
-              <p className="font-semibold">
+            <section aria-label="Zaključak" className={`${kartica} gap-2`}>
+              <p className="font-bold">
                 Dan je zatvoren {formatVrijeme(p.zakljucak.vrijeme)} ({p.zakljucak.zatvorila}).
               </p>
               {promijenjeno ? (

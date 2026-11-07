@@ -1,15 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { dugme } from "@/components/konobar/stil";
 import { useUcitaj } from "./api";
 import { detaljiTekst, formatVrijeme, nazivRadnje } from "./pomocno";
-import { Greska } from "./ui";
+import { Greska, kartica, Strane } from "./ui";
 
 type Zapis = { id: number; vrijeme: string; zaposlenik: string | null; radnja: string; detalji: unknown };
 
 export default function Dnevnik() {
-  // Each page starts after the last id of the one before; the stack lets "Novije" go back.
+  // Each page starts after the last id of the one before; the stack lets "Prethodna" go back.
   const [kursori, postaviKursore] = useState<number[]>([]);
   const prije = kursori.at(-1);
   const { podaci: p, greska, ucitano } = useUcitaj<{ dnevnik: Zapis[]; sljedeci: number | null }>(`/api/administracija/dnevnik${prije ? `?prije=${prije}` : ""}`);
@@ -22,8 +21,8 @@ export default function Dnevnik() {
       {p && p.dnevnik.length === 0 && <p>Dnevnik je prazan.</p>}
       <ul className="flex flex-col gap-2">
         {p?.dnevnik.map((z) => (
-          <li key={z.id} className="rounded-lg border-2 border-okvir p-3">
-            <p className="font-semibold break-words">
+          <li key={z.id} className={`${kartica} gap-1`}>
+            <p className="font-bold break-words">
               {nazivRadnje(z.radnja)} · {z.zaposlenik ?? "nepoznato"}
             </p>
             <p>{formatVrijeme(z.vrijeme)}</p>
@@ -36,15 +35,11 @@ export default function Dnevnik() {
         ))}
       </ul>
       {p && (
-        <div className="flex gap-2">
-          <button type="button" className={dugme} disabled={kursori.length === 0} onClick={() => postaviKursore(kursori.slice(0, -1))}>
-            Novije
-          </button>
-          <span className="flex items-center">Strana {kursori.length + 1}</span>
-          <button type="button" className={dugme} disabled={p.sljedeci === null} onClick={() => p.sljedeci !== null && postaviKursore([...kursori, p.sljedeci])}>
-            Starije
-          </button>
-        </div>
+        <Strane
+          strana={kursori.length + 1}
+          prethodna={kursori.length > 0 ? () => postaviKursore(kursori.slice(0, -1)) : undefined}
+          sljedeca={p.sljedeci !== null ? () => p.sljedeci !== null && postaviKursore([...kursori, p.sljedeci]) : undefined}
+        />
       )}
     </div>
   );

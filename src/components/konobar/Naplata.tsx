@@ -77,7 +77,7 @@ function Popust({ racun, onOsvjezi, prijavi }: { racun: Racun; onOsvjezi: () => 
 
   return (
     <section aria-label="Popust" className="flex flex-col gap-3">
-      <h3 className="text-lg font-semibold">Popust</h3>
+      <h3 className="text-lg font-bold">Popust</h3>
       {racun.popust && (
         <p>
           Popust {formatBroj(racun.popust.procenat)} % ({racun.popust.razlog}): −{formatKM(racun.popust.iznos)}
@@ -196,14 +196,14 @@ export default function Naplata({ racun, neposlano, onPlaceno, onOsvjezi }: { ra
     <div className="flex flex-col gap-6">
       <Popust racun={racun} onOsvjezi={onOsvjezi} prijavi={postaviGresku} />
       <section aria-label="Naplata" className="flex flex-col gap-3">
-        <h3 className="text-lg font-semibold">Naplata</h3>
+        <h3 className="text-lg font-bold">Naplata</h3>
         <p className="text-xl font-bold">Za platiti: {formatKM(ukupno)}</p>
         {neposlano ? (
-          <p role="status" className="font-semibold">
+          <p role="status" className="font-bold">
             {neposlano}
           </p>
         ) : !racun.sveIzdato ? (
-          <p role="status" className="font-semibold">
+          <p role="status" className="font-bold">
             Naplata nije moguća dok kuhinja, pečenjara i šank ne izdaju sve narudžbe.
           </p>
         ) : nula ? (
@@ -282,7 +282,7 @@ export default function Naplata({ racun, neposlano, onPlaceno, onOsvjezi }: { ra
             </button>
           </>
         )}
-        <p role="alert" className="font-semibold text-greska">
+        <p role="alert" className="font-bold text-error">
           {greska}
         </p>
       </section>

@@ -10,7 +10,7 @@ export default async function Page({ params }: { params: Promise<{ stoId: string
   if (id < 1 || id > 20) {
     return (
       <>
-        <p role="alert" className="font-semibold text-greska">
+        <p role="alert" className="font-bold text-error">
           Sto ne postoji. Stolovi su od 1 do 20.
         </p>
         <Link href="/konobar" className="inline-flex min-h-12 items-center underline">

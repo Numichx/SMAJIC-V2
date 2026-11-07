@@ -40,18 +40,18 @@ export default function StatistikaKonobara() {
             type="button"
             aria-pressed={dani === p.dani}
             onClick={() => postaviDane(p.dani)}
-            className={`${dugme} aria-pressed:border-akcent aria-pressed:bg-akcent aria-pressed:text-akcent-tekst`}
+            className={dugme}
           >
             {p.naziv}
           </button>
         ))}
       </div>
-      <p role="alert" className="font-semibold text-greska">
+      <p role="alert" className="font-bold text-error">
         {greska}
       </p>
       {!s && !greska && <p role="status">Učitavam…</p>}
       {s && s.dani === dani && (
-        <dl className="grid gap-3 sm:grid-cols-2">
+        <dl className="grid gap-3 md:grid-cols-2">
           {[
             ["Broj računa", String(s.brojRacuna)],
             ["Naplaćeno", formatKM(s.naplaceno)],
@@ -59,7 +59,7 @@ export default function StatistikaKonobara() {
             ["Baksiš", formatKM(s.baksis)],
             ["Na dug", formatKM(s.dug)],
           ].map(([naziv, vrijednost]) => (
-            <div key={naziv} className="rounded-lg border-2 border-okvir bg-povrsina p-3">
+            <div key={naziv} className="rounded-lg border-2 border-dim bg-base-200 p-3">
               <dt>{naziv}</dt>
               <dd className="text-2xl font-bold">{vrijednost}</dd>
             </div>

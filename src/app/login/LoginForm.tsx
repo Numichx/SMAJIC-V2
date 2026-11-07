@@ -1,5 +1,6 @@
 "use client";
 
+import { dugme, glavno, polje } from "@/components/konobar/stil";
 import { useEffect, useRef, useState } from "react";
 import { greskaIz } from "@/lib/api/greskaIz";
 import type { Odjeljak } from "@/lib/auth/session";
@@ -8,9 +9,6 @@ type Zaposlenik = { id: string; ime: string };
 
 const NEMA_VEZE = "Nema veze sa serverom. Pokušajte ponovo.";
 
-const dugme = "min-h-12 rounded-lg border-2 border-okvir bg-povrsina px-4 text-lg font-semibold";
-const glavno = "min-h-12 rounded-lg bg-akcent px-4 text-lg font-semibold text-akcent-tekst aria-disabled:opacity-60";
-const polje = "min-h-12 w-full rounded-lg border-2 border-okvir bg-background px-3 text-lg";
 
 export default function LoginForm({ uloga }: { uloga: Odjeljak }) {
   const [aktivacija, postaviAktivaciju] = useState(false);
@@ -116,7 +114,7 @@ export default function LoginForm({ uloga }: { uloga: Odjeljak }) {
   const poruke = (
     <div>
       <p role="status">{poruka}</p>
-      <p id="greska-forme" role="alert" className="font-semibold text-greska">
+      <p id="greska-forme" role="alert" className="font-bold text-error">
         {greska}
       </p>
     </div>
@@ -141,7 +139,7 @@ export default function LoginForm({ uloga }: { uloga: Odjeljak }) {
         </label>
         <label className="flex flex-col gap-1">
           <span>
-            Novi PIN <span id="novi-pin-savjet" className="text-base">4 do 8 cifara</span>
+            Novi PIN <span id="novi-pin-savjet" className="text-dim">4 do 8 cifara</span>
           </span>
           <input
             className={polje}
@@ -157,7 +155,7 @@ export default function LoginForm({ uloga }: { uloga: Odjeljak }) {
         </label>
         <label className="flex flex-col gap-1">
           <span>
-            Ponovite PIN <span id="ponovljeni-pin-savjet" className="text-base">4 do 8 cifara</span>
+            Ponovite PIN <span id="ponovljeni-pin-savjet" className="text-dim">4 do 8 cifara</span>
           </span>
           <input
             className={polje}
@@ -184,17 +182,17 @@ export default function LoginForm({ uloga }: { uloga: Odjeljak }) {
   return (
     <form onSubmit={prijavi} noValidate className="flex flex-col gap-4">
       {saImenom && ucitano && zaposlenici.length === 0 && (
-        <p>Još nijedan zaposlenik nema PIN. Aktivacijski kod dobijate od šefice. Pritisnite „Imam aktivacijski kod“.</p>
+        <p className="alert alert-info">Još nijedan zaposlenik nema PIN. Aktivacijski kod dobijate od šefice. Pritisnite „Imam aktivacijski kod“.</p>
       )}
       {saImenom && zaposlenici.length > 0 && (
         // Native radios: one choice, arrow keys between names, and "1 of 3" from the screen reader.
         <fieldset aria-describedby="greska-forme" className="flex flex-col gap-2">
           <legend className="mb-2">Izaberite svoje ime</legend>
-          <div className="grid gap-2 sm:grid-cols-2">
+          <div className="grid gap-2 md:grid-cols-2">
             {zaposlenici.map((z) => (
               <label
                 key={z.id}
-                className={`${dugme} flex cursor-pointer items-center has-checked:border-akcent has-checked:bg-akcent has-checked:text-akcent-tekst has-focus-visible:outline-3 has-focus-visible:outline-offset-2 has-focus-visible:outline-akcent`}
+                className={`${dugme} cursor-pointer justify-start has-checked:border-base-content has-checked:bg-base-content has-checked:text-base-100 has-focus-visible:outline-3 has-focus-visible:outline-offset-2 has-focus-visible:outline-base-content`}
               >
                 <input
                   type="radio"
@@ -215,7 +213,7 @@ export default function LoginForm({ uloga }: { uloga: Odjeljak }) {
       )}
       <label className="flex flex-col gap-1">
         <span>
-          PIN <span id="pin-savjet" className="text-base">4 do 8 cifara</span>
+          PIN <span id="pin-savjet" className="text-dim">4 do 8 cifara</span>
         </span>
         <input
           className={polje}

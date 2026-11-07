@@ -5,7 +5,7 @@ export const metadata = { title: "Izvještaji – Smajić" };
 export default function Page() {
   return (
     <>
-      <h1 className="mb-4 text-2xl font-semibold">Izvještaji</h1>
+      <h1 className="mb-4 text-2xl font-bold">Izvještaji</h1>
       <Izvjestaji />
     </>
   );

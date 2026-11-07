@@ -1,5 +1,5 @@
 import { brojIzUnosa } from "@/components/stanice/unos";
-import { formatBroj } from "@/lib/format";
+import { formatBroj, formatKM } from "@/lib/format";
 
 // A typed amount with at most `decimale` decimals, or NaN. The server refuses more, but saying so on the spot is kinder.
 export function kolicinaIzUnosa(tekst: string, decimale: number) {
@@ -64,3 +64,6 @@ export function detaljiTekst(detalji: unknown, prefiks = ""): string[] {
 }
 
 export const nazivRadnje = (radnja: string) => radnja.replaceAll("_", " ");
+
+// One form everywhere: "−5,00 KM (manjak)", "5,00 KM (višak)", "0,00 KM (tačno)".
+export const razlikaTekst = (iznos: number) => `${formatKM(iznos).replace("-", "−")} (${iznos < 0 ? "manjak" : iznos > 0 ? "višak" : "tačno"})`;

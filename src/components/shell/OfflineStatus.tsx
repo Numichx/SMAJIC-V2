@@ -1,5 +1,6 @@
 "use client";
 
+import { dugme } from "@/components/konobar/stil";
 import { useEffect, useState } from "react";
 import { useRed, zatvoriIzvjestaj } from "@/lib/offline/queue";
 import { pokreniSync } from "@/lib/offline/sync";
@@ -15,13 +16,14 @@ export default function OfflineStatus({ konobar }: { konobar: string }) {
   return (
     <section aria-label="Stanje veze" className="flex flex-col gap-2 p-3">
       {!veza && (
-        <p role="status" className="rounded-lg border-2 border-okvir bg-povrsina p-3 font-semibold">
+        <p role="status" className="alert alert-warning font-bold">
           Nema veze sa serverom.
         </p>
       )}
       {red.length > 0 && (
-        <div role="status" className="rounded-lg border-2 border-okvir bg-povrsina p-3">
-          <p className="font-semibold">Narudžbi na čekanju: {red.length}. Još nisu u kuhinji.</p>
+        <div role="status" className="alert alert-warning">
+          <div>
+          <p className="font-bold">Narudžbi na čekanju: {red.length}. Još nisu u kuhinji.</p>
           <ul>
             {red.map((z) => (
               <li key={z.id}>
@@ -30,15 +32,16 @@ export default function OfflineStatus({ konobar }: { konobar: string }) {
               </li>
             ))}
           </ul>
+          </div>
         </div>
       )}
       <div role="alert">
         {izvjestaji.length > 0 && (
         <ul className="flex flex-col gap-2">
           {izvjestaji.map((i) => (
-            <li key={i.id} className="flex items-center gap-3 rounded-lg border-2 border-greska bg-povrsina p-3">
-              <span className="flex-1 font-semibold">{i.poruka}</span>
-              <button type="button" aria-label={`Zatvori: ${i.poruka}`} onClick={() => zatvoriIzvjestaj(i.id).catch(() => {})} className="min-h-12 min-w-12 rounded-lg border-2 border-okvir px-3">
+            <li key={i.id} className="alert alert-error">
+              <span className="flex-1 font-bold">{i.poruka}</span>
+              <button type="button" aria-label={`Zatvori: ${i.poruka}`} onClick={() => zatvoriIzvjestaj(i.id).catch(() => {})} className={dugme}>
                 Zatvori
               </button>
             </li>

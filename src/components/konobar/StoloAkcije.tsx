@@ -84,7 +84,7 @@ export default function StoloAkcije({
                 postaviCilj(e.target.value);
                 postaviPotvrdu(false);
               }}
-              className="min-h-12 rounded-lg border-2 border-okvir bg-background px-3 text-lg"
+              className="min-h-12 rounded-lg border-2 border-dim bg-base-100 px-3 text-lg"
             >
               <option value="">Izaberite sto</option>
               {izbor.map((id) => (
@@ -95,7 +95,7 @@ export default function StoloAkcije({
             </select>
           </label>
           {potvrda && (
-            <p role="alert" className="font-semibold">
+            <p role="alert" className="font-bold">
               Spajanje se ne može poništiti. Spojiti sto {stoId} sa stolom {cilj}?
             </p>
           )}
@@ -107,7 +107,7 @@ export default function StoloAkcije({
           </button>
         </form>
       )}
-      <p role="alert" className="font-semibold text-greska">
+      <p role="alert" className="font-bold text-error">
         {greska}
       </p>
     </section>

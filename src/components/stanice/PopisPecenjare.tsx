@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 import { dugme, glavno, polje } from "@/components/konobar/stil";
 import { pregledPopisa } from "@/lib/domain/pecenjara";
 import { formatBroj, formatKM } from "@/lib/format";
-import { cijeliIzUnosa, kolicinaIzUnosa, novacIzUnosa } from "./brojevi";
+import { cijeliIzUnosa, kolicinaIzUnosa, novacIzUnosa, razlikaTekst } from "./brojevi";
 import { idPokusaja, pozovi, useLista } from "./pozivi";
 import { vrijemeSarajevo } from "./vrijeme";
 
@@ -60,7 +60,7 @@ function Sazetak({ p }: { p: Popis }) {
             Prodano: pilića {p.prodaneKoke}, jagnjetina {formatBroj(p.prodanaJanjetinaKg ?? 0)} kg
           </p>
           <p>
-            Pazar po popisu: {formatKM(p.pazarPoPopisu ?? 0)}. Predano: {formatKM(p.predaniPazar ?? 0)}. Razlika: {formatKM(p.razlika ?? 0)}
+            Pazar po popisu: {formatKM(p.pazarPoPopisu ?? 0)}. Predano: {formatKM(p.predaniPazar ?? 0)}. {razlikaTekst(p.razlika ?? 0)}
           </p>
         </>
       )}
@@ -144,7 +144,7 @@ export default function PopisPecenjare() {
 
   return (
     <div className="flex flex-col gap-4">
-      <p role="alert" className="font-semibold text-greska">
+      <p role="alert" className="font-bold text-error">
         {greska || lista.greska}
       </p>
 
@@ -152,7 +152,7 @@ export default function PopisPecenjare() {
 
       {pregled.smjena && !pregled.popis && (
         <form onSubmit={otvori} className="flex flex-col gap-3" aria-label="Početni popis">
-          <h2 className="text-xl font-semibold">Početni popis, smjena {pregled.smjena.oznaka}</h2>
+          <h2 className="text-xl font-bold">Početni popis, smjena {pregled.smjena.oznaka}</h2>
           <Polje oznaka="Pečeni pilići (komada)" vrijednost={koke1} postavi={postaviKoke1} />
           <Polje oznaka="Sirovi pilići (komada)" vrijednost={koke2} postavi={postaviKoke2} />
           <Polje oznaka="Jagnjetina (kg)" vrijednost={kg1} postavi={postaviKg1} />
@@ -164,25 +164,25 @@ export default function PopisPecenjare() {
 
       {zakljucan && (
         <form onSubmit={zatvori} className="flex flex-col gap-3" aria-label="Završni popis">
-          <h2 className="text-xl font-semibold">Završni popis, smjena {pregled.smjena?.oznaka}</h2>
+          <h2 className="text-xl font-bold">Završni popis, smjena {pregled.smjena?.oznaka}</h2>
           <Sazetak p={zakljucan} />
           <Polje oznaka="Dodatni pilići (komada)" vrijednost={dodKoke} postavi={postaviDodKoke} />
           <Polje oznaka="Dodatna jagnjetina (kg)" vrijednost={dodKg} postavi={postaviDodKg} />
           <Polje oznaka="Preostali pilići (komada)" vrijednost={preKoke} postavi={postaviPreKoke} />
           <Polje oznaka="Preostala jagnjetina (kg)" vrijednost={preKg} postavi={postaviPreKg} />
           <Polje oznaka="Predani pazar (KM)" vrijednost={predani} postavi={postaviPredani} />
-          <section aria-label="Pregled popisa" className="rounded-lg bg-povrsina p-3">
+          <section aria-label="Pregled popisa" className="rounded-box bg-base-200 p-3">
             {preview ? (
               <>
                 <p>
                   Prodano: pilića {preview.prodaneKoke}, jagnjetina {formatBroj(preview.prodanaJanjetinaKg)} kg
                 </p>
                 <p>Pazar po popisu: {formatKM(preview.pazarPoPopisu)}</p>
-                <p className="font-semibold">
-                  Razlika (predano minus pazar po popisu): {formatKM(preview.razlika)}
+                <p className="font-bold">
+                  {razlikaTekst(preview.razlika)}. Predano minus pazar po popisu.
                 </p>
                 {!preview.moguce && (
-                  <p role="alert" className="font-semibold text-greska">
+                  <p role="alert" className="font-bold text-error">
                     Završno stanje ne može biti veće od početnog i dodatnog.
                   </p>
                 )}
@@ -194,7 +194,7 @@ export default function PopisPecenjare() {
             )}
           </section>
           {ceka && (
-            <p role="alert" className="font-semibold text-greska">
+            <p role="alert" className="font-bold text-error">
               Zaključani popis se ne može ispraviti. Provjerite brojeve i dodirnite ponovo da zaključite.
             </p>
           )}
@@ -205,19 +205,19 @@ export default function PopisPecenjare() {
       )}
 
       {pregled.popis?.zatvoreno && (
-        <section aria-label="Zaključan popis" className="flex flex-col gap-1 rounded-lg border-2 border-okvir p-3">
-          <h2 className="text-xl font-semibold">Popis je zaključen</h2>
+        <section aria-label="Zaključan popis" className="flex flex-col gap-1 rounded-box border-2 border-dim p-3">
+          <h2 className="text-xl font-bold">Popis je zaključen</h2>
           <Sazetak p={pregled.popis} />
         </section>
       )}
 
       <section aria-label="Historija popisa" className="flex flex-col gap-2">
-        <h2 className="text-xl font-semibold">Historija</h2>
+        <h2 className="text-xl font-bold">Historija</h2>
         {lista.stavke?.length === 0 && <p>Još nema zaključenih popisa.</p>}
         {lista.stavke?.map((p) => (
-          <details key={p.smjenaId} className="rounded-lg border-2 border-okvir p-2">
+          <details key={p.smjenaId} className="rounded-box border-2 border-dim p-2">
             <summary className="flex min-h-12 items-center">
-              {vrijemeSarajevo(p.otvoreno)}, razlika {formatKM(p.razlika ?? 0)}
+              {vrijemeSarajevo(p.otvoreno)}, {razlikaTekst(p.razlika ?? 0)}
             </summary>
             <Sazetak p={p} />
           </details>

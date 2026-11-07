@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { dugme, glavno } from "@/components/konobar/stil";
 import { redPoRedu } from "@/lib/offline/queue";
 import { porukaUpozorenjaOdjave } from "@/lib/offline/odjava";
@@ -10,6 +10,12 @@ export default function Odjava() {
   const [brojZaPotvrdu, postaviBrojZaPotvrdu] = useState<number | null>(null);
   const [provjeravam, postaviProvjeravam] = useState(false);
   const zauzeto = useRef(false);
+  const pitanje = useRef<HTMLParagraphElement>(null);
+  const dugmeOdjave = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (brojZaPotvrdu !== null) pitanje.current?.focus();
+  }, [brojZaPotvrdu]);
 
   async function posaljiOdjavu() {
     postaviGresku("");
@@ -76,18 +82,21 @@ export default function Odjava() {
 
   return (
     <>
-      <p role="alert" className="font-semibold text-greska">
-        {greska}
-      </p>
+      <div role="alert">{greska && <p className="alert alert-error font-bold">{greska}</p>}</div>
       {brojZaPotvrdu !== null && (
-        <section role="alert" className="flex flex-col gap-2 rounded-lg border-2 border-greska bg-povrsina p-3">
-          <p className="font-semibold">{porukaUpozorenjaOdjave(brojZaPotvrdu)}</p>
+        <section role="alert" className="alert alert-warning flex flex-col items-start gap-2">
+          <p ref={pitanje} tabIndex={-1} className="font-bold">{porukaUpozorenjaOdjave(brojZaPotvrdu)}</p>
           <p>
             Odjavom ostaju sačuvane na ovom uređaju. Šalju se tek kada se ponovo prijavi osoba koja ih je unijela; nakon 4 sata čekanja neće biti poslane.
           </p>
           <div className="flex flex-wrap gap-2">
-            <button type="button" disabled={provjeravam} onClick={() => postaviBrojZaPotvrdu(null)} className={dugme}>
-              Otkaži odjavu
+            <button type="button" disabled={provjeravam} onClick={() => {
+                postaviBrojZaPotvrdu(null);
+                dugmeOdjave.current?.focus();
+              }}
+              className={dugme}
+            >
+              Odustani
             </button>
             <button type="button" disabled={provjeravam} onClick={potvrdiOdjavu} className={glavno}>
               {provjeravam ? "Provjeravam…" : "Odjavi se"}
@@ -95,7 +104,7 @@ export default function Odjava() {
           </div>
         </section>
       )}
-      <button type="button" disabled={provjeravam} onClick={provjeriRed} className="min-h-12 rounded-lg border-2 border-okvir px-4">
+      <button ref={dugmeOdjave} type="button" disabled={provjeravam} onClick={provjeriRed} className={dugme}>
         Odjava
       </button>
     </>

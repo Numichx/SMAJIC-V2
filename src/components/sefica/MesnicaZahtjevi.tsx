@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { dugme, glavno } from "@/components/konobar/stil";
+import { dugme } from "@/components/konobar/stil";
 import { formatBroj } from "@/lib/format";
 import { useSlanje, useUcitaj, zovi } from "./api";
 import { formatVrijeme, kolicinaIzUnosa } from "./pomocno";
-import { Greska, Polje } from "./ui";
+import { Greska, kartica, Polje, Strane } from "./ui";
 
 type Zahtjev = {
   id: string;
@@ -41,7 +41,7 @@ function Obrada({ z, osvjezi }: { z: Zahtjev; osvjezi: () => void }) {
       <Polje oznaka={`Isporučeno (${z.jedinica}) – ${z.artikal}`} vrijednost={kolicina} onChange={postaviKolicinu} />
       <Greska tekst={lokalno || greska} />
       <div className="flex flex-wrap gap-2">
-        <button type="button" className={glavno} aria-disabled={saljem} aria-label={`Isporuči: ${z.artikal}`} onClick={isporuci}>
+        <button type="button" className={dugme} aria-disabled={saljem} aria-label={`Isporuči: ${z.artikal}`} onClick={isporuci}>
           Isporuči
         </button>
         <button type="button" className={dugme} aria-disabled={saljem} aria-label={`Nema na stanju: ${z.artikal}`} onClick={nemaNaStanju}>
@@ -67,14 +67,14 @@ export default function MesnicaZahtjevi({ poPromjeni }: { poPromjeni: () => void
 
   return (
     <section aria-label="Zahtjevi kuhinje" className="flex flex-col gap-3">
-      <h3 className="text-lg font-semibold">Zahtjevi kuhinje</h3>
+      <h3 className="text-lg font-bold">Zahtjevi kuhinje</h3>
       <Greska tekst={greska} />
       {!ucitano && !greska && <p role="status">Učitavam zahtjeve…</p>}
       {p && cekaju.length === 0 && <p>Nema zahtjeva koji čekaju.</p>}
       <ul className="flex flex-col gap-2">
         {cekaju.map((z) => (
-          <li key={z.id} className="flex flex-col gap-2 rounded-lg border-2 border-akcent p-3">
-            <p className="text-lg font-semibold break-words">{z.artikal}</p>
+          <li key={z.id} className={`${kartica} gap-2`}>
+            <p className="text-lg font-bold break-words">{z.artikal}</p>
             <p>
               Traži: {z.kreirao}, {formatVrijeme(z.kreirano)} · Traženo: {z.trazeno === null ? "količina nije navedena" : `${formatBroj(z.trazeno)} ${z.jedinica}`}
             </p>
@@ -84,11 +84,11 @@ export default function MesnicaZahtjevi({ poPromjeni }: { poPromjeni: () => void
       </ul>
       {obradjeni.length > 0 && (
         <>
-          <h4 className="font-semibold">Obrađeni zahtjevi</h4>
+          <h4 className="font-bold">Obrađeni zahtjevi</h4>
           <ul className="flex flex-col gap-2">
             {obradjeni.map((z) => (
-              <li key={z.id} className="rounded-lg border-2 border-okvir p-3">
-                <p className="font-semibold break-words">
+              <li key={z.id} className={`${kartica} gap-1`}>
+                <p className="font-bold break-words">
                   {z.artikal} · {STATUS[z.status]}
                   {z.isporuceno !== null && `: ${formatBroj(z.isporuceno)} ${z.jedinica}`}
                 </p>
@@ -100,15 +100,7 @@ export default function MesnicaZahtjevi({ poPromjeni }: { poPromjeni: () => void
           </ul>
         </>
       )}
-      <div className="flex gap-2">
-        <button type="button" className={dugme} disabled={strana === 1} onClick={() => postaviStranu(strana - 1)}>
-          Novije
-        </button>
-        <span className="flex items-center">Strana {strana}</span>
-        <button type="button" className={dugme} disabled={!p?.imaJos} onClick={() => postaviStranu(strana + 1)}>
-          Starije
-        </button>
-      </div>
+      <Strane strana={strana} prethodna={strana > 1 ? () => postaviStranu(strana - 1) : undefined} sljedeca={p?.imaJos ? () => postaviStranu(strana + 1) : undefined} />
     </section>
   );
 }

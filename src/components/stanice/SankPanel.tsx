@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { formatBroj, formatKM } from "@/lib/format";
 import { dugme, glavno, polje } from "@/components/konobar/stil";
 import { idPokusaja, pozovi, useLista } from "./pozivi";
-import { kolicinaIzUnosa, novacIzUnosa } from "./brojevi";
+import { kolicinaIzUnosa, novacIzUnosa, razlikaTekst } from "./brojevi";
 import { vrijemeSarajevo } from "./vrijeme";
 
 const PRIJAVA = "/login?uloga=konobar";
@@ -34,8 +34,8 @@ const STANJE_POPISA = {
 function RezultatSmjene({ r }: { r: Rezultat }) {
   const n = r.naplate;
   return (
-    <section aria-label="Rezultat smjene" className="flex flex-col gap-2 rounded-lg border-2 border-akcent p-3">
-      <h3 className="text-lg font-semibold">
+    <section aria-label="Rezultat smjene" className="flex flex-col gap-2 rounded-box border-4 border-base-content p-3">
+      <h3 className="text-lg font-bold">
         Smjena {r.oznaka}
         {r.kraj && `, zatvorena ${vrijemeSarajevo(r.kraj)}`}
         {r.zatvorio && ` (${r.zatvorio})`}
@@ -45,10 +45,10 @@ function RezultatSmjene({ r }: { r: Rezultat }) {
       <p>Očekivano: {formatKM(r.ocekivaniPazar)}</p>
       <p>Predano: {formatKM(r.predaniPazar)}</p>
       <p className="text-lg font-bold">
-        Razlika: {formatKM(r.razlika)} {r.razlika < 0 ? "(manjak)" : r.razlika > 0 ? "(višak)" : ""}
+        {razlikaTekst(r.razlika)}
       </p>
-      <div className="rounded-lg bg-povrsina p-3">
-        <p className="font-semibold">Naplate u ovoj smjeni</p>
+      <div className="rounded-box bg-base-200 p-3">
+        <p className="font-bold">Naplate u ovoj smjeni</p>
         <p>
           Naplaćeno: {formatKM(n.naplaceno)}, od toga gotovina {formatKM(n.gotovina)} i kartica {formatKM(n.kartica)}
         </p>
@@ -195,7 +195,7 @@ export default function SankPanel() {
           Red narudžbi
         </Link>
       </p>
-      <p role="alert" className="font-semibold text-greska">
+      <p role="alert" className="font-bold text-error">
         {greska || pregled.greska}
       </p>
       <p role="status">{poruka}</p>
@@ -204,12 +204,12 @@ export default function SankPanel() {
 
       {podaci && (
         <section aria-label={otvorena ? "Zatvaranje smjene" : "Otvaranje smjene"} className="flex flex-col gap-4">
-          <h2 className="text-xl font-semibold">{otvorena ? `Smjena ${otvorena.oznaka} je otvorena` : "Otvaranje smjene"}</h2>
+          <h2 className="text-xl font-bold">{otvorena ? `Smjena ${otvorena.oznaka} je otvorena` : "Otvaranje smjene"}</h2>
 
           {otvorena && (
             <>
-              <form onSubmit={dopuni} className="flex flex-col gap-3 rounded-lg border-2 border-okvir p-3" aria-label="Dopuna">
-                <h3 className="font-semibold">Dopuna pića</h3>
+              <form onSubmit={dopuni} className="flex flex-col gap-3 rounded-box border-2 border-dim p-3" aria-label="Dopuna">
+                <h3 className="font-bold">Dopuna pića</h3>
                 <label className="flex flex-col gap-1">
                   Piće za dopunu
                   <select value={dopuniArtikal} onChange={(e) => postaviDopuniArtikal(e.target.value)} className={polje}>
@@ -229,9 +229,9 @@ export default function SankPanel() {
                   Dodaj dopunu
                 </button>
               </form>
-              <div className="rounded-lg border-2 border-okvir p-3">
+              <div className="rounded-box border-2 border-dim p-3">
                 {popis && popis !== "zatvoren" && (
-                  <p role="alert" className="font-semibold text-greska">
+                  <p role="alert" className="font-bold text-error">
                     Smjena se ne može zatvoriti dok pečenjara ne zaključi svoj popis. {STANJE_POPISA[popis]}
                   </p>
                 )}
@@ -249,14 +249,14 @@ export default function SankPanel() {
                     type="button"
                     aria-pressed={oznaka === o}
                     onClick={() => postaviOznaku(o)}
-                    className={`${dugme} aria-pressed:border-akcent aria-pressed:bg-akcent aria-pressed:text-akcent-tekst`}
+                    className={dugme}
                   >
                     {o === "I" ? "Prva smjena (I)" : "Druga smjena (II)"}
                   </button>
                 ))}
               </div>
             )}
-            <h3 className="font-semibold">{otvorena ? "Završni popis" : "Početni popis"}</h3>
+            <h3 className="font-bold">{otvorena ? "Završni popis" : "Početni popis"}</h3>
             <label className="flex flex-col gap-1">
               Traži piće
               <input type="search" value={trazi} onChange={(e) => postaviTrazi(e.target.value)} className={polje} />
@@ -264,10 +264,10 @@ export default function SankPanel() {
             <p>
               Upisano {upisano} od {artikli.length}. Enter prelazi na sljedeće polje.
             </p>
-            <ul className="grid gap-2 sm:grid-cols-2">
+            <ul className="grid gap-2 md:grid-cols-2">
               {prikaz.map((a) => (
                 <li key={a.id}>
-                  <label className="flex min-h-14 items-center gap-3 rounded-lg border-2 border-okvir px-3 py-1">
+                  <label className="flex min-h-14 items-center gap-3 rounded-box border-2 border-dim px-3 py-1">
                     <span className="flex-1">
                       {a.naziv} ({a.jedinica})
                       {otvorena && (
@@ -283,7 +283,7 @@ export default function SankPanel() {
                       value={unos[a.id] ?? ""}
                       onChange={(e) => postaviUnos({ ...unos, [a.id]: e.target.value })}
                       onKeyDown={dalje}
-                      className="min-h-12 w-24 rounded-lg border-2 border-okvir bg-background px-2 text-lg"
+                      className="input input-lg polje-rub w-24"
                     />
                   </label>
                 </li>
@@ -305,11 +305,11 @@ export default function SankPanel() {
 
       {pregled.stavke && pregled.stavke.length > 0 && (
         <section aria-label="Prethodne smjene" className="flex flex-col gap-2">
-          <h2 className="text-xl font-semibold">Prethodne smjene</h2>
+          <h2 className="text-xl font-bold">Prethodne smjene</h2>
           {pregled.stavke.map((s) => (
-            <details key={s.id} className="rounded-lg border-2 border-okvir p-2">
+            <details key={s.id} className="rounded-box border-2 border-dim p-2">
               <summary className="flex min-h-12 items-center">
-                Smjena {s.oznaka}, {s.kraj && vrijemeSarajevo(s.kraj)}, razlika {formatKM(s.razlika)}
+                Smjena {s.oznaka}, {s.kraj && vrijemeSarajevo(s.kraj)}, {razlikaTekst(s.razlika)}
               </summary>
               <RezultatSmjene r={s} />
             </details>

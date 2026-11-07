@@ -9,14 +9,14 @@ export default function MeniStranica() {
 
   return (
     <div className="flex flex-col gap-4">
-      <p role="alert" className="font-semibold text-greska">
+      <p role="alert" className="font-bold text-error">
         {greska}
       </p>
       {!meni && !greska && <p role="status">Učitavam meni…</p>}
       {meni && <MeniPrikaz meni={meni} />}
       {sZaslugama.length > 0 && (
         <details>
-          <summary className="min-h-12 cursor-pointer font-semibold">Zasluge za fotografije</summary>
+          <summary className="min-h-12 cursor-pointer font-bold">Zasluge za fotografije</summary>
           <ul className="mt-2 flex flex-col gap-1">
             {sZaslugama.map((p) => (
               <li key={p.id}>

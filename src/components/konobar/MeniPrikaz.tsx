@@ -1,5 +1,6 @@
 "use client";
 
+import { glavno, polje } from "@/components/konobar/stil";
 import { useState } from "react";
 import { formatKM } from "@/lib/format";
 import type { Meni, Proizvod } from "./tipovi";
@@ -13,7 +14,7 @@ export function Kartica({ p, onDodaj }: { p: Proizvod; onDodaj?: (p: Proizvod) =
         // eslint-disable-next-line @next/next/no-img-element -- plain img by design; the credit is the hover text and is listed on the help page
         <img src={p.slika.putanja} alt="" loading="lazy" className="mitem-img" title={p.slika.zasluge ?? undefined} />
       )}
-      <p className="text-lg font-semibold">{p.naziv}</p>
+      <p className="text-lg font-bold">{p.naziv}</p>
       <p>
         {formatKM(p.cijena)}/{p.jedinica}
       </p>
@@ -21,7 +22,7 @@ export function Kartica({ p, onDodaj }: { p: Proizvod; onDodaj?: (p: Proizvod) =
         <button
           type="button"
           onClick={() => onDodaj(p)}
-          className="min-h-12 rounded-lg bg-akcent px-4 font-semibold text-akcent-tekst"
+          className={glavno}
         >
           Dodaj
         </button>
@@ -48,7 +49,7 @@ export default function MeniPrikaz({ meni, onDodaj }: { meni: Meni; onDodaj?: (p
           value={trazi}
           onChange={(e) => postaviTrazi(e.target.value)}
           autoComplete="off"
-          className="min-h-12 w-full rounded-lg border-2 border-okvir bg-background px-3 text-lg"
+          className={polje}
         />
       </label>
       {!upit && (
@@ -61,7 +62,7 @@ export default function MeniPrikaz({ meni, onDodaj }: { meni: Meni; onDodaj?: (p
         </div>
       )}
       {proizvodi.length === 0 && <p role="status">Nema rezultata.</p>}
-      <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {proizvodi.map((p) => (
           <Kartica key={p.id} p={p} onDodaj={onDodaj} />
         ))}

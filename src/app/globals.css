@@ -1,26 +1,140 @@
 @import "tailwindcss";
+@plugin "daisyui" {
+  themes: false;
+  logs: false;
+}
+
+@plugin "daisyui/theme" {
+  name: "tamna";
+  default: true;
+  prefersdark: true;
+  color-scheme: dark;
+  --color-base-100: #171c1b;
+  --color-base-200: #232a28;
+  --color-base-300: #2e3633;
+  --color-base-content: #ece6da;
+  --color-primary: #c9873c;
+  --color-primary-content: #171c1b;
+  --color-secondary: #2e3633;
+  --color-secondary-content: #ece6da;
+  --color-accent: #2e3633;
+  --color-accent-content: #ece6da;
+  --color-neutral: #2e3633;
+  --color-neutral-content: #ece6da;
+  --color-info: #86aedd;
+  --color-info-content: #171c1b;
+  --color-success: #72c08e;
+  --color-success-content: #171c1b;
+  --color-warning: #e2b54e;
+  --color-warning-content: #171c1b;
+  --color-error: #e8695c;
+  --color-error-content: #171c1b;
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 1rem;
+  --size-selector: 0.3125rem;
+  --size-field: 0.3125rem;
+  --border: 2px;
+  --depth: 0;
+  --noise: 0;
+}
+
+@plugin "daisyui/theme" {
+  name: "svijetla";
+  default: false;
+  prefersdark: false;
+  color-scheme: light;
+  --color-base-100: #ece6da;
+  --color-base-200: #f7f3ec;
+  --color-base-300: #e0d8c8;
+  --color-base-content: #171c1b;
+  --color-primary: #895c29;
+  --color-primary-content: #f7f3ec;
+  --color-secondary: #616764;
+  --color-secondary-content: #f7f3ec;
+  --color-accent: #616764;
+  --color-accent-content: #f7f3ec;
+  --color-neutral: #616764;
+  --color-neutral-content: #f7f3ec;
+  --color-info: #506885;
+  --color-info-content: #f7f3ec;
+  --color-success: #426f52;
+  --color-success-content: #f7f3ec;
+  --color-warning: #7a622a;
+  --color-warning-content: #f7f3ec;
+  --color-error: #a24940;
+  --color-error-content: #f7f3ec;
+  --radius-selector: 0.5rem;
+  --radius-field: 0.5rem;
+  --radius-box: 1rem;
+  --size-selector: 0.3125rem;
+  --size-field: 0.3125rem;
+  --border: 2px;
+  --depth: 0;
+  --noise: 0;
+}
+
 @import "../styles/tema.css";
 @import "../styles/meni.css";
+@import "../styles/stanice.css";
 @import "../styles/stampa.css";
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-povrsina: var(--povrsina);
-  --color-okvir: var(--okvir);
-  --color-akcent: var(--akcent);
-  --color-akcent-tekst: var(--akcent-tekst);
-  --color-greska: var(--greska);
+  --color-dim: var(--dim);
+  --color-izdato: var(--izdato);
+  --font-sans: var(--font-atkinson), Arial, Helvetica, sans-serif;
+  --font-broj: var(--font-big-shoulders), var(--font-atkinson), sans-serif;
+}
+
+@theme {
+  /* Skala ×1,25 od 18 px; nova imena, --text-base ostaje Tailwindov. */
+  --text-tijelo: 1.125rem;
+  --text-tijelo--line-height: 1.4;
+  --text-h3: 1.40625rem;
+  --text-h3--line-height: 1.3;
+  --text-h2: 1.7578rem;
+  --text-h2--line-height: 1.2;
+  --text-h1: 2.1973rem;
+  --text-h1--line-height: 1.1;
+  --text-broj: 2.7466rem;
+  --text-broj--line-height: 1;
+  --text-broj-xl: 3.4332rem;
+  --text-broj-xl--line-height: 1;
+  --text-tabela: 1rem;
+  --text-tabela--line-height: 1.4;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
   font-size: 1.125rem;
+  line-height: 1.4;
 }
 
+/* U sloju components, iza daisyUI-ja, pa :focus daisyUI-ja i dalje mijenja rub (2 px dim, 5,7:1 na kartici). */
+@layer components {
+  .polje-rub {
+    --input-color: var(--color-dim);
+  }
+}
+
+/* Brojke u kolonama se poravnavaju; Atkinson ima tnum. */
+.tabelarno {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Nije u sloju, pa ga daisyUI ne nadjačava; nikad bakar. */
 :focus-visible {
-  outline: 3px solid var(--akcent);
+  outline: 3px solid var(--color-base-content);
   outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn,
+  .card,
+  .toggle,
+  .modal {
+    transition: none;
+  }
+  .btn:active {
+    translate: none;
+  }
 }

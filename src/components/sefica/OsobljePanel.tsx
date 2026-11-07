@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { dugme, glavno, polje } from "@/components/konobar/stil";
+import { dugme, glavno, izbor } from "@/components/konobar/stil";
 import type { Uloga } from "@/lib/auth/session";
 import { useSlanje, useUcitaj, zovi } from "./api";
-import { Greska, Polje } from "./ui";
+import { Greska, kartica, opasno, Polje } from "./ui";
 
 type Zaposlenik = { id: string; ime: string; uloga: Uloga; aktivan: boolean; ima_pin: boolean; ceka_aktivaciju: boolean };
 
@@ -23,7 +23,7 @@ function UlogaIzbor({ vrijednost, onChange, onemoguceno }: { vrijednost: Uloga; 
   return (
     <label className="flex flex-col gap-1">
       Uloga
-      <select className={polje} value={vrijednost} disabled={onemoguceno} onChange={(e) => onChange(e.target.value as Uloga)}>
+      <select className={izbor} value={vrijednost} disabled={onemoguceno} onChange={(e) => onChange(e.target.value as Uloga)}>
         {ULOGE.map((u) => (
           <option key={u} value={u}>
             {nazivi[u]}
@@ -51,8 +51,8 @@ function NovaOsoba({ gotovo }: { gotovo: (poruka: string) => void }) {
   }
 
   return (
-    <section aria-label="Nova osoba" className="flex flex-col gap-3 rounded-lg border-2 border-okvir p-3">
-      <h3 className="text-lg font-semibold">Dodaj osobu</h3>
+    <section aria-label="Nova osoba" className={`${kartica} gap-3`}>
+      <h3 className="text-lg font-bold">Dodaj osobu</h3>
       <Polje oznaka="Ime i prezime" vrijednost={ime} onChange={postaviIme} tip="text" maxLength={80} />
       <UlogaIzbor vrijednost={uloga} onChange={postaviUlogu} />
       <Greska tekst={lokalno || greska} />
@@ -83,12 +83,12 @@ function Izmjena({ z, jaSam, gotovo, zatvori }: { z: Zaposlenik; jaSam: boolean;
   }
 
   return (
-    <section aria-label={`Izmjena: ${z.ime}`} className="flex flex-col gap-3 border-t-2 border-okvir pt-3">
+    <section aria-label={`Izmjena: ${z.ime}`} className="flex flex-col gap-3 border-t-2 border-dim pt-3">
       <Polje oznaka="Ime i prezime" vrijednost={ime} onChange={postaviIme} tip="text" maxLength={80} />
       <UlogaIzbor vrijednost={uloga} onChange={postaviUlogu} onemoguceno={jaSam} />
       {jaSam && <p>Svoju ulogu ne možete promijeniti.</p>}
       {mijenjaUlogu && (
-        <p role="status" className="font-semibold">
+        <p role="status" className="font-bold">
           Promjena uloge briše PIN i prekida prijavu ove osobe. Trebat će joj novi kod.
         </p>
       )}
@@ -151,13 +151,13 @@ export default function OsobljePanel() {
     <div className="flex flex-col gap-4">
       <Greska tekst={greskaUcitavanja || greskaAkcije} />
       {poruka && (
-        <p role="status" className="font-semibold">
+        <p role="status" className="font-bold">
           {poruka}
         </p>
       )}
       {kod && (
-        <section role="status" aria-label="Aktivacijski kod" className="rounded-lg border-2 border-akcent bg-povrsina p-4">
-          <p className="font-semibold">{kod.ime}</p>
+        <section role="status" aria-label="Aktivacijski kod" className="card card-border border-base-content bg-base-200 p-4">
+          <p className="font-bold">{kod.ime}</p>
           <p aria-label={kod.kod.split("").join(" ")} className="my-2 text-4xl font-bold tracking-widest">{kod.kod}</p>
           <p>Kod vrijedi 15 minuta. Dajte ga zaposleniku da izabere svoj PIN.</p>
         </section>
@@ -174,10 +174,10 @@ export default function OsobljePanel() {
         {zaposlenici.map((z) => {
           const jaSam = z.ime === ja;
           return (
-            <li key={z.id} className="flex flex-col gap-2 rounded-lg border-2 border-okvir p-3">
+            <li key={z.id} className={`${kartica} gap-2`}>
               <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
                 <div className="min-w-0 flex-1">
-                  <p className="text-lg font-semibold break-words">{z.ime}</p>
+                  <p className="text-lg font-bold break-words">{z.ime}</p>
                   <p>
                     {nazivi[z.uloga]} · {!z.aktivan ? "Neaktivan" : z.ceka_aktivaciju ? "Čeka aktivaciju" : z.ima_pin ? "Ima PIN" : "Nema PIN"}
                   </p>
@@ -189,14 +189,14 @@ export default function OsobljePanel() {
                       onClick={() => noviPin(z)}
                       aria-disabled={saljemId === z.id}
                       aria-label={`Izdaj kod za ${z.ime}`}
-                      className="min-h-12 rounded-lg bg-akcent px-4 font-semibold text-akcent-tekst"
+                      className={dugme}
                     >
                       {saljemId === z.id ? "Izdajem…" : "Izdaj kod"}
                     </button>
                   )}
                   <button
                     type="button"
-                    className={dugme}
+                    className={`${dugme} aria-expanded:border-base-content`}
                     aria-expanded={uredjuje === z.id}
                     aria-label={`Uredi ${z.ime}`}
                     onClick={() => postaviUredjuje(uredjuje === z.id ? null : z.id)}
@@ -216,10 +216,10 @@ export default function OsobljePanel() {
                 </div>
               </div>
               {potvrdaDeaktivacije === z.id && (
-                <div className="flex flex-col gap-2 border-t-2 border-okvir pt-3">
-                  <p className="font-semibold">{z.ime} će odmah biti odjavljen(a) i neće moći raditi dok ga ne aktivirate.</p>
+                <div className="flex flex-col gap-2 border-t-2 border-dim pt-3">
+                  <p className="alert alert-warning font-bold">{z.ime} će odmah biti odjavljen(a) i neće moći raditi dok ga ne aktivirate.</p>
                   <div className="flex flex-wrap gap-2">
-                    <button type="button" className={glavno} aria-disabled={saljemId === z.id} aria-label={`Potvrdi deaktivaciju ${z.ime}`} onClick={() => postaviAktivnost(z, false)}>
+                    <button type="button" className={opasno} aria-disabled={saljemId === z.id} aria-label={`Potvrdi deaktivaciju ${z.ime}`} onClick={() => postaviAktivnost(z, false)}>
                       Potvrdi deaktivaciju
                     </button>
                     <button type="button" className={dugme} onClick={() => postaviPotvrdu(null)}>

@@ -53,7 +53,7 @@ export default function Izvjestaji() {
             type="button"
             aria-pressed={dani === p.dani}
             onClick={() => postaviDane(p.dani)}
-            className={`${dugme} aria-pressed:border-akcent aria-pressed:bg-akcent aria-pressed:text-akcent-tekst`}
+            className={dugme}
           >
             {p.naziv}
           </button>
@@ -71,7 +71,7 @@ export default function Izvjestaji() {
           </p>
           {r.racuni === 0 && r.mesnica.broj === 0 && <p>U ovom periodu nema naplaćenih računa.</p>}
           <section aria-label="Sažetak" className="flex flex-col gap-2">
-            <h3 className="text-lg font-semibold">Sažetak</h3>
+            <h3 className="text-lg font-bold">Sažetak</h3>
             <Podaci
               stavke={[
                 ["Naplaćenih računa", r.racuni],

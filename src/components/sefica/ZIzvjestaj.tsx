@@ -6,7 +6,7 @@ import { formatKM } from "@/lib/format";
 import { useUcitaj } from "./api";
 import { formatDatum, formatVrijeme, prethodniDan } from "./pomocno";
 import { danasUSarajevu } from "./zIzvjestajPomocno";
-import { Greska, Podaci, Tabela } from "./ui";
+import { Greska, kartica, Podaci, Tabela } from "./ui";
 
 type Izvjestaj = {
   datum: string;
@@ -65,22 +65,22 @@ export default function ZIzvjestaj({ danas }: { danas: string }) {
       {!izvjestajZaDatum && !greska && <p role="status">Učitavam Z-izvještaj…</p>}
       {izvjestajZaDatum && (
         <>
-          <section aria-label="Status Z-izvještaja" className="rounded-lg border-2 border-okvir p-3">
-            <h2 className="text-xl font-semibold">Z-izvještaj za {formatDatum(izvjestajZaDatum.datum)}</h2>
+          <section aria-label="Status Z-izvještaja" className={`${kartica} gap-2`}>
+            <h2 className="text-xl font-bold">Z-izvještaj za {formatDatum(izvjestajZaDatum.datum)}</h2>
             {izvjestajZaDatum.zatvoren ? (
               <>
                 <p>
                   Dan je zatvoren{izvjestajZaDatum.zatvorenoU ? ` ${formatVrijeme(izvjestajZaDatum.zatvorenoU)}` : ""}
-                  {izvjestajZaDatum.zatvorila ? ` (${izvjestajZaDatum.zatvorila})` : ""}. Prikazan je sačuvani zaključak.
+                  {izvjestajZaDatum.zatvorila ? ` (${izvjestajZaDatum.zatvorila})` : ""}. Prikazan je spremljeni zaključak.
                 </p>
                 {izvjestajZaDatum.promijenjenoNakonZatvaranja && (
-                  <p role="status" className="font-semibold">Podaci su se promijenili nakon zatvaranja. Za ažuriran zaključak koristite „Zatvaranje dana“.</p>
+                  <p role="status" className="font-bold">Podaci su se promijenili nakon zatvaranja. Za ažuriran zaključak koristite „Zatvaranje dana“.</p>
                 )}
               </>
             ) : <p>Dan još nije zatvoren. Prikazani su trenutno evidentirani podaci.</p>}
           </section>
           <section aria-label="Sažetak Z-izvještaja" className="flex flex-col gap-2">
-            <h3 className="text-lg font-semibold">Sažetak</h3>
+            <h3 className="text-lg font-bold">Sažetak</h3>
             <Podaci stavke={[
               ["Računi", izvjestajZaDatum.racuni],
               ["Bruto", formatKM(izvjestajZaDatum.bruto)],

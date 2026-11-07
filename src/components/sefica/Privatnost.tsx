@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { glavno } from "@/components/konobar/stil";
+import { dugme } from "@/components/konobar/stil";
 import { formatBroj } from "@/lib/format";
 import { useSlanje, zovi } from "./api";
-import { Greska, Polje } from "./ui";
+import { Greska, opasno, Polje } from "./ui";
 import { daniIzUnosa, tijeloAnonimizacije } from "./privatnostPomocno";
 
 type Rezultat = { dugovi: number; rezervacije: number; daniDugovi: number; daniRezervacije: number };
@@ -68,8 +68,8 @@ export default function Privatnost() {
         ime se zamjenjuje istom oznakom, a telefon i napomena se brišu.
         Otvoreni dugovi se ne diraju. Ne obuhvata imena zaposlenih, napomene narudžbi ni sigurnosne kopije.
       </p>
-      <p className="font-semibold">Ovo se ne može poništiti i nema pregleda podataka prije izmjene.</p>
-      <div className="grid gap-3 sm:grid-cols-2">
+      <p className="font-bold">Ovo se ne može poništiti i nema pregleda podataka prije izmjene.</p>
+      <div className="grid gap-3 md:grid-cols-2">
         <Polje
           oznaka="Rok za naplaćene dugove (dani)"
           vrijednost={daniDugovi}
@@ -87,29 +87,29 @@ export default function Privatnost() {
       <Greska tekst={lokalnaGreska || greska} />
       {!potvrda ? (
         <div>
-          <button type="button" className={glavno} disabled={saljem} onClick={() => { postaviRezultat(null); pripremiPotvrdu(); }}>
+          <button type="button" className={dugme} disabled={saljem} onClick={() => { postaviRezultat(null); pripremiPotvrdu(); }}>
             Nastavi na potvrdu
           </button>
         </div>
       ) : (
-        <section aria-label="Potvrda anonimizacije" className="flex flex-col gap-3 rounded-lg border-2 border-greska p-3">
-          <p className="font-semibold">
+        <section aria-label="Potvrda anonimizacije" className="flex flex-col gap-3">
+          <p className="alert alert-warning font-bold">
             Potvrdite: anonimizirati naplaćene dugove starije od {formatBroj(rokDugovi ?? 365)} dana
             i rezervacije starije od {formatBroj(rokRezervacije ?? 90)} dana?
           </p>
           <div className="flex flex-wrap gap-2">
-            <button type="button" className={glavno} disabled={saljem} onClick={anonimiziraj}>
-              {saljem ? "Obrađujem…" : "Da, anonimiziraj"}
+            <button type="button" className={opasno} disabled={saljem} onClick={anonimiziraj}>
+              {saljem ? "Obrađujem…" : "Anonimiziraj"}
             </button>
-            <button type="button" className="min-h-12 min-w-12 rounded-lg border-2 border-okvir bg-povrsina px-4 font-semibold" onClick={() => postaviPotvrdu(false)}>
+            <button type="button" className={dugme} onClick={() => postaviPotvrdu(false)}>
               Odustani
             </button>
           </div>
         </section>
       )}
       {rezultat && (
-        <p role="status" className="font-semibold">
-          Završeno: anonimizirana dugovanja {rezultat.dugovi}, rezervacije {rezultat.rezervacije}. Rokovi: {rezultat.daniDugovi} i {rezultat.daniRezervacije} dana.
+        <p role="status" className="font-bold">
+          Završeno: anonimizirani dugovi {rezultat.dugovi}, rezervacije {rezultat.rezervacije}. Rokovi: {rezultat.daniDugovi} i {rezultat.daniRezervacije} dana.
         </p>
       )}
     </div>

@@ -7,10 +7,10 @@ export const metadata = { title: "Pomoć – Smajić" };
 
 export default function Page() {
   return (
-    <div className="flex flex-col gap-6">
-      <h1 className="text-2xl font-semibold">Pomoć</h1>
+    <div className="flex max-w-prose flex-col gap-6">
+      <h1 className="text-2xl font-bold">Pomoć</h1>
       <section aria-labelledby="prva-prijava" className="flex flex-col gap-3">
-        <h2 id="prva-prijava" className="text-xl font-semibold">
+        <h2 id="prva-prijava" className="text-xl font-bold">
           Prva prijava
         </h2>
         <ol className="list-decimal space-y-2 pl-6">
@@ -21,7 +21,7 @@ export default function Page() {
       </section>
       {Object.values(VODIC).map((sekcija) => (
         <section key={sekcija.naziv} aria-labelledby={`vodic-${sekcija.naziv}`} className="flex flex-col gap-3">
-          <h2 id={`vodic-${sekcija.naziv}`} className="text-xl font-semibold">
+          <h2 id={`vodic-${sekcija.naziv}`} className="text-xl font-bold">
             {sekcija.naziv}
           </h2>
           <ol className="list-decimal space-y-2 pl-6">
@@ -32,13 +32,13 @@ export default function Page() {
         </section>
       ))}
       <details className="flex flex-col gap-3">
-        <summary className="min-h-12 cursor-pointer py-3 text-xl font-semibold">Fotografije menija</summary>
+        <summary className="min-h-12 cursor-pointer py-3 text-xl font-bold">Fotografije menija</summary>
         <ul className="space-y-1 pl-6">
           {ZASLUGE.map(([kljuc, s]) => (
             <li key={kljuc}>
               {kljuc.split("/")[1]}:{" "}
               {s.link ? (
-                <a href={s.link} rel="noreferrer" className="underline">
+                <a href={s.link} rel="noreferrer" className="link">
                   {s.zasluge}
                 </a>
               ) : (
