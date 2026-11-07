@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { detaljiTekst, formatDatum, formatVrijeme, jednako, kolicinaIzUnosa, prethodniDan } from "@/components/sefica/pomocno";
+import { detaljiTekst, formatDatum, formatVrijeme, jednako, kolicinaIzUnosa, prethodniDan, razlikaTekst } from "@/components/sefica/pomocno";
 
 describe("vrijeme", () => {
   it("prikazuje sarajevsko vrijeme, zimsko i ljetno", () => {
@@ -52,5 +52,13 @@ describe("detaljiTekst", () => {
     ]);
     expect(detaljiTekst(null)).toEqual([]);
     expect(detaljiTekst("tekst")).toEqual(["tekst"]);
+  });
+});
+
+describe("razlikaTekst", () => {
+  it("piše razliku u jednom obliku", () => {
+    expect(razlikaTekst(-5)).toBe("−5,00 KM (manjak)");
+    expect(razlikaTekst(2.5)).toBe("2,50 KM (višak)");
+    expect(razlikaTekst(0)).toBe("0,00 KM (tačno)");
   });
 });

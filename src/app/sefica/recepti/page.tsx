@@ -5,7 +5,7 @@ export const metadata = { title: "Recepti i nabavka – Smajić" };
 export default function Page() {
   return (
     <>
-      <h1 className="mb-4 text-2xl font-semibold">Recepti i nabavka</h1>
+      <h1 className="mb-4 text-2xl font-bold">Recepti i nabavka</h1>
       <ReceptiEkran />
     </>
   );

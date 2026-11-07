@@ -5,7 +5,7 @@ import { dugme, glavno } from "@/components/konobar/stil";
 import { formatKM } from "@/lib/format";
 import { useSlanje, useUcitaj, zovi } from "./api";
 import { formatVrijeme } from "./pomocno";
-import { Greska } from "./ui";
+import { Greska, kartica, Strane } from "./ui";
 
 type Dug = { racunId: string; broj: number; gostDuznik: string | null; iznos: number; vrijeme: string; stolovi: number[]; konobar: string };
 type Odgovor = { dugovi: Dug[]; imaJos: boolean; broj: number; ukupno: number };
@@ -25,15 +25,15 @@ function Red({ d, poNaplati }: { d: Dug; poNaplati: (p: string) => void }) {
   }
 
   return (
-    <li className="flex flex-col gap-2 rounded-lg border-2 border-okvir p-3">
-      <p className="text-lg font-semibold break-words">{d.gostDuznik ?? "Bez imena"}</p>
+    <li className={`${kartica} gap-2`}>
+      <p className="text-lg font-bold break-words">{d.gostDuznik ?? "Bez imena"}</p>
       <p>
         {formatKM(d.iznos)} · račun {d.broj} · {d.stolovi.length > 0 ? `sto ${d.stolovi.join(", ")} · ` : ""}konobar {d.konobar} · {formatVrijeme(d.vrijeme)}
       </p>
       <Greska tekst={greska} />
       {nacin ? (
         <div className="flex flex-col gap-2">
-          <p className="font-semibold">Potvrdite naplatu {formatKM(d.iznos)} {NAZIV[nacin]}.</p>
+          <p className="alert alert-warning font-bold">Potvrdite naplatu {formatKM(d.iznos)} {NAZIV[nacin]}.</p>
           <div className="flex flex-wrap gap-2">
             <button type="button" className={glavno} aria-disabled={saljem} aria-label={`Potvrdi naplatu ${NAZIV[nacin]}, račun ${d.broj}`} onClick={naplati}>
               {saljem ? "Naplaćujem…" : "Potvrdi naplatu"}
@@ -65,11 +65,11 @@ export default function DugoviGostiju() {
   return (
     <div className="flex flex-col gap-4">
       <Greska tekst={greska} />
-      {poruka && <p role="status" className="font-semibold break-words">{poruka}</p>}
+      {poruka && <p role="status" className="font-bold break-words">{poruka}</p>}
       {!ucitano && !greska && <p role="status">Učitavam dugove…</p>}
       {p && (
         <>
-          <p className="text-lg font-semibold">
+          <p className="text-lg font-bold">
             Neplaćenih dugova: {p.broj}, ukupno {formatKM(p.ukupno)}
           </p>
           <p>Dug se naplaćuje cijeli, u iznosu s računa, bez bakšiša.</p>
@@ -86,15 +86,7 @@ export default function DugoviGostiju() {
               />
             ))}
           </ul>
-          <div className="flex gap-2">
-            <button type="button" className={dugme} disabled={strana === 1} onClick={() => postaviStranu(strana - 1)}>
-              Prethodna
-            </button>
-            <span className="flex items-center">Strana {strana}</span>
-            <button type="button" className={dugme} disabled={!p.imaJos} onClick={() => postaviStranu(strana + 1)}>
-              Sljedeća
-            </button>
-          </div>
+          <Strane strana={strana} prethodna={strana > 1 ? () => postaviStranu(strana - 1) : undefined} sljedeca={p.imaJos ? () => postaviStranu(strana + 1) : undefined} />
         </>
       )}
     </div>

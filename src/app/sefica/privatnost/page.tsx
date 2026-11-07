@@ -5,7 +5,7 @@ export const metadata = { title: "Privatnost – Smajić" };
 export default function Page() {
   return (
     <>
-      <h1 className="mb-4 text-2xl font-semibold">Privatnost</h1>
+      <h1 className="mb-4 text-2xl font-bold">Privatnost</h1>
       <Privatnost />
     </>
   );

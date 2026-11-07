@@ -6,8 +6,8 @@ import { dugme, glavno } from "@/components/konobar/stil";
 import { pregledPopisa } from "@/lib/domain/pecenjara";
 import { formatBroj, formatKM } from "@/lib/format";
 import { useSlanje, useUcitaj, zovi } from "./api";
-import { formatVrijeme, kolicinaIzUnosa } from "./pomocno";
-import { Greska, Podaci, Polje, Tabela } from "./ui";
+import { formatVrijeme, kolicinaIzUnosa, razlikaTekst } from "./pomocno";
+import { Greska, kartica, Podaci, Polje, Strane, Tabela } from "./ui";
 
 type Popis = {
   smjenaId: string;
@@ -58,7 +58,7 @@ function Otvaranje({ osvjezi }: { osvjezi: () => void }) {
 
   return (
     <section aria-label="Početni popis" className="flex flex-col gap-3">
-      <h3 className="text-lg font-semibold">Početni popis pečenjare</h3>
+      <h3 className="text-lg font-bold">Početni popis pečenjare</h3>
       <Polje oznaka="Pečenih pilića" vrijednost={pecene} onChange={postaviPecene} tip="numeric" />
       <Polje oznaka="Sirovih pilića" vrijednost={sirove} onChange={postaviSirove} tip="numeric" />
       <Polje oznaka="Jagnjetina (kg)" vrijednost={kg} onChange={postaviKg} />
@@ -118,7 +118,7 @@ function Zatvaranje({ popis, cijene, osvjezi }: { popis: Popis; cijene: Pregled[
 
   return (
     <section aria-label="Završni popis" className="flex flex-col gap-3">
-      <h3 className="text-lg font-semibold">Završni popis pečenjare</h3>
+      <h3 className="text-lg font-bold">Završni popis pečenjare</h3>
       <p>
         Početno stanje: {popis.pocetneKokePecene} pečenih, {popis.pocetneKokeSirove} sirovih, {formatBroj(popis.pocetnaJanjetinaKg)} kg jagnjetine.
       </p>
@@ -128,14 +128,14 @@ function Zatvaranje({ popis, cijene, osvjezi }: { popis: Popis; cijene: Pregled[
       <Polje oznaka="Preostala jagnjetina (kg)" vrijednost={preostaloKg} onChange={postaviPreostaloKg} />
       <Polje oznaka="Predani pazar (KM)" vrijednost={predani} onChange={postaviPredani} />
       {pregled?.moguce && !prekoRaspolozivog && (
-        <section aria-label="Pregled popisa" className="rounded-lg border-2 border-okvir p-3">
+        <section aria-label="Pregled popisa" className={`${kartica} gap-2`}>
           <Podaci
             stavke={[
               ["Prodano pilića", pregled.prodaneKoke],
               ["Prodana jagnjetina", `${formatBroj(pregled.prodanaJanjetinaKg)} kg`],
               ["Pazar po popisu", formatKM(pregled.pazarPoPopisu)],
               ["Predano", formatKM(v.predaniPazar)],
-              ["Razlika", pregled.razlika === 0 ? "0,00 KM (tačno)" : pregled.razlika < 0 ? `Manjak ${formatKM(-pregled.razlika)}` : `Višak ${formatKM(pregled.razlika)}`],
+              ["Razlika", razlikaTekst(pregled.razlika)],
             ]}
           />
           <p>Pregled je samo procjena; server računa konačne iznose.</p>
@@ -144,10 +144,10 @@ function Zatvaranje({ popis, cijene, osvjezi }: { popis: Popis; cijene: Pregled[
       <Greska tekst={lokalno || greska} />
       {potvrda ? (
         <div className="flex flex-col gap-2">
-          <p className="font-semibold">Zaključani popis se ne može ispraviti. Jeste li sigurni?</p>
+          <p className="alert alert-warning font-bold">Zaključani popis se ne može ispraviti. Jeste li sigurni?</p>
           <div className="flex flex-wrap gap-2">
             <button type="button" className={glavno} aria-disabled={saljem} onClick={zatvori}>
-              {saljem ? "Zaključujem…" : "Da, zaključi popis"}
+              {saljem ? "Zaključujem…" : "Zaključi popis"}
             </button>
             <button type="button" className={dugme} onClick={() => postaviPotvrdu(false)}>
               Nazad
@@ -169,7 +169,7 @@ function Dugovi() {
   const { podaci: d, greska, ucitano } = useUcitaj<Dugovi>("/api/pecenjara/dug");
   return (
     <section aria-label="Dugovi konobara pečenjari" className="flex flex-col gap-2">
-      <h3 className="text-lg font-semibold">Dugovi konobara pečenjari</h3>
+      <h3 className="text-lg font-bold">Dugovi konobara pečenjari</h3>
       <p>Samo za pregled: uplate bilježi pečenjara.</p>
       <Greska tekst={greska} />
       {!ucitano && !greska && <p role="status">Učitavam dugove…</p>}
@@ -181,7 +181,7 @@ function Dugovi() {
             redovi={d.dugovi.map((x) => [x.ime, formatKM(x.izdato), formatKM(x.placeno), formatKM(x.dug)])}
             prazno="Nijedan konobar ne duguje pečenjari."
           />
-          {d.dugovi.length > 0 && <p className="font-semibold">Ukupno: {formatKM(d.ukupno)}</p>}
+          {d.dugovi.length > 0 && <p className="font-bold">Ukupno: {formatKM(d.ukupno)}</p>}
         </>
       )}
     </section>
@@ -201,7 +201,7 @@ export default function PopisPecenjare() {
         <>
           {!p.smjena && (
             <p role="status">
-              Nema otvorene smjene. Smjenu otvara konobar ili šefica na <Link href="/sank" className="inline-flex min-h-12 min-w-12 items-center justify-center underline">šanku</Link>.
+              Nema otvorene smjene. Smjenu otvara konobar ili šefica na <Link href="/sank" className="link inline-flex min-h-12 min-w-12 items-center justify-center">šanku</Link>.
             </p>
           )}
           {p.smjena && (
@@ -212,7 +212,7 @@ export default function PopisPecenjare() {
           {p.smjena && !p.popis && <Otvaranje osvjezi={osvjezi} />}
           {p.popis && !p.popis.zatvoreno && <Zatvaranje popis={p.popis} cijene={p.cijene} osvjezi={osvjezi} />}
           {p.popis?.zatvoreno && (
-            <p role="status" className="font-semibold">
+            <p role="status" className="font-bold">
               Popis pečenjare za ovu smjenu je zaključen.
             </p>
           )}
@@ -225,19 +225,11 @@ export default function PopisPecenjare() {
               h.prodanaJanjetinaKg === null ? "–" : `${formatBroj(h.prodanaJanjetinaKg)} kg`,
               h.pazarPoPopisu === null ? "–" : formatKM(h.pazarPoPopisu),
               h.predaniPazar === null ? "–" : formatKM(h.predaniPazar),
-              h.razlika === null ? "–" : formatKM(h.razlika),
+              h.razlika === null ? "–" : razlikaTekst(h.razlika),
             ])}
             prazno="Još nema zaključenih popisa."
           />
-          <div className="flex gap-2">
-            <button type="button" className={dugme} disabled={strana === 1} onClick={() => postaviStranu(strana - 1)}>
-              Novije
-            </button>
-            <span className="flex items-center">Strana {strana}</span>
-            <button type="button" className={dugme} disabled={!p.imaJos} onClick={() => postaviStranu(strana + 1)}>
-              Starije
-            </button>
-          </div>
+          <Strane strana={strana} prethodna={strana > 1 ? () => postaviStranu(strana - 1) : undefined} sljedeca={p.imaJos ? () => postaviStranu(strana + 1) : undefined} />
         </>
       )}
       <Dugovi />
