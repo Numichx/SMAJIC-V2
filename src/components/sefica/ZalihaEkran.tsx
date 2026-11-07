@@ -174,7 +174,7 @@ function Lista({ uloga, zaliha, osvjezi }: { uloga: Uloga; zaliha: Artikal[]; os
         {prikaz.map((a) => (
           <li key={a.id} className={`${kartica} gap-2`}>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-              <div className="min-w-0 flex-1">
+              <div className="min-w-0 flex-1 basis-64">
                 <p className="text-lg font-bold break-words">{a.naziv}</p>
                 <p>
                   Stanje: <strong>{formatBroj(a.stanje)} {a.jedinica}</strong>

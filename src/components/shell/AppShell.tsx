@@ -60,7 +60,7 @@ export default async function AppShell({ odjeljak, children }: { odjeljak: Odjel
       <DemoStatus />
       <div className={`flex flex-1 flex-col ${bocno ? "md:flex-row" : ""}`}>
         <header
-          className={`flex flex-wrap items-center gap-x-4 gap-y-2 border-b-2 border-dim bg-base-200 ${dno ? "p-2 md:p-3" : "p-3"} ${
+          className={`flex flex-wrap items-center gap-x-3 gap-y-2 border-b-2 border-dim bg-base-200 p-2 md:gap-x-4 md:p-3 ${
             bocno ? "md:sticky md:top-0 md:h-dvh md:w-60 md:flex-none md:flex-col md:flex-nowrap md:items-stretch md:gap-4 md:overflow-y-auto md:border-b-0 md:p-5" : ""
           }`}
         >
@@ -70,8 +70,8 @@ export default async function AppShell({ odjeljak, children }: { odjeljak: Odjel
           </strong>
           <span className="font-semibold">{sesija.ime}</span>
           <Navigacija veze={dno ? navigacija.konobar : [...navigacija[sesija.uloga], { href: "/pomoc", naziv: "Pomoć" }]} dno={dno} bocno={bocno} />
-          {/* On the waiter's phone every pixel above the tables counts: same buttons, 44 px instead of 48. */}
-          <div className={`ml-auto flex gap-2 ${dno ? "max-md:[&_.btn]:h-11 max-md:[&_.btn]:px-3 max-md:[&_.btn]:text-sm" : ""} ${bocno ? "md:mt-auto md:ml-0 md:flex-col" : ""}`}>
+          {/* On a phone every pixel above the content counts: same buttons, 44 px instead of 48. */}
+          <div className={`ml-auto flex gap-2 max-md:[&_.btn]:h-11 max-md:[&_.btn]:px-3 max-md:[&_.btn]:text-sm ${bocno ? "md:mt-auto md:ml-0 md:flex-col" : ""}`}>
             {/* Six tabs do not fit a phone's bottom bar, so the waiter's Pomoć sits up here. */}
             {dno && (
               <Link href="/pomoc" className="btn btn-lg btn-outline border-dim font-bold">

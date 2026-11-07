@@ -176,7 +176,7 @@ export default function OsobljePanel() {
           return (
             <li key={z.id} className={`${kartica} gap-2`}>
               <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
-                <div className="min-w-0 flex-1">
+                <div className="min-w-0 flex-1 basis-64">
                   <p className="text-lg font-bold break-words">{z.ime}</p>
                   <p>
                     {nazivi[z.uloga]} · {!z.aktivan ? "Neaktivan" : z.ceka_aktivaciju ? "Čeka aktivaciju" : z.ima_pin ? "Ima PIN" : "Nema PIN"}

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 
 // One stroke icon per link, keyed by href; a link without one just shows its label.
 const P = {
@@ -58,34 +59,58 @@ export default function Navigacija({ veze, dno = false, bocno = false }: { veze:
     .filter((v) => putanja === v.href || putanja.startsWith(`${v.href}/`))
     .reduce<string | undefined>((a, v) => (a && a.length >= v.href.length ? a : v.href), undefined);
 
+  // Without a bottom bar, a phone shows one button naming the current page; the links open under it.
+  const [otvoren, postaviOtvoren] = useState(false);
+  const sklopivo = !dno;
+  const trenutna = veze.find((v) => v.href === aktivna)?.naziv ?? "Izbornik";
+
   return (
-    <nav
-      aria-label="Glavna navigacija"
-      className={
-        dno
-          ? "fixed inset-x-0 bottom-0 z-40 grid auto-cols-fr grid-flow-col gap-1 border-t-2 border-dim bg-base-200 p-1 pb-[max(0.25rem,env(safe-area-inset-bottom))] md:static md:flex md:flex-col md:gap-1 md:border-0 md:bg-transparent md:p-0"
-          : bocno
-            ? "flex flex-wrap gap-2 md:flex-col md:flex-nowrap md:gap-1"
-            : "flex flex-wrap gap-2"
-      }
-    >
-      {veze.map((v) => (
-        <Link
-          key={v.href}
-          href={v.href}
-          aria-current={aktivna === v.href ? "page" : undefined}
-          className={`btn btn-lg btn-outline border-dim font-bold aria-[current=page]:border-primary aria-[current=page]:bg-primary aria-[current=page]:text-primary-content ${
-            bocno ? "md:h-11 md:min-h-11 md:justify-start md:border-transparent md:text-dim" : ""
-          } ${dno ? "max-md:h-14 max-md:flex-col max-md:gap-0.5 max-md:border-0 max-md:px-1 max-md:text-xs max-md:leading-tight max-md:whitespace-normal" : ""}`}
+    <>
+      {sklopivo && (
+        <button
+          type="button"
+          aria-expanded={otvoren}
+          aria-controls="glavna-navigacija"
+          onClick={() => postaviOtvoren((o) => !o)}
+          className="btn btn-lg btn-outline border-dim font-bold md:hidden max-md:h-11 max-md:max-w-44 max-md:px-3 max-md:text-sm"
         >
-          {IKONA[v.href] && (
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="size-5 flex-none">
-              <path d={IKONA[v.href]} />
-            </svg>
-          )}
-          {v.naziv}
-        </Link>
-      ))}
-    </nav>
+          <span className="sr-only">Izbornik: </span>
+          <span className="truncate">{trenutna}</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className={`size-4 flex-none transition-transform motion-reduce:transition-none ${otvoren ? "rotate-180" : ""}`}>
+            <path d="M6 9l6 6 6-6" />
+          </svg>
+        </button>
+      )}
+      <nav
+        id="glavna-navigacija"
+        aria-label="Glavna navigacija"
+        className={`${
+          dno
+            ? "fixed inset-x-0 bottom-0 z-40 grid auto-cols-fr grid-flow-col gap-1 border-t-2 border-dim bg-base-200 p-1 pb-[max(0.25rem,env(safe-area-inset-bottom))] md:static md:flex md:flex-col md:gap-1 md:border-0 md:bg-transparent md:p-0"
+            : bocno
+              ? "flex flex-wrap gap-2 md:flex-col md:flex-nowrap md:gap-1"
+              : "flex flex-wrap gap-2"
+        } ${sklopivo ? `max-md:order-last max-md:grid max-md:w-full max-md:grid-cols-2 ${otvoren ? "" : "max-md:hidden"}` : ""}`}
+      >
+        {veze.map((v) => (
+          <Link
+            key={v.href}
+            href={v.href}
+            aria-current={aktivna === v.href ? "page" : undefined}
+            onClick={() => postaviOtvoren(false)}
+            className={`btn btn-lg btn-outline border-dim font-bold aria-[current=page]:border-primary aria-[current=page]:bg-primary aria-[current=page]:text-primary-content ${
+              bocno ? "md:h-11 md:min-h-11 md:justify-start md:border-transparent md:text-dim" : ""
+            } ${dno ? "max-md:h-14 max-md:flex-col max-md:gap-0.5 max-md:border-0 max-md:px-1 max-md:text-xs max-md:leading-tight max-md:whitespace-normal" : ""}`}
+          >
+            {IKONA[v.href] && (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" className="size-5 flex-none">
+                <path d={IKONA[v.href]} />
+              </svg>
+            )}
+            {v.naziv}
+          </Link>
+        ))}
+      </nav>
+    </>
   );
 }
